@@ -20,7 +20,6 @@
 		DBDB96C92DCE3E950051294F /* _NIOConcurrency in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C82DCE3E950051294F /* _NIOConcurrency */; };
 		DBDB96CB2DCE3E950051294F /* _NIOFileSystem in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96CA2DCE3E950051294F /* _NIOFileSystem */; };
 		DBDB96CD2DCE3E950051294F /* _NIOFileSystemFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96CC2DCE3E950051294F /* _NIOFileSystemFoundationCompat */; };
-		DBDB96D02DCE3EBC0051294F /* StreamDeck in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96CF2DCE3EBC0051294F /* StreamDeck */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,7 +71,6 @@
 				DBDB96B92DCE3E950051294F /* NIOCore in Frameworks */,
 				DBDB96CD2DCE3E950051294F /* _NIOFileSystemFoundationCompat in Frameworks */,
 				DBDB96BD2DCE3E950051294F /* NIOFoundationCompat in Frameworks */,
-				DBDB96D02DCE3EBC0051294F /* StreamDeck in Frameworks */,
 				DBDB96C92DCE3E950051294F /* _NIOConcurrency in Frameworks */,
 				DBDB96C52DCE3E950051294F /* NIOTestUtils in Frameworks */,
 				DBDB96CB2DCE3E950051294F /* _NIOFileSystem in Frameworks */,
@@ -156,7 +154,6 @@
 				DBDB96C82DCE3E950051294F /* _NIOConcurrency */,
 				DBDB96CA2DCE3E950051294F /* _NIOFileSystem */,
 				DBDB96CC2DCE3E950051294F /* _NIOFileSystemFoundationCompat */,
-				DBDB96CF2DCE3EBC0051294F /* StreamDeck */,
 			);
 			productName = StreamDeckSocketServer;
 			productReference = DBDB96852DCE3E490051294F /* StreamDeckSocketServer.app */;
@@ -242,7 +239,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */,
-				DBDB96CE2DCE3EBC0051294F /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DBDB96862DCE3E490051294F /* Products */;
@@ -608,14 +604,6 @@
 				minimumVersion = 2.82.1;
 			};
 		};
-		DBDB96CE2DCE3EBC0051294F /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/emorydunn/StreamDeckPlugin.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.5.1;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -683,11 +671,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
 			productName = _NIOFileSystemFoundationCompat;
-		};
-		DBDB96CF2DCE3EBC0051294F /* StreamDeck */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96CE2DCE3EBC0051294F /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */;
-			productName = StreamDeck;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
