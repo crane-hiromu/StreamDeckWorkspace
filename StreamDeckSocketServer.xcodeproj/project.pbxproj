@@ -1,0 +1,695 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DBDB96B52DCE3E950051294F /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96B42DCE3E950051294F /* NIO */; };
+		DBDB96B72DCE3E950051294F /* NIOConcurrencyHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96B62DCE3E950051294F /* NIOConcurrencyHelpers */; };
+		DBDB96B92DCE3E950051294F /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96B82DCE3E950051294F /* NIOCore */; };
+		DBDB96BB2DCE3E950051294F /* NIOEmbedded in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96BA2DCE3E950051294F /* NIOEmbedded */; };
+		DBDB96BD2DCE3E950051294F /* NIOFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96BC2DCE3E950051294F /* NIOFoundationCompat */; };
+		DBDB96BF2DCE3E950051294F /* NIOHTTP1 in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96BE2DCE3E950051294F /* NIOHTTP1 */; };
+		DBDB96C12DCE3E950051294F /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C02DCE3E950051294F /* NIOPosix */; };
+		DBDB96C32DCE3E950051294F /* NIOTLS in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C22DCE3E950051294F /* NIOTLS */; };
+		DBDB96C52DCE3E950051294F /* NIOTestUtils in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C42DCE3E950051294F /* NIOTestUtils */; };
+		DBDB96C72DCE3E950051294F /* NIOWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C62DCE3E950051294F /* NIOWebSocket */; };
+		DBDB96C92DCE3E950051294F /* _NIOConcurrency in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C82DCE3E950051294F /* _NIOConcurrency */; };
+		DBDB96CB2DCE3E950051294F /* _NIOFileSystem in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96CA2DCE3E950051294F /* _NIOFileSystem */; };
+		DBDB96CD2DCE3E950051294F /* _NIOFileSystemFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96CC2DCE3E950051294F /* _NIOFileSystemFoundationCompat */; };
+		DBDB96D02DCE3EBC0051294F /* StreamDeck in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96CF2DCE3EBC0051294F /* StreamDeck */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DBDB96972DCE3E4A0051294F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDB967D2DCE3E490051294F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DBDB96842DCE3E490051294F;
+			remoteInfo = StreamDeckSocketServer;
+		};
+		DBDB96A12DCE3E4A0051294F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDB967D2DCE3E490051294F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DBDB96842DCE3E490051294F;
+			remoteInfo = StreamDeckSocketServer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		DBDB96852DCE3E490051294F /* StreamDeckSocketServer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StreamDeckSocketServer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBDB96962DCE3E4A0051294F /* StreamDeckSocketServerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StreamDeckSocketServerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBDB96A02DCE3E4A0051294F /* StreamDeckSocketServerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StreamDeckSocketServerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		DBDB96872DCE3E490051294F /* StreamDeckSocketServer */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = StreamDeckSocketServer;
+			sourceTree = "<group>";
+		};
+		DBDB96992DCE3E4A0051294F /* StreamDeckSocketServerTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = StreamDeckSocketServerTests;
+			sourceTree = "<group>";
+		};
+		DBDB96A32DCE3E4A0051294F /* StreamDeckSocketServerUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = StreamDeckSocketServerUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DBDB96822DCE3E490051294F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DBDB96B92DCE3E950051294F /* NIOCore in Frameworks */,
+				DBDB96CD2DCE3E950051294F /* _NIOFileSystemFoundationCompat in Frameworks */,
+				DBDB96BD2DCE3E950051294F /* NIOFoundationCompat in Frameworks */,
+				DBDB96D02DCE3EBC0051294F /* StreamDeck in Frameworks */,
+				DBDB96C92DCE3E950051294F /* _NIOConcurrency in Frameworks */,
+				DBDB96C52DCE3E950051294F /* NIOTestUtils in Frameworks */,
+				DBDB96CB2DCE3E950051294F /* _NIOFileSystem in Frameworks */,
+				DBDB96C12DCE3E950051294F /* NIOPosix in Frameworks */,
+				DBDB96B52DCE3E950051294F /* NIO in Frameworks */,
+				DBDB96C72DCE3E950051294F /* NIOWebSocket in Frameworks */,
+				DBDB96BF2DCE3E950051294F /* NIOHTTP1 in Frameworks */,
+				DBDB96B72DCE3E950051294F /* NIOConcurrencyHelpers in Frameworks */,
+				DBDB96BB2DCE3E950051294F /* NIOEmbedded in Frameworks */,
+				DBDB96C32DCE3E950051294F /* NIOTLS in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBDB96932DCE3E4A0051294F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBDB969D2DCE3E4A0051294F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DBDB967C2DCE3E490051294F = {
+			isa = PBXGroup;
+			children = (
+				DBDB96872DCE3E490051294F /* StreamDeckSocketServer */,
+				DBDB96992DCE3E4A0051294F /* StreamDeckSocketServerTests */,
+				DBDB96A32DCE3E4A0051294F /* StreamDeckSocketServerUITests */,
+				DBDB96862DCE3E490051294F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DBDB96862DCE3E490051294F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DBDB96852DCE3E490051294F /* StreamDeckSocketServer.app */,
+				DBDB96962DCE3E4A0051294F /* StreamDeckSocketServerTests.xctest */,
+				DBDB96A02DCE3E4A0051294F /* StreamDeckSocketServerUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DBDB96842DCE3E490051294F /* StreamDeckSocketServer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DBDB96AA2DCE3E4A0051294F /* Build configuration list for PBXNativeTarget "StreamDeckSocketServer" */;
+			buildPhases = (
+				DBDB96812DCE3E490051294F /* Sources */,
+				DBDB96822DCE3E490051294F /* Frameworks */,
+				DBDB96832DCE3E490051294F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				DBDB96872DCE3E490051294F /* StreamDeckSocketServer */,
+			);
+			name = StreamDeckSocketServer;
+			packageProductDependencies = (
+				DBDB96B42DCE3E950051294F /* NIO */,
+				DBDB96B62DCE3E950051294F /* NIOConcurrencyHelpers */,
+				DBDB96B82DCE3E950051294F /* NIOCore */,
+				DBDB96BA2DCE3E950051294F /* NIOEmbedded */,
+				DBDB96BC2DCE3E950051294F /* NIOFoundationCompat */,
+				DBDB96BE2DCE3E950051294F /* NIOHTTP1 */,
+				DBDB96C02DCE3E950051294F /* NIOPosix */,
+				DBDB96C22DCE3E950051294F /* NIOTLS */,
+				DBDB96C42DCE3E950051294F /* NIOTestUtils */,
+				DBDB96C62DCE3E950051294F /* NIOWebSocket */,
+				DBDB96C82DCE3E950051294F /* _NIOConcurrency */,
+				DBDB96CA2DCE3E950051294F /* _NIOFileSystem */,
+				DBDB96CC2DCE3E950051294F /* _NIOFileSystemFoundationCompat */,
+				DBDB96CF2DCE3EBC0051294F /* StreamDeck */,
+			);
+			productName = StreamDeckSocketServer;
+			productReference = DBDB96852DCE3E490051294F /* StreamDeckSocketServer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		DBDB96952DCE3E4A0051294F /* StreamDeckSocketServerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DBDB96AD2DCE3E4A0051294F /* Build configuration list for PBXNativeTarget "StreamDeckSocketServerTests" */;
+			buildPhases = (
+				DBDB96922DCE3E4A0051294F /* Sources */,
+				DBDB96932DCE3E4A0051294F /* Frameworks */,
+				DBDB96942DCE3E4A0051294F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DBDB96982DCE3E4A0051294F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				DBDB96992DCE3E4A0051294F /* StreamDeckSocketServerTests */,
+			);
+			name = StreamDeckSocketServerTests;
+			packageProductDependencies = (
+			);
+			productName = StreamDeckSocketServerTests;
+			productReference = DBDB96962DCE3E4A0051294F /* StreamDeckSocketServerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		DBDB969F2DCE3E4A0051294F /* StreamDeckSocketServerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DBDB96B02DCE3E4A0051294F /* Build configuration list for PBXNativeTarget "StreamDeckSocketServerUITests" */;
+			buildPhases = (
+				DBDB969C2DCE3E4A0051294F /* Sources */,
+				DBDB969D2DCE3E4A0051294F /* Frameworks */,
+				DBDB969E2DCE3E4A0051294F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DBDB96A22DCE3E4A0051294F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				DBDB96A32DCE3E4A0051294F /* StreamDeckSocketServerUITests */,
+			);
+			name = StreamDeckSocketServerUITests;
+			packageProductDependencies = (
+			);
+			productName = StreamDeckSocketServerUITests;
+			productReference = DBDB96A02DCE3E4A0051294F /* StreamDeckSocketServerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DBDB967D2DCE3E490051294F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					DBDB96842DCE3E490051294F = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					DBDB96952DCE3E4A0051294F = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = DBDB96842DCE3E490051294F;
+					};
+					DBDB969F2DCE3E4A0051294F = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = DBDB96842DCE3E490051294F;
+					};
+				};
+			};
+			buildConfigurationList = DBDB96802DCE3E490051294F /* Build configuration list for PBXProject "StreamDeckSocketServer" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = DBDB967C2DCE3E490051294F;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */,
+				DBDB96CE2DCE3EBC0051294F /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = DBDB96862DCE3E490051294F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DBDB96842DCE3E490051294F /* StreamDeckSocketServer */,
+				DBDB96952DCE3E4A0051294F /* StreamDeckSocketServerTests */,
+				DBDB969F2DCE3E4A0051294F /* StreamDeckSocketServerUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DBDB96832DCE3E490051294F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBDB96942DCE3E4A0051294F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBDB969E2DCE3E4A0051294F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DBDB96812DCE3E490051294F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBDB96922DCE3E4A0051294F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBDB969C2DCE3E4A0051294F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DBDB96982DCE3E4A0051294F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DBDB96842DCE3E490051294F /* StreamDeckSocketServer */;
+			targetProxy = DBDB96972DCE3E4A0051294F /* PBXContainerItemProxy */;
+		};
+		DBDB96A22DCE3E4A0051294F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DBDB96842DCE3E490051294F /* StreamDeckSocketServer */;
+			targetProxy = DBDB96A12DCE3E4A0051294F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		DBDB96A82DCE3E4A0051294F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		DBDB96A92DCE3E4A0051294F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		DBDB96AB2DCE3E4A0051294F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = StreamDeckSocketServer/StreamDeckSocketServer.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"StreamDeckSocketServer/Preview Content\"";
+				DEVELOPMENT_TEAM = R82WJ5W3TV;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = h.crane.t.StreamDeckSocketServer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		DBDB96AC2DCE3E4A0051294F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = StreamDeckSocketServer/StreamDeckSocketServer.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"StreamDeckSocketServer/Preview Content\"";
+				DEVELOPMENT_TEAM = R82WJ5W3TV;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = h.crane.t.StreamDeckSocketServer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		DBDB96AE2DCE3E4A0051294F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R82WJ5W3TV;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = h.crane.t.StreamDeckSocketServerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StreamDeckSocketServer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/StreamDeckSocketServer";
+			};
+			name = Debug;
+		};
+		DBDB96AF2DCE3E4A0051294F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R82WJ5W3TV;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = h.crane.t.StreamDeckSocketServerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StreamDeckSocketServer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/StreamDeckSocketServer";
+			};
+			name = Release;
+		};
+		DBDB96B12DCE3E4A0051294F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R82WJ5W3TV;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = h.crane.t.StreamDeckSocketServerUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = StreamDeckSocketServer;
+			};
+			name = Debug;
+		};
+		DBDB96B22DCE3E4A0051294F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R82WJ5W3TV;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = h.crane.t.StreamDeckSocketServerUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = StreamDeckSocketServer;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DBDB96802DCE3E490051294F /* Build configuration list for PBXProject "StreamDeckSocketServer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBDB96A82DCE3E4A0051294F /* Debug */,
+				DBDB96A92DCE3E4A0051294F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DBDB96AA2DCE3E4A0051294F /* Build configuration list for PBXNativeTarget "StreamDeckSocketServer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBDB96AB2DCE3E4A0051294F /* Debug */,
+				DBDB96AC2DCE3E4A0051294F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DBDB96AD2DCE3E4A0051294F /* Build configuration list for PBXNativeTarget "StreamDeckSocketServerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBDB96AE2DCE3E4A0051294F /* Debug */,
+				DBDB96AF2DCE3E4A0051294F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DBDB96B02DCE3E4A0051294F /* Build configuration list for PBXNativeTarget "StreamDeckSocketServerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBDB96B12DCE3E4A0051294F /* Debug */,
+				DBDB96B22DCE3E4A0051294F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-nio.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.82.1;
+			};
+		};
+		DBDB96CE2DCE3EBC0051294F /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/emorydunn/StreamDeckPlugin.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DBDB96B42DCE3E950051294F /* NIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIO;
+		};
+		DBDB96B62DCE3E950051294F /* NIOConcurrencyHelpers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOConcurrencyHelpers;
+		};
+		DBDB96B82DCE3E950051294F /* NIOCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOCore;
+		};
+		DBDB96BA2DCE3E950051294F /* NIOEmbedded */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOEmbedded;
+		};
+		DBDB96BC2DCE3E950051294F /* NIOFoundationCompat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOFoundationCompat;
+		};
+		DBDB96BE2DCE3E950051294F /* NIOHTTP1 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOHTTP1;
+		};
+		DBDB96C02DCE3E950051294F /* NIOPosix */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOPosix;
+		};
+		DBDB96C22DCE3E950051294F /* NIOTLS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOTLS;
+		};
+		DBDB96C42DCE3E950051294F /* NIOTestUtils */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOTestUtils;
+		};
+		DBDB96C62DCE3E950051294F /* NIOWebSocket */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOWebSocket;
+		};
+		DBDB96C82DCE3E950051294F /* _NIOConcurrency */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = _NIOConcurrency;
+		};
+		DBDB96CA2DCE3E950051294F /* _NIOFileSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = _NIOFileSystem;
+		};
+		DBDB96CC2DCE3E950051294F /* _NIOFileSystemFoundationCompat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = _NIOFileSystemFoundationCompat;
+		};
+		DBDB96CF2DCE3EBC0051294F /* StreamDeck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBDB96CE2DCE3EBC0051294F /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */;
+			productName = StreamDeck;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = DBDB967D2DCE3E490051294F /* Project object */;
+}
