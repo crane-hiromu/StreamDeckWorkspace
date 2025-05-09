@@ -24,17 +24,19 @@ extension WebSocketHandler: ChannelInboundHandler {
         
         switch frame.opcode {
         case .text:
-            if let text = frame.data.getString(at: 0, length: frame.data.readableBytes) {
-                print("🎧 Received: \(text)")
-                // 受け取ったメッセージに応じて処理（例：音を鳴らす、アプリを制御）
+            var data = frame.unmaskedData
+            if let text = data.readString(length: data.readableBytes) {
+                print("Received text: \(text)")
+            } else {
+                print("Text frame, but failed to decode string")
             }
         default:
-            break
+            print("Received: something")
         }
     }
 
     func errorCaught(context: ChannelHandlerContext, error: any Error) {
-        print("エラー: \(error)")
+        print("error: \(error)")
         context.close(promise: nil)
     }
 }
