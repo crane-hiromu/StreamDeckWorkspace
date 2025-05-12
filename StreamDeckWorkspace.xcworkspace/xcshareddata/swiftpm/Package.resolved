@@ -1,6 +1,24 @@
 {
-  "originHash" : "b68c973e78e301de37753c919a62c1dda9a70e82a8dbd432336372a4edf9b951",
+  "originHash" : "1a614ded8a2a22aeb61e79da730c1ec529b0a103381acb240459de03c5446c85",
   "pins" : [
+    {
+      "identity" : "streamdeckplugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/emorydunn/StreamDeckPlugin.git",
+      "state" : {
+        "revision" : "f6d1a5ff8545106bf18720817bfa9f2833b7babc",
+        "version" : "0.5.1"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "41982a3656a71c768319979febd796c6fd111d5c",
+        "version" : "1.5.0"
+      }
+    },
     {
       "identity" : "swift-atomics",
       "kind" : "remoteSourceControl",
@@ -26,6 +44,15 @@
       "state" : {
         "revision" : "0f54d58bb5db9e064f332e8524150de379d1e51c",
         "version" : "2.82.1"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-syntax.git",
+      "state" : {
+        "revision" : "64889f0c732f210a935a0ad7cda38f77f876262d",
+        "version" : "509.1.1"
       }
     },
     {

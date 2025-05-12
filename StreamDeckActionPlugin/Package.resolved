@@ -1,0 +1,33 @@
+{
+  "originHash" : "14826fd7a8a07fb7217804362a653ae69670a0a4957b9bf464ecbed3ef7be63f",
+  "pins" : [
+    {
+      "identity" : "streamdeckplugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/emorydunn/StreamDeckPlugin.git",
+      "state" : {
+        "revision" : "f6d1a5ff8545106bf18720817bfa9f2833b7babc",
+        "version" : "0.5.1"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "41982a3656a71c768319979febd796c6fd111d5c",
+        "version" : "1.5.0"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-syntax.git",
+      "state" : {
+        "revision" : "64889f0c732f210a935a0ad7cda38f77f876262d",
+        "version" : "509.1.1"
+      }
+    }
+  ],
+  "version" : 3
+}

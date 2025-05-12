@@ -4,4 +4,7 @@
    <FileRef
       location = "group:StreamDeckSocketServer/StreamDeckSocketServer.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:StreamDeckActionPlugin">
+   </FileRef>
 </Workspace>
