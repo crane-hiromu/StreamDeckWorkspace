@@ -10,6 +10,10 @@ open-p:
 open-l:
 	open ~/Library/Logs/ElgatoStreamDeck/
 
+# ログをリセット
+delete-l:
+	rm -rf ~/Library/Logs/ElgatoStreamDeck/*
+
 # クリーンアップ用（必要なら）
 clean:
 	rm -rf build/   # buildディレクトリを削除する例

@@ -9,14 +9,12 @@ final class SamplePlugin: Plugin {
     static var author: String = "Hiromu"
     static var icon: String = "Icons/pluginIcon"
     static var version: String = "1.0"
-//    static var os: [PluginOS] = [.macOS(.v11)]
-
-//    @GlobalSetting(\.count) var count
 
     @ActionBuilder
     static var actions: [any Action.Type] {
         SampleTapAction.self
         SampleDialAction.self
+        SocketTapAction.self
     }
 
     // ダイアルで使うディスプレイのレイアウトのみ

@@ -6,22 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		DBDB96B52DCE3E950051294F /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96B42DCE3E950051294F /* NIO */; };
-		DBDB96B72DCE3E950051294F /* NIOConcurrencyHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96B62DCE3E950051294F /* NIOConcurrencyHelpers */; };
-		DBDB96B92DCE3E950051294F /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96B82DCE3E950051294F /* NIOCore */; };
-		DBDB96BB2DCE3E950051294F /* NIOEmbedded in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96BA2DCE3E950051294F /* NIOEmbedded */; };
-		DBDB96BD2DCE3E950051294F /* NIOFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96BC2DCE3E950051294F /* NIOFoundationCompat */; };
-		DBDB96BF2DCE3E950051294F /* NIOHTTP1 in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96BE2DCE3E950051294F /* NIOHTTP1 */; };
-		DBDB96C12DCE3E950051294F /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C02DCE3E950051294F /* NIOPosix */; };
-		DBDB96C32DCE3E950051294F /* NIOTLS in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C22DCE3E950051294F /* NIOTLS */; };
-		DBDB96C52DCE3E950051294F /* NIOTestUtils in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C42DCE3E950051294F /* NIOTestUtils */; };
-		DBDB96C72DCE3E950051294F /* NIOWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C62DCE3E950051294F /* NIOWebSocket */; };
-		DBDB96C92DCE3E950051294F /* _NIOConcurrency in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96C82DCE3E950051294F /* _NIOConcurrency */; };
-		DBDB96CB2DCE3E950051294F /* _NIOFileSystem in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96CA2DCE3E950051294F /* _NIOFileSystem */; };
-		DBDB96CD2DCE3E950051294F /* _NIOFileSystemFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = DBDB96CC2DCE3E950051294F /* _NIOFileSystemFoundationCompat */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		DBDB96972DCE3E4A0051294F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -68,19 +52,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBDB96B92DCE3E950051294F /* NIOCore in Frameworks */,
-				DBDB96CD2DCE3E950051294F /* _NIOFileSystemFoundationCompat in Frameworks */,
-				DBDB96BD2DCE3E950051294F /* NIOFoundationCompat in Frameworks */,
-				DBDB96C92DCE3E950051294F /* _NIOConcurrency in Frameworks */,
-				DBDB96C52DCE3E950051294F /* NIOTestUtils in Frameworks */,
-				DBDB96CB2DCE3E950051294F /* _NIOFileSystem in Frameworks */,
-				DBDB96C12DCE3E950051294F /* NIOPosix in Frameworks */,
-				DBDB96B52DCE3E950051294F /* NIO in Frameworks */,
-				DBDB96C72DCE3E950051294F /* NIOWebSocket in Frameworks */,
-				DBDB96BF2DCE3E950051294F /* NIOHTTP1 in Frameworks */,
-				DBDB96B72DCE3E950051294F /* NIOConcurrencyHelpers in Frameworks */,
-				DBDB96BB2DCE3E950051294F /* NIOEmbedded in Frameworks */,
-				DBDB96C32DCE3E950051294F /* NIOTLS in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,19 +112,6 @@
 			);
 			name = StreamDeckSocketServer;
 			packageProductDependencies = (
-				DBDB96B42DCE3E950051294F /* NIO */,
-				DBDB96B62DCE3E950051294F /* NIOConcurrencyHelpers */,
-				DBDB96B82DCE3E950051294F /* NIOCore */,
-				DBDB96BA2DCE3E950051294F /* NIOEmbedded */,
-				DBDB96BC2DCE3E950051294F /* NIOFoundationCompat */,
-				DBDB96BE2DCE3E950051294F /* NIOHTTP1 */,
-				DBDB96C02DCE3E950051294F /* NIOPosix */,
-				DBDB96C22DCE3E950051294F /* NIOTLS */,
-				DBDB96C42DCE3E950051294F /* NIOTestUtils */,
-				DBDB96C62DCE3E950051294F /* NIOWebSocket */,
-				DBDB96C82DCE3E950051294F /* _NIOConcurrency */,
-				DBDB96CA2DCE3E950051294F /* _NIOFileSystem */,
-				DBDB96CC2DCE3E950051294F /* _NIOFileSystemFoundationCompat */,
 			);
 			productName = StreamDeckSocketServer;
 			productReference = DBDB96852DCE3E490051294F /* StreamDeckSocketServer.app */;
@@ -238,7 +196,6 @@
 			mainGroup = DBDB967C2DCE3E490051294F;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DBDB96862DCE3E490051294F /* Products */;
@@ -594,85 +551,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-nio.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.82.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		DBDB96B42DCE3E950051294F /* NIO */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIO;
-		};
-		DBDB96B62DCE3E950051294F /* NIOConcurrencyHelpers */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOConcurrencyHelpers;
-		};
-		DBDB96B82DCE3E950051294F /* NIOCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOCore;
-		};
-		DBDB96BA2DCE3E950051294F /* NIOEmbedded */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOEmbedded;
-		};
-		DBDB96BC2DCE3E950051294F /* NIOFoundationCompat */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOFoundationCompat;
-		};
-		DBDB96BE2DCE3E950051294F /* NIOHTTP1 */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOHTTP1;
-		};
-		DBDB96C02DCE3E950051294F /* NIOPosix */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOPosix;
-		};
-		DBDB96C22DCE3E950051294F /* NIOTLS */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOTLS;
-		};
-		DBDB96C42DCE3E950051294F /* NIOTestUtils */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOTestUtils;
-		};
-		DBDB96C62DCE3E950051294F /* NIOWebSocket */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = NIOWebSocket;
-		};
-		DBDB96C82DCE3E950051294F /* _NIOConcurrency */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = _NIOConcurrency;
-		};
-		DBDB96CA2DCE3E950051294F /* _NIOFileSystem */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = _NIOFileSystem;
-		};
-		DBDB96CC2DCE3E950051294F /* _NIOFileSystemFoundationCompat */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBDB96B32DCE3E950051294F /* XCRemoteSwiftPackageReference "swift-nio" */;
-			productName = _NIOFileSystemFoundationCompat;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DBDB967D2DCE3E490051294F /* Project object */;
 }

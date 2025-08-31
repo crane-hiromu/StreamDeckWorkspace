@@ -4,12 +4,18 @@ import SwiftUI
 // MARK: - AppDelegate
 final class AppDelegate: NSObject, NSApplicationDelegate {
 
+    // MARK: Property
+
+    private let socketServer = UnixSocketServer()
+
+    // MARK: Delegate Method
+
     func applicationDidFinishLaunching(_ notification: Notification) {
-        WebSocketHandler.startServer()
+        socketServer.startServer()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        // アプリケーション終了時の処理
+        socketServer.stopServer()
     }
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {

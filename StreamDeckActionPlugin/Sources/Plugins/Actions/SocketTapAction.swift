@@ -1,12 +1,19 @@
+//
+//  SocketTapAction.swift
+//  StreamDeckActionPlugin
+//
+//  Created by h.tsuruta on 2025/08/31.
+//
+
 import StreamDeck
 import OSLog
 
 // MARK: - Action
-class SampleTapAction: KeyAction {
+class SocketTapAction: KeyAction {
     typealias Settings = NoSettings
 
-    static var name: String = "Sample Action"
-    static var uuid: String = "com.hiromu.sampletapaction"
+    static var name: String = "Socket Action"
+    static var uuid: String = "com.hiromu.sockettapaction"
     static var icon: String = "Icons/actionIcon"
 
     static var states: [PluginActionState]? = [
@@ -24,7 +31,10 @@ class SampleTapAction: KeyAction {
 
         logMessage(#function, context, coordinates as Any)
 
-        setTitle(to: "ボタン")
+        setTitle(to: "通信")
+
+        // Unix socketクライアントを接続
+        UnixSocketClient.shared.connect()
     }
 
     func didReceiveGlobalSettings() {
@@ -51,9 +61,25 @@ class SampleTapAction: KeyAction {
     func keyUp(device: String, payload: KeyEvent<Settings>, longPress: Bool) {
         logMessage(#function, longPress)
 
-        setTitle(to: "keyUp")
+        setTitle(to: "タップ")
 
         if longPress { return }
+
+        // Unix socketサーバーに通知を送信
+        let message = """
+        {
+            "action": "tap",
+            "device": "\(device)",
+            "context": "\(context)",
+            "coordinates": {
+                "column": \(coordinates?.column ?? 0),
+                "row": \(coordinates?.row ?? 0)
+            },
+            "timestamp": \(Date().timeIntervalSince1970)
+        }
+        """
+
+        UnixSocketClient.shared.sendMessage(message)
     }
 
     func longKeyPress(device: String, payload: KeyEvent<NoSettings>) {
