@@ -203,12 +203,45 @@ private extension UnixSocketServer {
     ///   - buffer: 受信データのバッファ
     ///   - bytesRead: 読み取ったバイト数
     func processReceivedMessage(buffer: [UInt8], bytesRead: Int) {
-        if let message = SocketHelper.parseUTF8String(from: buffer, bytesRead: bytesRead) {
-            print("📨 Received Unix socket message: \(message)")
+        // 1. Buffer → String
+        guard let jsonString = SocketHelper.parseUTF8String(from: buffer, bytesRead: bytesRead) else {
+            print("❌ Failed to parse UTF-8 string")
+            return
+        }
+        // 2. String → JSON → Entity
+        guard let message = parseMessageFromJSON(jsonString) else {
+            print("❌ Failed to parse JSON message: \(jsonString)")
+            return
+        }
+        // 3. メッセージ処理
+        handleParsedMessage(message)
+    }
+    
+    /// JSON文字列からメッセージエンティティを解析する
+    /// - Parameter jsonString: JSON形式の文字列
+    /// - Returns: 解析されたメッセージ、失敗時はnil
+    private func parseMessageFromJSON(_ jsonString: String) -> MessageEntity? {
+        guard let data = jsonString.data(using: .utf8) else { return nil }
+        
+        do {
+            let message = try JSONDecoder().decode(MessageEntity.self, from: data)
+            return message
+        } catch {
+            print("❌ JSON decode error: \(error)")
+            return nil
+        }
+    }
+    
+    /// 解析されたメッセージを処理する
+    /// - Parameter message: 解析されたメッセージエンティティ
+    private func handleParsedMessage(_ message: MessageEntity) {
+        print("📨 Received parsed message: \(message)")
 
-            DispatchQueue.main.async {
-                SoundPlayer.shared.playSound(named: "puf")
-            }
+        // todo 
+        // entityからactionを取得し、そのactionに応じて処理を行う
+        
+        DispatchQueue.main.async {
+            SoundPlayer.shared.playSound(named: "puf")
         }
     }
 }
