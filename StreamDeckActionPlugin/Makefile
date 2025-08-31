@@ -6,6 +6,10 @@ build:
 open-p:
 	open ~/Library/Application\ Support/com.elgato.StreamDeck/Plugins
 
+# Stream Deck ログフォルダを開く
+open-l:
+	open ~/Library/Logs/ElgatoStreamDeck/
+
 # クリーンアップ用（必要なら）
 clean:
 	rm -rf build/   # buildディレクトリを削除する例

@@ -6,6 +6,9 @@ import PackageDescription
 let package = Package(
     name: "StreamDeckActionPlugin",
     platforms: [.macOS(.v12)],
+    products: [
+        .executable(name: "action-plugin", targets: ["StreamDeckActionPlugin"])
+    ],
     dependencies: [
         .package(url: "https://github.com/emorydunn/StreamDeckPlugin.git", from: "0.5.1")
     ],
