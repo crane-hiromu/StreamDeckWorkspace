@@ -36,7 +36,7 @@ final class UnixSocketClient {
         }
         
         // サーバーアドレスを設定
-        // 基本的にはPOSIX API (C の低レベルソケットAPI)をSwiftから呼んでおり、 C の定義を Swift に自動でブリッジしている
+        // 基本的にはPOSIX API (C の低レベルソケットAPI)をSwiftから呼んでおり、 C の定義を Swift に自動ブリッジしている
         var serverAddr = sockaddr_un()
         serverAddr.sun_family = sa_family_t(AF_UNIX)
         strncpy(&serverAddr.sun_path, socketPath, Int(socklen_t(socketPath.count)))
@@ -97,7 +97,7 @@ final class UnixSocketClient {
 private extension UnixSocketClient {
 
     func sockaddr_cast(_ ptr: UnsafePointer<sockaddr_un>) -> UnsafePointer<sockaddr> {
-        return UnsafeRawPointer(ptr).assumingMemoryBound(to: sockaddr.self)
+        UnsafeRawPointer(ptr).assumingMemoryBound(to: sockaddr.self)
     }
 
     func logMessage(_ message: String) {

@@ -13,13 +13,13 @@ class SampleDialAction: EncoderAction {
     typealias Settings = NoSettings
 
     // ダイアル画面に表示されるタイトル
-    static var name: String = "Dial Action 2"
+    static var name: String = "Sample Dial"
     // ビルドエラーになるので必ず小文字にすること
     static var uuid: String = "dialaction.rotary"
     static var icon: String = "Icons/actionIcon"
 
     static var encoder: RotaryEncoder? = RotaryEncoder(
-        layout: .layout(name: .dialsample),
+        layout: .layout(name: .sampledial),
         stackColor: "#f1184c",
         icon: "Icons/stopwatch",
         rotate: "Rotate_ac", // ホームアプリに説明が出る
@@ -31,8 +31,6 @@ class SampleDialAction: EncoderAction {
     var context: String
     var coordinates: StreamDeck.Coordinates?
 
-//    @GlobalSetting(\.title) var title
-
     required init(context: String, coordinates: StreamDeck.Coordinates?) {
         self.context = context
         self.coordinates = coordinates
@@ -40,26 +38,12 @@ class SampleDialAction: EncoderAction {
         logMessage(#function, context, coordinates as Any)
 
         setFeedback([
-            "dial-text": #function
+            SampleDialType.text.key: #function
         ])
     }
 
     func didReceiveGlobalSettings() {
         logMessage(#function)
-
-//        setFeedback([
-//            "dial-text": "T"
-//        ])
-    }
-
-    func willAppear(context: String, payload: AppearEvent<NoSettings>) {
-        logMessage(#function)
-        // No call
-    }
-
-    func willDisappear(context: String, payload: AppearEvent<NoSettings>) {
-        logMessage(#function)
-        // No call
     }
 
     // MARK: Dial Action
@@ -68,7 +52,7 @@ class SampleDialAction: EncoderAction {
         logMessage(#function, payload.ticks)
 
         setFeedback([
-            "dial-text": #function
+            SampleDialType.text.key: #function
         ])
     }
 
@@ -77,7 +61,7 @@ class SampleDialAction: EncoderAction {
         logMessage(#function)
 
         setFeedback([
-            "dial-text": #function
+            SampleDialType.text.key: #function
         ])
     }
 

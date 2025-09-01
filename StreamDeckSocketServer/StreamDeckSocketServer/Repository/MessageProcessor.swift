@@ -46,26 +46,45 @@ final class MessageProcessor {
         print("📨 Processing message: \(entity)")
 
         // TODO
+        //
 
         switch entity.action {
-        case .keyDown:
-            break
+        case .keyDown(let entity):
+            switch entity.command {
+            case .playSound:
+                DispatchQueue.main.async {
+                    SoundPlayer.shared.playSound(named: entity.sound)
+                }
+            default:
+                break
+            }
         case .keyUp:
             break
         case .longKeyPress:
             break
-        case .dialRotate:
-            break
-        case .dialDown:
-            break
+        case .dialRotate(let entity):
+            switch entity.command {
+            case .changeVolume:
+                let volume = Float(entity.volume) / 20.0
+                DispatchQueue.main.async {
+                    SystemVolumeManager.shared.adjustVolume(by: volume)
+                }
+            default:
+                break
+            }
+        case .dialDown(let entity):
+            switch entity.command {
+            case .toggleMute:
+                DispatchQueue.main.async {
+                    SystemVolumeManager.shared.toggleMute()
+                }
+            default:
+                break
+            }
         case .dialUp:
-            break
+            break // NOP
         case .longPressDialUp:
-            break
-        }
-
-        DispatchQueue.main.async {
-            SoundPlayer.shared.playSound(named: "puf")
+            break // NOP
         }
     }
 }

@@ -32,9 +32,6 @@ class SocketTapAction: KeyAction {
         logMessage(#function, context, coordinates as Any)
 
         setTitle(to: "通信")
-
-        // Unix socketクライアントを接続
-        UnixSocketClient.shared.connect()
     }
 
     func didReceiveGlobalSettings() {
@@ -45,22 +42,12 @@ class SocketTapAction: KeyAction {
         logMessage(#function)
         setTitle(to: "タップ前")
 
-        // Unix socketサーバーに通知を送信
-        let message = """
-        {
-            "type": "keyDown",
-            "data": {
-                "command": \(0),
-                "context": "\(context)",
-                "coordinates": {
-                    "column": \(coordinates?.column ?? 0),
-                    "row": \(coordinates?.row ?? 0)
-                },
-                "timestamp": \(Date().timeIntervalSince1970)
-            }
-        }
-        """
-
+        let message = MessageBuilder.buildSocketTapMessage(
+            type: .keyDown,
+            command: .playSound,
+            sound: .beat,
+            coordinates: coordinates
+        )
         UnixSocketClient.shared.sendMessage(message)
     }
 
@@ -74,8 +61,7 @@ class SocketTapAction: KeyAction {
 
     func longKeyPress(device: String, payload: KeyEvent<NoSettings>) {
         logMessage(#function)
-
-        setTitle(to: "longKeyPress")
+        setTitle(to: "長押し")
     }
 
     func sendToPlugin(context: String, payload: [String: Any]) {

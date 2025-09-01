@@ -21,24 +21,56 @@ struct MessageEntity: Codable {
     }
 }
 
-// MARK: - Action Specific Entities
-struct KeyDownEntity: Codable {
+// MARK: - Key Action
+
+protocol KeyEntity {
+    var command: CommandType { get }
+    var coordinates: KeyCoordinates { get }
+}
+
+struct KeyDownEntity: KeyEntity, Codable {
+    let command: CommandType
+    let sound: String
+    let coordinates: KeyCoordinates
+}
+
+struct KeyUpEntity: KeyEntity, Codable {
+    let command: CommandType
+    let coordinates: KeyCoordinates
+}
+
+struct LongKeyPressEntity: KeyEntity, Codable {
+    let command: CommandType
+    let coordinates: KeyCoordinates
+}
+
+// MARK: - Dial Action
+
+protocol DialEntity {
+    var command: CommandType { get }
+}
+
+struct DialRotateEntity: DialEntity, Codable {
+    let command: CommandType
+    let volume: Int
+}
+
+struct DialDownEntity: DialEntity, Codable {
+    let command: CommandType
+    let volume: Int
+}
+
+struct DialUpEntity: DialEntity, Codable {
     let command: CommandType
 }
 
-struct KeyUpEntity: Codable {}
+struct LongPressDialUpEntity: DialEntity, Codable {
+    let command: CommandType
+}
 
-struct LongKeyPressEntity: Codable {}
+// MARK: - Common Entity
 
-struct DialRotateEntity: Codable {}
-
-struct DialDownEntity: Codable {}
-
-struct DialUpEntity: Codable {}
-
-struct LongPressDialUpEntity: Codable {}
-
-// MARK: - Command
-enum CommandType: Int, Codable {
-    case playSound = 0
+struct KeyCoordinates: Codable {
+    let column: Int
+    let row: Int
 }

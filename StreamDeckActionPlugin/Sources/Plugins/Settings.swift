@@ -9,6 +9,5 @@ import Foundation
 import StreamDeck
 
 extension GlobalSettings {
-
-    // #globalSetting("title", defaultValue: "N", ofType: String.self)
+    // #globalSetting("volume", defaultValue: 0, ofType: Int.self)
 }

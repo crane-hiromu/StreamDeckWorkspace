@@ -1,0 +1,15 @@
+//
+//  CommandType.swift
+//  StreamDeckSocketServer
+//
+//  Created by h.tsuruta on 2025/09/01.
+//
+
+import Foundation
+
+// MARK: - Command
+enum CommandType: Int, Codable {
+    case playSound = 0
+    case changeVolume = 1
+    case toggleMute = 2
+}

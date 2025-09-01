@@ -10,7 +10,8 @@ import StreamDeck
 
 // MARK: - Extension
 extension LayoutName {
-    static let dialsample: LayoutName = "dialsample"
+    static let sampledial: LayoutName = "sampledial"
+    static let volumedial: LayoutName = "volumedial"
 
     static func layout(name: LayoutName) -> Self {
         .init("Layouts/\(name).json")
