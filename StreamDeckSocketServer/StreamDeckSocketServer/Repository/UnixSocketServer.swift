@@ -15,6 +15,8 @@ final class UnixSocketServer {
     private let socketPath = NSHomeDirectory() + "/tmp/streamdeck.sock"
     private var serverSocket = SocketDescriptor()
     private var clientSocket = SocketDescriptor()
+    private let messageProcessor = MessageProcessor.shared
+    private var isRunning = false
 
     // MARK: Method
 
@@ -50,6 +52,7 @@ final class UnixSocketServer {
         }
 
         print("🟢 Unix socket server started on \(socketPath)")
+        isRunning = true
 
         // 接続を受け付けるスレッド
         DispatchQueue.global(qos: .background).async {
@@ -62,7 +65,7 @@ final class UnixSocketServer {
     /// 無限ループでクライアント接続を待ち受け、接続が確立されると
     /// 別スレッドでクライアントとの通信を開始します。
     func acceptConnections() {
-        while true {
+        while isRunning {
             guard acceptClientConnection() else {
                 print("❌ Failed to accept connection: \(errno)")
                 continue
@@ -79,28 +82,28 @@ final class UnixSocketServer {
     /// クライアントとの通信を処理する
     /// 
     /// クライアントから送信されたデータを継続的に読み取り、
-    /// メッセージを受信するとサウンドを再生します。
+    /// メッセージを受信するとMessageProcessorに委譲します。
     /// 接続が閉じられるかエラーが発生するまで継続します。
     func handleClient() {
         let bufferSize = 1024
         var buffer = [UInt8](repeating: 0, count: bufferSize)
+        var shouldContinue = true
 
-        while true {
+        while shouldContinue && isRunning {
             let result = readDataFromClient(buffer: &buffer, bufferSize: bufferSize)
 
             switch result {
             case .success(let count):
-                processReceivedMessage(buffer: buffer, bytesRead: count)
+                messageProcessor.processReceivedMessage(buffer: buffer, bytesRead: count)
             case .connectionClosed:
                 print("🔌 Unix socket client disconnected")
-                break
+                shouldContinue = false
             case .error:
                 print("❌ Unix socket read error: \(errno)")
-                break
+                shouldContinue = false
             }
         }
-
-        close(clientSocket.value)
+        clientSocket.reset()
     }
 
     /// Unixソケットサーバーを停止する
@@ -108,11 +111,11 @@ final class UnixSocketServer {
     /// サーバーソケットとクライアントソケットを閉じ、
     /// 既存のソケットファイルを削除します。
     func stopServer() {
-        guard serverSocket.isValid else { return }
-
+        isRunning = false
         close(serverSocket.value)
         close(clientSocket.value)
         serverSocket.reset()
+        clientSocket.reset()
         cleanupExistingSocket()
 
         print("🔴 Unix socket server stopped")
@@ -196,52 +199,5 @@ private extension UnixSocketServer {
     func readDataFromClient(buffer: inout [UInt8], bufferSize: Int) -> ReadResult {
         let bytesRead = Darwin.read(clientSocket.value, &buffer, bufferSize)
         return SocketHelper.readResult(bytesRead)
-    }
-    
-    /// 受信したメッセージを処理する
-    /// - Parameters:
-    ///   - buffer: 受信データのバッファ
-    ///   - bytesRead: 読み取ったバイト数
-    func processReceivedMessage(buffer: [UInt8], bytesRead: Int) {
-        // 1. Buffer → String
-        guard let jsonString = SocketHelper.parseUTF8String(from: buffer, bytesRead: bytesRead) else {
-            print("❌ Failed to parse UTF-8 string")
-            return
-        }
-        // 2. String → JSON → Entity
-        guard let message = parseMessageFromJSON(jsonString) else {
-            print("❌ Failed to parse JSON message: \(jsonString)")
-            return
-        }
-        // 3. メッセージ処理
-        handleParsedMessage(message)
-    }
-    
-    /// JSON文字列からメッセージエンティティを解析する
-    /// - Parameter jsonString: JSON形式の文字列
-    /// - Returns: 解析されたメッセージ、失敗時はnil
-    private func parseMessageFromJSON(_ jsonString: String) -> MessageEntity? {
-        guard let data = jsonString.data(using: .utf8) else { return nil }
-        
-        do {
-            let message = try JSONDecoder().decode(MessageEntity.self, from: data)
-            return message
-        } catch {
-            print("❌ JSON decode error: \(error)")
-            return nil
-        }
-    }
-    
-    /// 解析されたメッセージを処理する
-    /// - Parameter message: 解析されたメッセージエンティティ
-    private func handleParsedMessage(_ message: MessageEntity) {
-        print("📨 Received parsed message: \(message)")
-
-        // todo 
-        // entityからactionを取得し、そのactionに応じて処理を行う
-        
-        DispatchQueue.main.async {
-            SoundPlayer.shared.playSound(named: "puf")
-        }
     }
 }

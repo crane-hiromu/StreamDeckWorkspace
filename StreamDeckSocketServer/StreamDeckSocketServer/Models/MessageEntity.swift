@@ -10,9 +10,35 @@ import Foundation
 // MARK: - Message Entity
 /// 受信メッセージを表すエンティティ
 struct MessageEntity: Codable {
-    // TODO: メッセージの構造を定義する
-    // 例：
-    // let type: String
-    // let data: [String: Any]
-    // let timestamp: Date
+    let action: ActionType
+
+    init(from decoder: Decoder) throws {
+        self.action = try ActionType(from: decoder)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        try action.encode(to: encoder)
+    }
+}
+
+// MARK: - Action Specific Entities
+struct KeyDownEntity: Codable {
+    let command: CommandType
+}
+
+struct KeyUpEntity: Codable {}
+
+struct LongKeyPressEntity: Codable {}
+
+struct DialRotateEntity: Codable {}
+
+struct DialDownEntity: Codable {}
+
+struct DialUpEntity: Codable {}
+
+struct LongPressDialUpEntity: Codable {}
+
+// MARK: - Command
+enum CommandType: Int, Codable {
+    case playSound = 0
 }

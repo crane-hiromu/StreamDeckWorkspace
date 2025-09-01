@@ -41,45 +41,35 @@ class SocketTapAction: KeyAction {
         logMessage(#function)
     }
 
-    func willAppear(context: String, payload: AppearEvent<NoSettings>) {
+    func keyDown(device: String, payload: KeyEvent<NoSettings>) {
         logMessage(#function)
-        // No call
-        setTitle(to: #function)
-    }
+        setTitle(to: "タップ前")
 
-    func willDisappear(context: String, payload: AppearEvent<NoSettings>) {
-        logMessage(#function)
-        // No call
-    }
+        // Unix socketサーバーに通知を送信
+        let message = """
+        {
+            "type": "keyDown",
+            "data": {
+                "command": \(0),
+                "context": "\(context)",
+                "coordinates": {
+                    "column": \(coordinates?.column ?? 0),
+                    "row": \(coordinates?.row ?? 0)
+                },
+                "timestamp": \(Date().timeIntervalSince1970)
+            }
+        }
+        """
 
-    func keyDown(context: String, payload: KeyEvent<Settings>) {
-        logMessage(#function)
-        // No call
+        UnixSocketClient.shared.sendMessage(message)
     }
 
     // longKeyPressの後にも呼ばれるので注意
     func keyUp(device: String, payload: KeyEvent<Settings>, longPress: Bool) {
         logMessage(#function, longPress)
-
-        setTitle(to: "タップ")
+        setTitle(to: "タップ後")
 
         if longPress { return }
-
-        // Unix socketサーバーに通知を送信
-        let message = """
-        {
-            "action": "tap",
-            "device": "\(device)",
-            "context": "\(context)",
-            "coordinates": {
-                "column": \(coordinates?.column ?? 0),
-                "row": \(coordinates?.row ?? 0)
-            },
-            "timestamp": \(Date().timeIntervalSince1970)
-        }
-        """
-
-        UnixSocketClient.shared.sendMessage(message)
     }
 
     func longKeyPress(device: String, payload: KeyEvent<NoSettings>) {

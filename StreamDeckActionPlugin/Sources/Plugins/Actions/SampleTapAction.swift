@@ -42,9 +42,9 @@ class SampleTapAction: KeyAction {
         // No call
     }
 
-    func keyDown(context: String, payload: KeyEvent<Settings>) {
+    func keyDown(device: String, payload: KeyEvent<NoSettings>) {
         logMessage(#function)
-        // No call
+        setTitle(to: "keyDown")
     }
 
     // longKeyPressの後にも呼ばれるので注意
