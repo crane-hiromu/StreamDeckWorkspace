@@ -11,148 +11,185 @@ import AVFoundation
 // MARK: - Advanced Player (Pitch Preservation)
 final class AdvancedSoundPlayer {
     static let shared = AdvancedSoundPlayer()
-    
+
     // レート調整用定数
     private static let rateMin: Float = 0.5
     private static let rateMax: Float = 3.0
     private static let rateBase: Float = 1.2
-    // 累積ステップ（回転の総和を保持して可逆性を担保）
-    private var cumulativeStep: Float = 0
 
+    // チャンネル
+    enum Channel: Int, CaseIterable {
+        case main, one, two, three, other
+    }
+
+    // エンジンとチャンネル別ノード
     private var audioEngine: AVAudioEngine?
-    private var audioPlayerNode: AVAudioPlayerNode?
-    private var timePitchNode: AVAudioUnitTimePitch?
-    private var currentAudioFile: AVAudioFile?
-    
+    private var playerNodes: [Channel: AVAudioPlayerNode] = [:]
+    private var pitchNodes: [Channel: AVAudioUnitTimePitch] = [:]
+    private var currentFiles: [Channel: AVAudioFile] = [:]
+    private var cumulativeSteps: [Channel: Float] = [:]
+
     private init() {}
-    
-    func playSoundWithPitchPreservation(named soundName: String, 
-                                       ext: String = "mp3",
-                                       rate: Float = 1.0) {
+
+    // MARK: - Public API
+
+    func play(named soundName: String,
+              ext: String = "mp3",
+              on channel: Channel,
+              rate: Float = 1.0,
+              loop: Bool = false) {
 
         guard let url = Bundle.main.url(forResource: soundName, withExtension: ext) else {
             print("❌ Audio file not found: \(soundName)")
             return
         }
-        
+
         do {
-            // 既存のエンジンを停止・クリーンアップ
-            stopAndCleanup()
-            
-            // オーディオエンジンをセットアップ
-            audioEngine = AVAudioEngine()
-            audioPlayerNode = AVAudioPlayerNode()
-            timePitchNode = AVAudioUnitTimePitch()
-            
-            guard let engine = audioEngine,
-                  let playerNode = audioPlayerNode,
-                  let timePitch = timePitchNode else { 
-                print("❌ Failed to create audio components")
-                return 
-            }
-            
-            // オーディオファイルを読み込み
-            currentAudioFile = try AVAudioFile(forReading: url)
-            guard let audioFile = currentAudioFile else { return }
-            
-            // ノードを接続
-            engine.attach(playerNode)
-            engine.attach(timePitch)
-            
-            engine.connect(playerNode, to: timePitch, format: audioFile.processingFormat)
-            engine.connect(timePitch, to: engine.mainMixerNode, format: audioFile.processingFormat)
-            
-            // 速度変更（ピッチは保持）
-            timePitch.rate = rate
-            // 現在のレートから累積ステップを初期化
+            try ensureEngine()
+            guard let engine = audioEngine else { return }
+
+            let audioFile = try AVAudioFile(forReading: url)
+            currentFiles[channel] = audioFile
+
+            let nodes = try ensureNodes(for: channel, format: audioFile.processingFormat)
+
+            // レート設定（ピッチ保持）
+            nodes.pitch.rate = rate
             if rate > 0 {
-                cumulativeStep = logf(rate) / logf(Self.rateBase)
+                cumulativeSteps[channel] = logf(rate) / logf(Self.rateBase)
             } else {
-                cumulativeStep = 0
+                cumulativeSteps[channel] = 0
             }
-            
-            // エンジンを開始
-            try engine.start()
-            
-            // 再生開始
-            playerNode.scheduleFile(audioFile, at: nil) { [weak self] in
-                // 再生完了時の処理
-                DispatchQueue.main.async {
-                    self?.stopAndCleanup()
+
+            // 既に再生中なら止める（チャンネル差し替え）
+            if nodes.player.isPlaying {
+                nodes.player.stop()
+            }
+
+            // スケジュール
+            if loop {
+                nodes.player.scheduleFile(audioFile, at: nil, completionHandler: nil)
+            } else {
+                nodes.player.scheduleFile(audioFile, at: nil) { [weak self] in
+                    guard let self else { return }
+                    DispatchQueue.main.async {
+                        self.stop(channel)
+                    }
                 }
             }
-            playerNode.play()
-            
-            print("🎵 Playing \(soundName) with rate: \(rate) (pitch preserved)")
-            
+
+            // エンジン起動（既に起動ならOK）
+            if !engine.isRunning {
+                try engine.start()
+            }
+            nodes.player.play()
+
+            print("🎵 [Channel \(channel.rawValue+1)] Playing \(soundName) rate=\(rate) loop=\(loop)")
+
         } catch {
-            print("❌ Failed to play with pitch preservation: \(error)")
+            print("❌ Failed to play on channel \(channel): \(error)")
         }
     }
-        
+
     // ステップ値から再生レートを算出（等比スケール）
     static func rate(for step: Int) -> Float {
         let clampedStep = max(min(step, 8), -8)
         let computed = powf(Self.rateBase, Float(clampedStep))
         return min(max(computed, Self.rateMin), Self.rateMax)
     }
-    
+
     // ステップ指定でレート変更（感度1/5・累積可逆）
-    func changeRate(step: Int) {
+    func changeRate(on channel: Channel, step: Int) {
         let rawDelta = max(min(step, 8), -8)
         guard rawDelta != 0 else { return }
-
-        // 感度を1/5に減衰（符号維持）
         let attenuated = Float(rawDelta) / 5.0
 
-        // 累積してからレート算出（左右回転で可逆）
-        cumulativeStep = max(min(cumulativeStep + attenuated, 24.0), -24.0)
-        let computed = powf(Self.rateBase, cumulativeStep)
+        let current = cumulativeSteps[channel] ?? 0
+        let updated = max(min(current + attenuated, 24.0), -24.0)
+        cumulativeSteps[channel] = updated
+
+        let computed = powf(Self.rateBase, updated)
         let clamped = min(max(computed, Self.rateMin), Self.rateMax)
-        changeRate(clamped)
+        setRate(on: channel, rate: clamped)
     }
 
-    // 再生中の速度変更
-    private func changeRate(_ rate: Float) {
-        guard let timePitch = timePitchNode,
-              let playerNode = audioPlayerNode,
-              playerNode.isPlaying else {
-            print("❌ No audio playing or components not available")
+    // 直接レート変更
+    func setRate(on channel: Channel, rate: Float) {
+        guard let pitch = pitchNodes[channel],
+              let player = playerNodes[channel],
+              player.isPlaying else {
+            print("❌ No audio playing or components not available for channel \(channel)")
             return
         }
-        timePitch.rate = rate
-        print("🎵 Playback rate changed to: \(rate)")
+        pitch.rate = rate
+        if rate > 0 {
+            cumulativeSteps[channel] = logf(rate) / logf(Self.rateBase)
+        }
+        print("🎵 [Channel \(channel.rawValue+1)] rate -> \(rate)")
     }
 
-    // 速度をデフォルト値に戻す
-    func resetRate() {
-        changeRate(1.0)
-        cumulativeStep = 0
+    // レートをデフォルト(1.0)に戻す（指定チャンネル）
+    func resetRate(on channel: Channel) {
+        setRate(on: channel, rate: 1.0)
+        cumulativeSteps[channel] = 0
     }
 
     // 現在の再生速度を取得
-    func getCurrentRate() -> Float {
-        timePitchNode?.rate ?? 1.0
+    func currentRate(on channel: Channel) -> Float {
+        pitchNodes[channel]?.rate ?? 1.0
     }
-    
+
     // 再生中かどうか確認
-    func isPlaying() -> Bool {
-        audioPlayerNode?.isPlaying ?? false
+    func isPlaying(on channel: Channel) -> Bool {
+        playerNodes[channel]?.isPlaying ?? false
     }
-    
-    // 停止
-    func stop() {
-        audioPlayerNode?.stop()
-        stopAndCleanup()
+
+    // 停止（指定チャンネル）
+    func stop(_ channel: Channel) {
+        playerNodes[channel]?.stop()
+        // state cleanup for the channel (engineは維持)
+        currentFiles[channel] = nil
+        cumulativeSteps[channel] = 0
     }
-    
-    // プライベートメソッド
-    private func stopAndCleanup() {
-        audioPlayerNode?.stop()
-        audioEngine?.stop()
-        audioEngine = nil
-        audioPlayerNode = nil
-        timePitchNode = nil
-        currentAudioFile = nil
+
+    // 全停止
+    func stopAll() {
+        playerNodes.values.forEach { $0.stop() }
+        currentFiles.removeAll()
+        cumulativeSteps.removeAll()
+    }
+
+    // 全チャンネルのレートをデフォルトに戻す
+    func resetAllRates() {
+        Channel.allCases.forEach { ch in
+            resetRate(on: ch)
+        }
+    }
+
+    // MARK: - Private helpers
+
+    private func ensureEngine() throws {
+        if audioEngine == nil {
+            audioEngine = AVAudioEngine()
+        }
+    }
+
+    private func ensureNodes(for channel: Channel, format: AVAudioFormat) throws -> (player: AVAudioPlayerNode, pitch: AVAudioUnitTimePitch) {
+        if let player = playerNodes[channel], let pitch = pitchNodes[channel] {
+            return (player, pitch)
+        }
+        guard let engine = audioEngine else { throw NSError(domain: "AdvancedSoundPlayer", code: -1) }
+
+        let player = AVAudioPlayerNode()
+        let pitch = AVAudioUnitTimePitch()
+        engine.attach(player)
+        engine.attach(pitch)
+
+        engine.connect(player, to: pitch, format: format)
+        engine.connect(pitch, to: engine.mainMixerNode, format: format)
+
+        playerNodes[channel] = player
+        pitchNodes[channel] = pitch
+        return (player, pitch)
     }
 }

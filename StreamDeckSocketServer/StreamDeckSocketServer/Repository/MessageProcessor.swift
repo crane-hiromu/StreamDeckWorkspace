@@ -45,16 +45,12 @@ final class MessageProcessor {
     private func handleMessage(_ entity: MessageEntity) {
         print("📨 Processing message: \(entity)")
 
-        // TODO
-        //
-
         switch entity.action {
         case .keyDown(let entity):
             switch entity.command {
             case .playSound:
                 DispatchQueue.main.async {
-//                    SoundPlayer.shared.playSound(named: entity.sound)
-                    AdvancedSoundPlayer.shared.playSoundWithPitchPreservation(named: entity.sound)
+                    AdvancedSoundPlayer.shared.play(named: entity.sound, on: entity.channelType)
                 }
             default:
                 break
@@ -68,12 +64,13 @@ final class MessageProcessor {
             case .changeVolume:
                 let volume = Float(entity.volume ?? 0) / 20.0
                 DispatchQueue.main.async {
+                    // TODO: これは全体なので音源ごとに調整する場合は別途実装が
                     SystemVolumeManager.shared.adjustVolume(by: volume)
                 }
             case .changeRate:
                 let rate = entity.rate ?? 0
                 DispatchQueue.main.async {
-                    AdvancedSoundPlayer.shared.changeRate(step: rate)
+                    AdvancedSoundPlayer.shared.changeRate(on: entity.channelType, step: rate)
                 }
             default:
                 break
@@ -86,7 +83,7 @@ final class MessageProcessor {
                 }
             case .changeRate:
                 DispatchQueue.main.async {
-                    AdvancedSoundPlayer.shared.resetRate()
+                    AdvancedSoundPlayer.shared.resetRate(on: entity.channelType)
                 }
             default:
                 break

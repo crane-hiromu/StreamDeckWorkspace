@@ -47,6 +47,8 @@ final class VolumeDialAction: EncoderAction {
         let message = MessageBuilder.buildVolumeDialMessage(
             type: .dialRotate,
             command: .changeVolume,
+            channel: .main, // non related
+            coordinates: payload.coordinates,
             volume: payload.ticks
         )
         UnixSocketClient.shared.sendMessage(message)
@@ -57,7 +59,9 @@ final class VolumeDialAction: EncoderAction {
 
         let message = MessageBuilder.buildVolumeDialMessage(
             type: .dialDown,
-            command: .changeVolume
+            command: .changeVolume,
+            channel: .main, // non related
+            coordinates: payload.coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
     }

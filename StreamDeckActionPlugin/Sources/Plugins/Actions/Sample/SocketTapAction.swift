@@ -46,6 +46,7 @@ class SocketTapAction: KeyAction {
             type: .keyDown,
             command: .playSound,
             sound: .beatL,
+            channel: .main,
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)

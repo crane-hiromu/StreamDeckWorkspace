@@ -47,6 +47,8 @@ final class RateDialAction: EncoderAction {
         let message = MessageBuilder.buildVolumeDialMessage(
             type: .dialRotate,
             command: .changeRate,
+            channel: .main,
+            coordinates: payload.coordinates,
             rate: payload.ticks
         )
         UnixSocketClient.shared.sendMessage(message)
@@ -57,7 +59,9 @@ final class RateDialAction: EncoderAction {
 
         let message = MessageBuilder.buildVolumeDialMessage(
             type: .dialDown,
-            command: .changeRate
+            command: .changeRate,
+            channel: .main,
+            coordinates: payload.coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
     }

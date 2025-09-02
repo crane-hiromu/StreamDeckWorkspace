@@ -18,6 +18,7 @@ final class MessageBuilder {
              data,
              sound,
              command,
+             channel,
              volume,
              rate,
              coordinates,
@@ -61,12 +62,19 @@ final class MessageBuilder {
         var name: String { rawValue }
     }
 
+    enum ChannelType: Int {
+        case main, one, two, three
+
+        var id: Int { rawValue }
+    }
+
     /**
      * SocketTapAction用のメッセージを構築します
      */
     static func buildSocketTapMessage(type: MessageType,
                                       command: MessageCommandType,
                                       sound: SoundType,
+                                      channel: ChannelType,
                                       coordinates: Coordinates?) -> String {
         """
         {
@@ -74,6 +82,7 @@ final class MessageBuilder {
             "\(MessageKeys.data.key)": {
                 "\(MessageKeys.command.key)": \(command.value),
                 "\(MessageKeys.sound.key)": "\(sound.name)",
+                "\(MessageKeys.channel.key)": \(channel.id),
                 "\(MessageKeys.coordinates.key)": {
                     "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
                     "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
@@ -88,6 +97,8 @@ final class MessageBuilder {
      */
     static func buildVolumeDialMessage(type: MessageType,
                                        command: MessageCommandType,
+                                       channel: ChannelType,
+                                       coordinates: Coordinates?,
                                        volume: Int = 0,
                                        rate: Int = 0) -> String {
         """
@@ -95,8 +106,13 @@ final class MessageBuilder {
             "\(MessageKeys.type.key)": "\(type.key)",
             "\(MessageKeys.data.key)": {
                 "\(MessageKeys.command.key)": \(command.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                },
                 "\(MessageKeys.volume.key)": \(volume),
-                "\(MessageKeys.rate.key)": \(rate)
+                "\(MessageKeys.rate.key)": \(rate),
             }
         }
         """
