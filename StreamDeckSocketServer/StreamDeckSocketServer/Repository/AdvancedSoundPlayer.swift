@@ -8,6 +8,32 @@
 import Foundation
 import AVFoundation
 
+// MARK: - Advanced Sound Player Error
+enum AdvancedSoundPlayerError: Int, Error {
+    case engineCreationFailed = -1
+    case audioFileNotFound = -2
+    case audioEngineNotFound = -3
+    
+    var localizedDescription: String {
+        switch self {
+        case .engineCreationFailed:
+            return "Failed to create audio engine"
+        case .audioFileNotFound:
+            return "Audio file not found"
+        case .audioEngineNotFound:
+            return "Audio engine not found"
+        }
+    }
+    
+    var nsError: NSError {
+        NSError(
+            domain: "AdvancedSoundPlayer",
+            code: rawValue,
+            userInfo: [NSLocalizedDescriptionKey: localizedDescription]
+        )
+    }
+}
+
 // MARK: - Advanced Player (Pitch Preservation)
 final class AdvancedSoundPlayer {
     static let shared = AdvancedSoundPlayer()
@@ -33,49 +59,25 @@ final class AdvancedSoundPlayer {
 
     // MARK: - Public API
 
-    func play(named soundName: String,
-              ext: String = "mp3",
-              on channel: Channel,
-              rate: Float = 1.0,
-              loop: Bool = false) {
-
-        guard let url = Bundle.main.url(forResource: soundName, withExtension: ext) else {
-            print("❌ Audio file not found: \(soundName)")
-            return
-        }
-
+    func play(
+        named soundName: String,
+        ext: String = "mp3",
+        on channel: Channel,
+        rate: Float = 1.0,
+        loop: Bool = false
+    ) {
         do {
-            try ensureEngine()
-            guard let engine = audioEngine else { return }
-
-            let audioFile = try AVAudioFile(forReading: url)
-            currentFiles[channel] = audioFile
-
+            let audioFile = try setupAudioFile(named: soundName, ext: ext)
             let nodes = try ensureNodes(for: channel, format: audioFile.processingFormat)
-
             // レート設定（ピッチ保持）
-            nodes.pitch.rate = rate
-            cumulativeSteps[channel] = 0 < rate ? (logf(rate) / logf(Self.rateBase)) : 0
-
-            // 既に再生中なら止める（チャンネル差し替え）
-            if nodes.player.isPlaying {
-                nodes.player.stop()
-                // 停止後に少し待ってから再スケジュール
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                    self.scheduleAndPlay(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop)
-                }
+            setupRate(nodes: nodes, channel: channel, rate: rate)
+            // 既存再生の処理
+            if handleExistingPlayback(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop) {
                 return
             }
-
-            // 初回再生の場合
-            scheduleAndPlay(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop)
-
-            // エンジン起動（既に起動ならOK）
-            if !engine.isRunning {
-                try engine.start()
-            }
-            nodes.player.play()
-
+            // 初回再生の開始
+            startPlayback(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop)
+            
             print("🎵 [Channel \(channel.rawValue+1)] Playing \(soundName) rate=\(rate) loop=\(loop)")
 
         } catch {
@@ -191,7 +193,7 @@ final class AdvancedSoundPlayer {
             return (player, pitch)
         }
         guard let engine = audioEngine else {
-            throw NSError(domain: "AdvancedSoundPlayer", code: -1)
+            throw AdvancedSoundPlayerError.audioEngineNotFound.nsError
         }
 
         let player = AVAudioPlayerNode()
@@ -236,5 +238,71 @@ final class AdvancedSoundPlayer {
         }
         
         nodes.player.play()
+    }
+
+    /**
+     * オーディオファイルをセットアップします
+     */
+    private func setupAudioFile(named soundName: String, ext: String) throws -> AVAudioFile {
+        guard let url = Bundle.main.url(forResource: soundName, withExtension: ext) else {
+            throw AdvancedSoundPlayerError.audioFileNotFound.nsError
+        }
+        
+        try ensureEngine()
+        guard let engine = audioEngine else {
+            throw AdvancedSoundPlayerError.audioEngineNotFound.nsError
+        }
+        
+        return try AVAudioFile(forReading: url)
+    }
+    
+    /**
+     * レート設定を行います
+     */
+    private func setupRate(
+        nodes: (player: AVAudioPlayerNode, pitch: AVAudioUnitTimePitch),
+        channel: Channel,
+        rate: Float
+    ) {
+        nodes.pitch.rate = rate
+        cumulativeSteps[channel] = 0 < rate ? (logf(rate) / logf(Self.rateBase)) : 0
+    }
+    
+    /**
+     * 既存の再生がある場合の処理を行います
+     * 
+     * - Returns: 既存再生を処理した場合はtrue、初回再生の場合はfalse
+     */
+    private func handleExistingPlayback(
+        nodes: (player: AVAudioPlayerNode, pitch: AVAudioUnitTimePitch),
+        audioFile: AVAudioFile,
+        channel: Channel,
+        loop: Bool
+    ) -> Bool {
+        guard nodes.player.isPlaying else { return false }
+        nodes.player.stop()
+        // 停止後に少し待ってから再スケジュール
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+            self.scheduleAndPlay(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop)
+        }
+        return true
+    }
+    
+    /**
+     * 初回再生を開始します
+     */
+    private func startPlayback(
+        nodes: (player: AVAudioPlayerNode, pitch: AVAudioUnitTimePitch),
+        audioFile: AVAudioFile,
+        channel: Channel,
+        loop: Bool
+    ) {
+        // エンジン起動（既に起動ならOK）
+        if let engine = audioEngine, !engine.isRunning {
+            try? engine.start()
+        }
+        
+        // エンジン起動後にスケジュールと再生
+        scheduleAndPlay(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop)
     }
 }
