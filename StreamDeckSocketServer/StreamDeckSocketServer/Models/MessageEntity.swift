@@ -52,7 +52,8 @@ protocol DialEntity {
 
 struct DialRotateEntity: DialEntity, Codable {
     let command: CommandType
-    let volume: Int
+    let volume: Int?
+    let rate: Int?
 }
 
 struct DialDownEntity: DialEntity, Codable {

@@ -53,7 +53,8 @@ final class MessageProcessor {
             switch entity.command {
             case .playSound:
                 DispatchQueue.main.async {
-                    SoundPlayer.shared.playSound(named: entity.sound)
+//                    SoundPlayer.shared.playSound(named: entity.sound)
+                    AdvancedSoundPlayer.shared.playSoundWithPitchPreservation(named: entity.sound)
                 }
             default:
                 break
@@ -65,18 +66,27 @@ final class MessageProcessor {
         case .dialRotate(let entity):
             switch entity.command {
             case .changeVolume:
-                let volume = Float(entity.volume) / 20.0
+                let volume = Float(entity.volume ?? 0) / 20.0
                 DispatchQueue.main.async {
                     SystemVolumeManager.shared.adjustVolume(by: volume)
+                }
+            case .changeRate:
+                let rate = entity.rate ?? 0
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.changeRate(step: rate)
                 }
             default:
                 break
             }
         case .dialDown(let entity):
             switch entity.command {
-            case .toggleMute:
+            case .changeVolume:
                 DispatchQueue.main.async {
                     SystemVolumeManager.shared.toggleMute()
+                }
+            case .changeRate:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.resetRate()
                 }
             default:
                 break

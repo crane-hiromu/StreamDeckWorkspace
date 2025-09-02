@@ -54,6 +54,7 @@ final class SystemVolumeManager {
             return nil
         }
     }
+
     @discardableResult
     func setVolume(_ value: Float) -> Bool {
         guard let deviceID = defaultOutputDeviceID() else { return false }

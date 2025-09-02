@@ -11,5 +11,5 @@ import Foundation
 enum CommandType: Int, Codable {
     case playSound = 0
     case changeVolume = 1
-    case toggleMute = 2
+    case changeRate = 2
 }

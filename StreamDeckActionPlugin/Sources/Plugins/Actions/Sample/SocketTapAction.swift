@@ -45,7 +45,7 @@ class SocketTapAction: KeyAction {
         let message = MessageBuilder.buildSocketTapMessage(
             type: .keyDown,
             command: .playSound,
-            sound: .beat,
+            sound: .beatL,
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)

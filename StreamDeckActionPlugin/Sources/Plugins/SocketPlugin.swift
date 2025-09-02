@@ -17,6 +17,7 @@ final class SocketPlugin: Plugin {
         SampleDialAction.self
         SocketTapAction.self
         // Socket Server Action
+        RateDialAction.self
         VolumeDialAction.self
     }
 
@@ -25,6 +26,7 @@ final class SocketPlugin: Plugin {
         // Sample Layout
         sampleDialLayout
         // Socket Server Layout
+        rateDialLayout
         volumeDialLayout
     }
 

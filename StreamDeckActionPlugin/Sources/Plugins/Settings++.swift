@@ -1,5 +1,5 @@
 //
-//  Settings.swift
+//  Settings++.swift
 //  StreamDeckActionPlugin
 //
 //  Created by h.tsuruta on 2025/08/31.
