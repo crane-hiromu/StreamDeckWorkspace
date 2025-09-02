@@ -15,8 +15,9 @@ final class SocketPlugin: Plugin {
         // Sample Action
         SampleTapAction.self
         SampleDialAction.self
-        SocketTapAction.self
         // Socket Server Action
+        iOSDCTrackTapAction.self
+        LongTrackTapAction.self
         RateDialAction.self
         VolumeDialAction.self
     }

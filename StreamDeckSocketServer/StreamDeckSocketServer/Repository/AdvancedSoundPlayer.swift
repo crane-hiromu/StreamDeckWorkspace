@@ -19,7 +19,7 @@ final class AdvancedSoundPlayer {
 
     // チャンネル
     enum Channel: Int, CaseIterable {
-        case main, one, two, three, other
+        case main, sub, two, three, four, other
     }
 
     // エンジンとチャンネル別ノード
@@ -55,28 +55,20 @@ final class AdvancedSoundPlayer {
 
             // レート設定（ピッチ保持）
             nodes.pitch.rate = rate
-            if rate > 0 {
-                cumulativeSteps[channel] = logf(rate) / logf(Self.rateBase)
-            } else {
-                cumulativeSteps[channel] = 0
-            }
+            cumulativeSteps[channel] = 0 < rate ? (logf(rate) / logf(Self.rateBase)) : 0
 
             // 既に再生中なら止める（チャンネル差し替え）
             if nodes.player.isPlaying {
                 nodes.player.stop()
+                // 停止後に少し待ってから再スケジュール
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                    self.scheduleAndPlay(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop)
+                }
+                return
             }
 
-            // スケジュール
-            if loop {
-                nodes.player.scheduleFile(audioFile, at: nil, completionHandler: nil)
-            } else {
-                nodes.player.scheduleFile(audioFile, at: nil) { [weak self] in
-                    guard let self else { return }
-                    DispatchQueue.main.async {
-                        self.stop(channel)
-                    }
-                }
-            }
+            // 初回再生の場合
+            scheduleAndPlay(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop)
 
             // エンジン起動（既に起動ならOK）
             if !engine.isRunning {
@@ -168,17 +160,39 @@ final class AdvancedSoundPlayer {
 
     // MARK: - Private helpers
 
+    /**
+     * オーディオエンジンが存在しない場合に作成します
+     * 
+     * - Throws: エンジン作成に失敗した場合にエラーを投げます
+     */
     private func ensureEngine() throws {
         if audioEngine == nil {
             audioEngine = AVAudioEngine()
         }
     }
 
-    private func ensureNodes(for channel: Channel, format: AVAudioFormat) throws -> (player: AVAudioPlayerNode, pitch: AVAudioUnitTimePitch) {
+    /**
+     * 指定されたチャンネルのオーディオノードを確保します
+     * 
+     * - Parameters:
+     *   - channel: ノードを確保するチャンネル
+     *   - format: オーディオフォーマット
+     * - Returns: プレイヤーノードとピッチノードのタプル
+     * - Throws: エンジンが存在しない場合にエラーを投げます
+     * 
+     * - Note: 既存のノードが存在する場合はそれを返し、存在しない場合は新規作成します
+     */
+    private func ensureNodes(
+        for channel: Channel,
+        format: AVAudioFormat
+    ) throws -> (player: AVAudioPlayerNode, pitch: AVAudioUnitTimePitch) {
+
         if let player = playerNodes[channel], let pitch = pitchNodes[channel] {
             return (player, pitch)
         }
-        guard let engine = audioEngine else { throw NSError(domain: "AdvancedSoundPlayer", code: -1) }
+        guard let engine = audioEngine else {
+            throw NSError(domain: "AdvancedSoundPlayer", code: -1)
+        }
 
         let player = AVAudioPlayerNode()
         let pitch = AVAudioUnitTimePitch()
@@ -191,5 +205,36 @@ final class AdvancedSoundPlayer {
         playerNodes[channel] = player
         pitchNodes[channel] = pitch
         return (player, pitch)
+    }
+
+    /**
+     * オーディオファイルをスケジュールして再生を開始します
+     * 
+     * - Parameters:
+     *   - nodes: プレイヤーノードとピッチノードのタプル
+     *   - audioFile: 再生するオーディオファイル
+     *   - channel: 再生するチャンネル
+     *   - loop: ループ再生するかどうか
+     *
+     * - Note: ループ再生の場合は完了時のコールバックを設定しません
+     */
+    private func scheduleAndPlay(
+        nodes: (player: AVAudioPlayerNode, pitch: AVAudioUnitTimePitch),
+        audioFile: AVAudioFile,
+        channel: Channel,
+        loop: Bool
+    ) {
+        if loop {
+            nodes.player.scheduleFile(audioFile, at: nil)
+        } else {
+            nodes.player.scheduleFile(audioFile, at: nil) { [weak self] in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    self.stop(channel)
+                }
+            }
+        }
+        
+        nodes.player.play()
     }
 }

@@ -63,7 +63,7 @@ final class MessageBuilder {
     }
 
     enum ChannelType: Int {
-        case main, one, two, three
+        case main, sub, two, three, four
 
         var id: Int { rawValue }
     }

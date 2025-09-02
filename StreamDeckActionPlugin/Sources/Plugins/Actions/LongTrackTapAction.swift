@@ -1,5 +1,5 @@
 //
-//  SocketTapAction.swift
+//  LongTrackTapAction.swift
 //  StreamDeckActionPlugin
 //
 //  Created by h.tsuruta on 2025/08/31.
@@ -9,11 +9,11 @@ import StreamDeck
 import OSLog
 
 // MARK: - Action
-class SocketTapAction: KeyAction {
+final class LongTrackTapAction: KeyAction {
     typealias Settings = NoSettings
 
-    static var name: String = "Socket Action"
-    static var uuid: String = "com.hiromu.sockettapaction"
+    static var name: String = "Long Track Sound"
+    static var uuid: String = "longtrack.tap"
     static var icon: String = "Icons/actionIcon"
 
     static var states: [PluginActionState]? = [
@@ -28,20 +28,10 @@ class SocketTapAction: KeyAction {
     required init(context: String, coordinates: Coordinates?) {
         self.context = context
         self.coordinates = coordinates
-
-        logMessage(#function, context, coordinates as Any)
-
-        setTitle(to: "通信")
-    }
-
-    func didReceiveGlobalSettings() {
-        logMessage(#function)
+        setTitle(to: "Long\nTrack")
     }
 
     func keyDown(device: String, payload: KeyEvent<NoSettings>) {
-        logMessage(#function)
-        setTitle(to: "タップ前")
-
         let message = MessageBuilder.buildSocketTapMessage(
             type: .keyDown,
             command: .playSound,
@@ -50,22 +40,5 @@ class SocketTapAction: KeyAction {
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
-    }
-
-    // longKeyPressの後にも呼ばれるので注意
-    func keyUp(device: String, payload: KeyEvent<Settings>, longPress: Bool) {
-        logMessage(#function, longPress)
-        setTitle(to: "タップ後")
-
-        if longPress { return }
-    }
-
-    func longKeyPress(device: String, payload: KeyEvent<NoSettings>) {
-        logMessage(#function)
-        setTitle(to: "長押し")
-    }
-
-    func sendToPlugin(context: String, payload: [String: Any]) {
-        logMessage(#function)
     }
 }
