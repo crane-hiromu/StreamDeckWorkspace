@@ -54,7 +54,8 @@ final class AdvancedSoundPlayer {
     private var pitchNodes: [Channel: AVAudioUnitTimePitch] = [:]
     private var eqNodes: [Channel: AVAudioUnitEQ] = [:]
     private var currentFiles: [Channel: AVAudioFile] = [:]
-    private var cumulativeSteps: [Channel: Float] = [:]
+    // レート制御（等比）をチャンネルごとに管理
+    private var rateControllers: [Channel: RateController] = [:]
     private var cumulativePitchCents: [Channel: Float] = [:]
     private var isolatorBalance: [Channel: Float] = [:] // -1.0 (LOW boost) ... 0 ... +1.0 (HIGH boost)
     
@@ -90,24 +91,14 @@ final class AdvancedSoundPlayer {
         
     // ステップ値から再生レートを算出（等比スケール）
     static func rate(for step: Int) -> Float {
-        let clampedStep = max(min(step, 8), -8)
-        let computed = powf(Self.rateBase, Float(clampedStep))
-        return min(max(computed, Self.rateMin), Self.rateMax)
+        RateController.rate(for: step, base: Self.rateBase, lowerBound: Self.rateMin, upperBound: Self.rateMax)
     }
     
     // ステップ指定でレート変更
     func changeRate(on channel: Channel, step: Int) {
-        let rawDelta = max(min(step, 8), -8)
-        guard rawDelta != 0 else { return }
-        let attenuated = Float(rawDelta) / 5.0
-
-        let current = cumulativeSteps[channel] ?? 0
-        let updated = max(min(current + attenuated, 24.0), -24.0)
-        cumulativeSteps[channel] = updated
-
-        let computed = powf(Self.rateBase, updated)
-        let clamped = min(max(computed, Self.rateMin), Self.rateMax)
-        setRate(on: channel, rate: clamped)
+        let controller = ensureRateController(for: channel)
+        let newRate = controller.change(step: step)
+        setRate(on: channel, rate: newRate)
     }
 
     // 直接レート変更
@@ -119,9 +110,8 @@ final class AdvancedSoundPlayer {
             return
         }
         pitch.rate = rate
-        if rate > 0 {
-            cumulativeSteps[channel] = logf(rate) / logf(Self.rateBase)
-        }
+        // RateControllerへも同期
+        ensureRateController(for: channel).setRate(rate)
         print("🎵 [Channel \(channel.rawValue+1)] rate -> \(rate)")
     }
 
@@ -158,8 +148,8 @@ final class AdvancedSoundPlayer {
 
     // レートをデフォルト(1.0)に戻す（指定チャンネル）
     func resetRate(on channel: Channel) {
+        ensureRateController(for: channel).reset()
         setRate(on: channel, rate: 1.0)
-        cumulativeSteps[channel] = 0
     }
 
     // 指定されたチャンネルのピッチをデフォルト（0セント）に戻します
@@ -183,14 +173,14 @@ final class AdvancedSoundPlayer {
         playerNodes[channel]?.stop()
         // state cleanup for the channel (engineは維持)
         currentFiles[channel] = nil
-        cumulativeSteps[channel] = 0
+        rateControllers[channel]?.reset()
     }
 
     // 全停止
     func stopAll() {
         playerNodes.values.forEach { $0.stop() }
         currentFiles.removeAll()
-        cumulativeSteps.removeAll()
+        rateControllers.values.forEach { $0.reset() }
     }
 
     // 全チャンネルのレートをデフォルトに戻す
@@ -257,7 +247,15 @@ final class AdvancedSoundPlayer {
         playerNodes[channel] = player
         pitchNodes[channel] = pitch
         eqNodes[channel] = eq
+        if rateControllers[channel] == nil { rateControllers[channel] = RateController() }
         return (player, pitch, eq)
+    }
+
+    private func ensureRateController(for channel: Channel) -> RateController {
+        if let rc = rateControllers[channel] { return rc }
+        let rc = RateController()
+        rateControllers[channel] = rc
+        return rc
     }
 
     // Isolator EQ Factory
@@ -413,7 +411,7 @@ final class AdvancedSoundPlayer {
         rate: Float
     ) {
         nodes.pitch.rate = rate
-        cumulativeSteps[channel] = 0 < rate ? (logf(rate) / logf(Self.rateBase)) : 0
+        ensureRateController(for: channel).setRate(rate)
     }
     
     /**
