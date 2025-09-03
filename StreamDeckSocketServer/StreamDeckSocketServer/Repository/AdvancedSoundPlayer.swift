@@ -56,7 +56,7 @@ final class AdvancedSoundPlayer {
     private var currentFiles: [Channel: AVAudioFile] = [:]
     // レート制御（等比）をチャンネルごとに管理
     private var rateControllers: [Channel: RateController] = [:]
-    private var cumulativePitchCents: [Channel: Float] = [:]
+    private var pitchControllers: [Channel: PitchController] = [:]
     private var isolatorBalance: [Channel: Float] = [:] // -1.0 (LOW boost) ... 0 ... +1.0 (HIGH boost)
     
     private init() {}
@@ -117,18 +117,8 @@ final class AdvancedSoundPlayer {
 
     // ステップ指定でピッチ変更
     func changePitch(on channel: Channel, step: Int) {
-        let rawDelta = max(min(step, 8), -8)
-        guard rawDelta != 0 else { return }
-
-        // 感度を1/5に減衰し、セント換算（1.0 -> 100 cents として扱う）
-        let attenuated = Float(rawDelta) / 5.0
-        let deltaCents = attenuated * 100.0
-
-        let current = cumulativePitchCents[channel] ?? 0
-        let updated = max(min(current + deltaCents, 2400.0), -2400.0)
-        cumulativePitchCents[channel] = updated
-
-        setPitch(on: channel, pitch: updated)
+        let cents = ensurePitchController(for: channel).change(step: step)
+        setPitch(on: channel, pitch: cents)
     }
     // 指定されたチャンネルのピッチを変更
     func setPitch(on channel: Channel, pitch: Float) {
@@ -142,6 +132,7 @@ final class AdvancedSoundPlayer {
         // ピッチ値を-2400〜2400の範囲に制限
         let clampedPitch = min(max(pitch, -2400), 2400)
         pitchNode.pitch = clampedPitch
+        ensurePitchController(for: channel).setCents(clampedPitch)
         
         print("🎵 [Channel \(channel.rawValue+1)] pitch -> \(clampedPitch) cents")
     }
@@ -154,8 +145,8 @@ final class AdvancedSoundPlayer {
 
     // 指定されたチャンネルのピッチをデフォルト（0セント）に戻します
     func resetPitch(on channel: Channel) {
+        ensurePitchController(for: channel).reset()
         setPitch(on: channel, pitch: 0.0)
-        cumulativePitchCents[channel] = 0
     }
 
     // 現在の再生速度を取得
@@ -248,6 +239,7 @@ final class AdvancedSoundPlayer {
         pitchNodes[channel] = pitch
         eqNodes[channel] = eq
         if rateControllers[channel] == nil { rateControllers[channel] = RateController() }
+        if pitchControllers[channel] == nil { pitchControllers[channel] = PitchController() }
         return (player, pitch, eq)
     }
 
@@ -256,6 +248,13 @@ final class AdvancedSoundPlayer {
         let rc = RateController()
         rateControllers[channel] = rc
         return rc
+    }
+
+    private func ensurePitchController(for channel: Channel) -> PitchController {
+        if let pc = pitchControllers[channel] { return pc }
+        let pc = PitchController()
+        pitchControllers[channel] = pc
+        return pc
     }
 
     // Isolator EQ Factory
