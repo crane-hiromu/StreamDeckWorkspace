@@ -12,6 +12,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         socketServer.startServer()
+        // オーディオエンジンを事前起動（初回再生の遅延を回避）
+        AdvancedSoundPlayer.shared.prewarmAudioEngine()
     }
 
     func applicationWillTerminate(_ notification: Notification) {

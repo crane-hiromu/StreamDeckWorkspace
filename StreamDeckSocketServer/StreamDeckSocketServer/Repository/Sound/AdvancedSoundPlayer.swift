@@ -24,6 +24,36 @@ final class AdvancedSoundPlayer {
     private init() {}
 
     // MARK: - Public API
+    
+    /// オーディオエンジンを事前起動（初回再生の遅延を回避）
+    func prewarmAudioEngine() {
+        do {
+            try ensureEngine()
+            
+            guard let engine = audioEngine else {
+                print("❌ Audio engine not available")
+                return
+            }
+            // 最低1つのチャンネルを作成してからエンジンを起動
+            if channels.isEmpty {
+                let dummyChannel = PlaybackChannel(channel: .main)
+                let format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 2)
+                guard let audioFormat = format else {
+                    print("❌ Failed to create audio format")
+                    return
+                }
+                try? dummyChannel.setupNodes(engine: engine, format: audioFormat)
+                channels[.main] = dummyChannel
+            }
+            
+            if !engine.isRunning {
+                try engine.start()
+                print("🔧 Audio engine prewarmed successfully")
+            }
+        } catch {
+            print("❌ Failed to prewarm audio engine: \(error)")
+        }
+    }
 
     func play(
         named soundName: String,
@@ -48,8 +78,16 @@ final class AdvancedSoundPlayer {
                 }
                 return
             }
-            // 初回再生の開始
-            startPlayback(channel: channel, playbackChannel: playbackChannel, audioFile: audioFile, loop: loop)
+            // 初回再生時は読み込みに時間がかかるため、少し待機してから再生開始
+            let isFirstPlaybackForChannel = !playbackChannel.isPlaying
+            if isFirstPlaybackForChannel {
+                print("🔍 [DEBUG] First playback for channel \(channel) detected, waiting for engine to be ready...")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.startPlaybackAfterDelay(channel: channel, playbackChannel: playbackChannel, audioFile: audioFile, loop: loop)
+                }
+            } else {
+                startPlaybackAfterDelay(channel: channel, playbackChannel: playbackChannel, audioFile: audioFile, loop: loop)
+            }
             
             print("🎵 [Channel \(channel.rawValue+1)] Playing \(soundName) rate=\(rate) loop=\(loop)")
             
@@ -192,7 +230,7 @@ final class AdvancedSoundPlayer {
         return playbackChannel
     }
 
-    private func startPlayback(channel: Channel, playbackChannel: PlaybackChannel, audioFile: AVAudioFile, loop: Bool) {
+    private func startPlaybackAfterDelay(channel: Channel, playbackChannel: PlaybackChannel, audioFile: AVAudioFile, loop: Bool) {
         // エンジン起動（既に起動ならOK）
         if let engine = audioEngine, !engine.isRunning {
             try? engine.start()
