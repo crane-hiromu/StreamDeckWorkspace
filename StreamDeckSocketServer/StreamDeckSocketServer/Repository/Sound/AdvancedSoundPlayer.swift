@@ -55,13 +55,12 @@ final class AdvancedSoundPlayer {
         }
     }
 
-    func play(
-        named soundName: String,
-        ext: String = "mp3",
-        on channel: Channel,
-        rate: Float = 1.0,
-        loop: Bool = false
-    ) {
+    /// 指定されたチャンネルで音声ファイルを再生
+    func play(named soundName: String,
+              ext: String = "mp3",
+              on channel: Channel,
+              rate: Float = 1.0,
+              loop: Bool = false) {
         do {
             let audioFile = try setupAudioFile(named: soundName, ext: ext)
             let playbackChannel = ensureChannel(for: channel, format: audioFile.processingFormat)
@@ -72,9 +71,7 @@ final class AdvancedSoundPlayer {
                 playbackChannel.stop()
                 // 停止後に少し待ってから再再生
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                    playbackChannel.play(file: audioFile, loop: loop) { [weak self] in
-                        self?.stop(channel)
-                    }
+                    self.playWithCallback(channel: channel, playbackChannel: playbackChannel, file: audioFile)
                 }
                 return
             }
@@ -210,17 +207,14 @@ final class AdvancedSoundPlayer {
 
     // MARK: - Private helpers
 
-    /**
-     * オーディオエンジンが存在しない場合に作成
-     * 
-     * - Throws: エンジン作成に失敗した場合にエラーを投げます
-     */
+    /// オーディオエンジンが存在しない場合に作成
     private func ensureEngine() throws {
         if audioEngine == nil {
             audioEngine = AVAudioEngine()
         }
     }
 
+    /// 指定されたチャンネルのPlaybackChannelインスタンスを取得または作成
     private func ensureChannel(for channel: Channel, format: AVAudioFormat) -> PlaybackChannel {
         if let existing = channels[channel] { return existing }
         
@@ -230,21 +224,32 @@ final class AdvancedSoundPlayer {
         return playbackChannel
     }
 
-    private func startPlaybackAfterDelay(channel: Channel, playbackChannel: PlaybackChannel, audioFile: AVAudioFile, loop: Bool) {
+    /// 遅延後に音声再生を開始
+    private func startPlaybackAfterDelay(channel: Channel,
+                                         playbackChannel: PlaybackChannel,
+                                         audioFile: AVAudioFile,
+                                         loop: Bool) {
         // エンジン起動（既に起動ならOK）
         if let engine = audioEngine, !engine.isRunning {
             try? engine.start()
         }
-        
         // 再生開始
-        playbackChannel.play(file: audioFile, loop: loop) { [weak self] in
+        playWithCallback(channel: channel, playbackChannel: playbackChannel, file: audioFile)
+    }
+
+    /// コールバック付きで音声ファイルを再生
+    private func playWithCallback(channel: Channel,
+                                  playbackChannel: PlaybackChannel,
+                                  file: AVAudioFile,
+                                  loop: Bool = false,
+                                  completion: (() -> Void)? = nil) {
+
+        playbackChannel.play(file: file, loop: loop) { [weak self] in
             self?.stop(channel)
         }
     }
 
-    /**
-     * オーディオファイルをセットアップします
-     */
+    /// オーディオファイルをセットアップ
     private func setupAudioFile(named soundName: String, ext: String) throws -> AVAudioFile {
         guard let url = Bundle.main.url(forResource: soundName, withExtension: ext) else {
             throw AdvancedSoundPlayerError.audioFileNotFound.nsError

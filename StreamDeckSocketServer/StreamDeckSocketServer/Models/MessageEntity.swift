@@ -26,16 +26,11 @@ struct MessageEntity: Codable {
 protocol BaseEntity {
     var command: CommandType { get }
     var channel: Int { get }
-    /*
-     - ボタンの座標は取れるが今回は使用しない
-     - パース処理のオーバーヘッドを減らすためにコメントアウトする
-     */
     // var coordinates: KeyCoordinates { get }
     // var isValidCoordinate: Bool { get }
 }
 
 extension BaseEntity {
-
 //    // 座標がマイナスの場合は無効
 //    var isValidCoordinate: Bool {
 //        0 <= coordinates.column || 0 <= coordinates.row

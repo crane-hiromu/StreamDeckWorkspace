@@ -19,6 +19,7 @@ final class PlaybackChannel {
     private var pitchNode: AVAudioUnitTimePitch?
     private var eqNode: AVAudioUnitEQ?
     private var currentFile: AVAudioFile?
+    private var isLooping: Bool = false  // ループ状態を管理
 
     // 各機能のコントローラ
     let rateController: RateController
@@ -79,6 +80,7 @@ final class PlaybackChannel {
         guard let player = playerNode else { return }
 
         currentFile = file
+        isLooping = loop
 
         // 既に再生中なら停止
         if player.isPlaying {
@@ -88,15 +90,41 @@ final class PlaybackChannel {
         }
 
         // スケジュール
+        scheduleFileForPlayback(file: file, loop: loop, completion: completion)
+        player.play()
+    }
+
+    /// ファイルをスケジュール（ループ対応）
+    private func scheduleFileForPlayback(file: AVAudioFile, loop: Bool, completion: (() -> Void)?) {
+        guard let player = playerNode else { return }
+        
         if loop {
-            player.scheduleFile(file, at: nil)
+            // ループ再生の場合
+            player.scheduleFile(file, at: nil) { [weak self] in
+                // 再生完了時に再度スケジュール
+                DispatchQueue.main.async {
+                    if self?.isLooping == true {
+                        self?.scheduleFileForPlayback(file: file, loop: true, completion: completion)
+                        self?.playerNode?.play()
+                    }
+                }
+            }
         } else {
+            // 通常再生の場合
             player.scheduleFile(file, at: nil) {
                 completion?()
             }
         }
+    }
 
-        player.play()
+    /// ループ状態を切り替え
+    func setLooping(_ enabled: Bool) {
+        isLooping = enabled
+    }
+
+    /// ループ状態を取得
+    var looping: Bool {
+        return isLooping
     }
 
     /// 再生停止
@@ -105,6 +133,7 @@ final class PlaybackChannel {
             self.playerNode?.stop()
         }
         currentFile = nil
+        isLooping = false  // ループ状態もリセット
         rateController.reset()
         pitchController.reset()
     }
