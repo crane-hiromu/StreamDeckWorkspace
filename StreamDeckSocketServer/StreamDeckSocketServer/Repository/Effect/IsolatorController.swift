@@ -2,7 +2,7 @@
 //  IsolatorController.swift
 //  StreamDeckSocketServer
 //
-//  Created by Assistant on 2025/09/03.
+//  Created by h.tsuruta on 2025/09/03.
 //
 
 import Foundation
@@ -99,5 +99,3 @@ final class IsolatorController {
         eq.bands[2].gain = highGain
     }
 }
-
-

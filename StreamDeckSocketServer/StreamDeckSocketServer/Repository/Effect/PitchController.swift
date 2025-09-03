@@ -2,7 +2,7 @@
 //  PitchController.swift
 //  StreamDeckSocketServer
 //
-//  Created by Assistant on 2025/09/03.
+//  Created by h.tsuruta on 2025/09/03.
 //
 
 import Foundation
@@ -60,5 +60,3 @@ final class PitchController {
     /// 現在のピッチ（セント）
     var currentCents: Float { cumulativeCents }
 }
-
-

@@ -2,7 +2,7 @@
 //  RateController.swift
 //  StreamDeckSocketServer
 //
-//  Created by Assistant on 2025/09/03.
+//  Created by h.tsuruta on 2025/09/03.
 //
 
 import Foundation
@@ -108,5 +108,3 @@ final class RateController {
         return Swift.min(Swift.max(computed, lowerBound), upperBound)
     }
 }
-
-

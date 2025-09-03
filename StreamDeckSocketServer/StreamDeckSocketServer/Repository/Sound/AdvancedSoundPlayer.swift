@@ -1,0 +1,222 @@
+//
+//  AdvancedSoundPlayer.swift
+//  StreamDeckSocketServer
+//
+//  Created by h.tsuruta on 2025/08/31.
+//
+
+import Foundation
+import AVFoundation
+
+// MARK: - Advanced Player (Pitch Preservation)
+final class AdvancedSoundPlayer {
+    static let shared = AdvancedSoundPlayer()
+
+    // チャンネル
+    enum Channel: Int, CaseIterable {
+        case main, sub, two, three, four, other
+    }
+
+    // エンジンとチャンネル管理
+    private var audioEngine: AVAudioEngine?
+    private var channels: [Channel: PlaybackChannel] = [:]
+
+    private init() {}
+
+    // MARK: - Public API
+
+    func play(
+        named soundName: String,
+        ext: String = "mp3",
+        on channel: Channel,
+        rate: Float = 1.0,
+        loop: Bool = false
+    ) {
+        do {
+            let audioFile = try setupAudioFile(named: soundName, ext: ext)
+            let playbackChannel = ensureChannel(for: channel, format: audioFile.processingFormat)
+            // レート設定
+            playbackChannel.setRate(rate)
+            // 既存再生の処理
+            if playbackChannel.isPlaying {
+                playbackChannel.stop()
+                // 停止後に少し待ってから再再生
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                    playbackChannel.play(file: audioFile, loop: loop) { [weak self] in
+                        self?.stop(channel)
+                    }
+                }
+                return
+            }
+            // 初回再生の開始
+            startPlayback(channel: channel, playbackChannel: playbackChannel, audioFile: audioFile, loop: loop)
+            
+            print("🎵 [Channel \(channel.rawValue+1)] Playing \(soundName) rate=\(rate) loop=\(loop)")
+            
+        } catch {
+            print("❌ Failed to play on channel \(channel): \(error)")
+        }
+    }
+
+    // ステップ値から再生レートを算出（等比スケール）
+    static func rate(for step: Int) -> Float {
+        RateController.rate(for: step)
+    }
+    
+    // ステップ指定でレート変更
+    func changeRate(on channel: Channel, step: Int) {
+        guard let playbackChannel = channels[channel] else { return }
+        let newRate = playbackChannel.rateController.change(step: step)
+        playbackChannel.setRate(newRate)
+    }
+
+    // 直接レート変更
+    func setRate(on channel: Channel, rate: Float) {
+        guard let playbackChannel = channels[channel] else { return }
+        guard playbackChannel.isPlaying else {
+            print("❌ No audio playing or components not available for channel \(channel)")
+            return
+        }
+        playbackChannel.setRate(rate)
+        print("🎵 [Channel \(channel.rawValue+1)] rate -> \(rate)")
+    }
+
+    // ステップ指定でピッチ変更
+    func changePitch(on channel: Channel, step: Int) {
+        guard let playbackChannel = channels[channel] else { return }
+        let cents = playbackChannel.pitchController.change(step: step)
+        playbackChannel.setPitch(cents)
+    }
+
+    // 指定されたチャンネルのピッチを変更
+    func setPitch(on channel: Channel, pitch: Float) {
+        guard let playbackChannel = channels[channel] else { return }
+        guard playbackChannel.isPlaying else {
+            print("❌ No audio playing or components not available for channel \(channel)")
+            return
+        }
+        playbackChannel.setPitch(pitch)
+        print("🎵 [Channel \(channel.rawValue+1)] pitch -> \(pitch) cents")
+    }
+
+    // レートをデフォルト(1.0)に戻す（指定チャンネル）
+    func resetRate(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.rateController.reset()
+        playbackChannel.setRate(1.0)
+    }
+
+    // 指定されたチャンネルのピッチをデフォルト（0セント）に戻します
+    func resetPitch(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.pitchController.reset()
+        playbackChannel.setPitch(0.0)
+    }
+
+    // 現在の再生速度を取得
+    func currentRate(on channel: Channel) -> Float {
+        guard let playbackChannel = channels[channel] else { return 1.0 }
+        return playbackChannel.pitch?.rate ?? 1.0
+    }
+    
+    // 再生中かどうか確認
+    func isPlaying(on channel: Channel) -> Bool {
+        guard let playbackChannel = channels[channel] else { return false }
+        return playbackChannel.isPlaying
+    }
+
+    // 停止（指定チャンネル）
+    func stop(_ channel: Channel) {
+        channels[channel]?.stop()
+    }
+
+    // 全停止
+    func stopAll() {
+        channels.values.forEach { $0.stop() }
+    }
+
+    // 全チャンネルのレートをデフォルトに戻す
+    func resetAllRates() {
+        channels.values.forEach { $0.rateController.reset() }
+    }
+
+    // 全チャンネルのピッチをデフォルトに戻す
+    func resetAllPitch() {
+        channels.values.forEach { $0.pitchController.reset() }
+    }
+
+    // MARK: - Isolator Control
+
+    /// ノブ値（トグルの累積）を -1...1 に正規化して、LOW/MID/HIGH のゲインを更新
+    func updateIsolatorBalance(on channel: Channel, step: Int, sensitivity: Float = 1.0/20.0) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.updateIsolatorBalance(step: step, sensitivity: sensitivity)
+    }
+
+    /// アイソレーター状態を直接設定（スムージング対応）
+    func setIsolatorBalance(on channel: Channel, value s: Float, smoothing: Float = 0.15) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.setIsolatorBalance(value: s, smoothing: smoothing)
+    }
+
+    /// 指定チャンネルのアイソレーターをリセット（フラット）
+    func resetIsolator(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.resetIsolator()
+    }
+
+    /// 全チャンネルのアイソレーターをリセット（フラット）
+    func resetAllIsolators() {
+        channels.values.forEach { $0.resetIsolator() }
+    }
+
+    // MARK: - Private helpers
+
+    /**
+     * オーディオエンジンが存在しない場合に作成
+     * 
+     * - Throws: エンジン作成に失敗した場合にエラーを投げます
+     */
+    private func ensureEngine() throws {
+        if audioEngine == nil {
+            audioEngine = AVAudioEngine()
+        }
+    }
+
+    private func ensureChannel(for channel: Channel, format: AVAudioFormat) -> PlaybackChannel {
+        if let existing = channels[channel] { return existing }
+        
+        let playbackChannel = PlaybackChannel(channel: channel)
+        try? playbackChannel.setupNodes(engine: audioEngine!, format: format)
+        channels[channel] = playbackChannel
+        return playbackChannel
+    }
+
+    private func startPlayback(channel: Channel, playbackChannel: PlaybackChannel, audioFile: AVAudioFile, loop: Bool) {
+        // エンジン起動（既に起動ならOK）
+        if let engine = audioEngine, !engine.isRunning {
+            try? engine.start()
+        }
+        
+        // 再生開始
+        playbackChannel.play(file: audioFile, loop: loop) { [weak self] in
+            self?.stop(channel)
+        }
+    }
+
+    /**
+     * オーディオファイルをセットアップします
+     */
+    private func setupAudioFile(named soundName: String, ext: String) throws -> AVAudioFile {
+        guard let url = Bundle.main.url(forResource: soundName, withExtension: ext) else {
+            throw AdvancedSoundPlayerError.audioFileNotFound.nsError
+        }
+        
+        try ensureEngine()
+        guard audioEngine != nil else {
+            throw AdvancedSoundPlayerError.audioEngineNotFound.nsError
+        }
+        
+        return try AVAudioFile(forReading: url)
+    }
+}
