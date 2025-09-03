@@ -19,7 +19,9 @@ final class PlaybackChannel {
     private var pitchNode: AVAudioUnitTimePitch?
     private var eqNode: AVAudioUnitEQ?
     private var currentFile: AVAudioFile?
-    private var isLooping: Bool = false  // ループ状態を管理
+    private var isLoop: Bool = false  // ループ状態を管理
+    private var fileDuration: Double = 0.0 // 再生中のファイルの長さ
+    private var playbackStartTime: Double = 0.0 // 再生開始時刻
 
     // 各機能のコントローラ
     let rateController: RateController
@@ -80,51 +82,56 @@ final class PlaybackChannel {
         guard let player = playerNode else { return }
 
         currentFile = file
-        isLooping = loop
+        isLoop = loop
 
         // 既に再生中なら停止
         if player.isPlaying {
             DispatchQueue.main.async {
                 player.stop()
+                // 停止完了を待つ（少し遅延）
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    self.playAgain(file: file, completion: completion)
+                }
             }
+            return
         }
+        playAgain(file: file, completion: completion)
+    }
 
-        // スケジュール
-        scheduleFileForPlayback(file: file, loop: loop, completion: completion)
+    func playAgain(file: AVAudioFile, completion: (() -> Void)? = nil) {
+         guard let player = playerNode else { return }
+        scheduleFileForPlayback(file: file, completion: completion)
         player.play()
     }
 
     /// ファイルをスケジュール（ループ対応）
-    private func scheduleFileForPlayback(file: AVAudioFile, loop: Bool, completion: (() -> Void)?) {
+    private func scheduleFileForPlayback(file: AVAudioFile, completion: (() -> Void)?) {
         guard let player = playerNode else { return }
         
-        if loop {
-            // ループ再生の場合
-            player.scheduleFile(file, at: nil) { [weak self] in
-                // 再生完了時に再度スケジュール
+        player.scheduleFile(file, at: nil) { [weak self] in
+            // ループ再生の場合、再度スケジュール
+            if self?.isLoop == true {
                 DispatchQueue.main.async {
-                    if self?.isLooping == true {
-                        self?.scheduleFileForPlayback(file: file, loop: true, completion: completion)
-                        self?.playerNode?.play()
-                    }
+                    self?.playAgain(file: file, completion: completion)
                 }
-            }
-        } else {
-            // 通常再生の場合
-            player.scheduleFile(file, at: nil) {
-                completion?()
+            // 通常再生の場合、再生完了したファイルが同じかチェック（これがないと連打できない）
+            } else if self?.currentFile === file {
+                // 完了コールバックを実行。最後の音がカットされないように終了を遅らせる。
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    completion?()
+                }
             }
         }
     }
 
     /// ループ状態を切り替え
-    func setLooping(_ enabled: Bool) {
-        isLooping = enabled
+    func setLoop(_ enabled: Bool) {
+        isLoop = enabled
     }
 
     /// ループ状態を取得
     var looping: Bool {
-        return isLooping
+        return isLoop
     }
 
     /// 再生停止
@@ -133,7 +140,7 @@ final class PlaybackChannel {
             self.playerNode?.stop()
         }
         currentFile = nil
-        isLooping = false  // ループ状態もリセット
+        // isLoop = false
         rateController.reset()
         pitchController.reset()
     }

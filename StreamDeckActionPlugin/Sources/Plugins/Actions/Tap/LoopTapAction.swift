@@ -34,10 +34,9 @@ final class LoopTapAction: KeyAction {
     }
 
     func keyDown(device: String, payload: KeyEvent<NoSettings>) {
-        let message = MessageBuilder.buildTapMessage(
+        let message = MessageBuilder.buildLoopTapMessage(
             type: .keyDown,
-            command: .playSound,
-            sound: .beatL,
+            command: .setLoopState,
             channel: .main,
             coordinates: coordinates
         )

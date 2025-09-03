@@ -148,6 +148,58 @@ final class AdvancedSoundPlayer {
         playbackChannel.setPitch(0.0)
     }
 
+    // MARK: - Loop Control
+
+    /// 指定されたチャンネルのループ設定を変更
+    func setLoop(on channel: Channel, loop: Bool) {
+        guard let playbackChannel = channels[channel] else { return }
+        guard playbackChannel.isPlaying else {
+            print("❌ No audio playing or components not available for channel \(channel)")
+            return
+        }
+        playbackChannel.setLoop(loop)
+        print("🎵 [Channel \(channel.rawValue+1)] loop -> \(loop)")
+    }
+
+    /// 指定されたチャンネルの現在のループ設定を取得
+    func isLooping(on channel: Channel) -> Bool {
+        guard let playbackChannel = channels[channel] else { return false }
+        return playbackChannel.looping
+    }
+
+    /// 全チャンネルのループ設定を変更
+    func setAllLoops(_ loop: Bool) {
+        channels.values.forEach { $0.setLoop(loop) }
+        print("🎵 All channels loop -> \(loop)")
+    }
+
+    /// 全チャンネルのループ設定をリセット（false）
+    func resetAllLoops() {
+        channels.values.forEach { $0.setLoop(false) }
+        print("🎵 All channels loop reset to false")
+    }
+
+    /// 指定されたチャンネルのループ設定を反転
+    func toggleLoop(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        guard playbackChannel.isPlaying else {
+            print("❌ No audio playing or components not available for channel \(channel)")
+            return
+        }
+        let newLoopState = !playbackChannel.looping
+        playbackChannel.setLoop(newLoopState)
+        print("🎵 [Channel \(channel.rawValue+1)] loop toggled -> \(newLoopState)")
+    }
+
+    /// 全チャンネルのループ設定を反転
+    func toggleAllLoops() {
+        channels.values.forEach { channel in
+            let newLoopState = !channel.looping
+            channel.setLoop(newLoopState)
+        }
+        print("🎵 All channels loop toggled")
+    }
+
     // 現在の再生速度を取得
     func currentRate(on channel: Channel) -> Float {
         guard let playbackChannel = channels[channel] else { return 1.0 }

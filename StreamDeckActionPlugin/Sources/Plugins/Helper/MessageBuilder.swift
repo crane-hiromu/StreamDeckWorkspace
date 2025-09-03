@@ -51,6 +51,7 @@ final class MessageBuilder {
         case changeRate = 2
         case changePitch = 3
         case changeFrequency = 4
+        case setLoopState = 5
 
         var value: Int { rawValue }
     }
@@ -95,7 +96,29 @@ final class MessageBuilder {
         }
         """
     }
-    
+
+    /**
+     * LoopAction用のメッセージを構築します
+     */
+    static func buildLoopTapMessage(type: MessageType,
+                                    command: MessageCommandType,
+                                    channel: ChannelType,
+                                    coordinates: Coordinates?) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(command.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                }
+            }
+        }
+        """
+    }
+
     /**
      * ボリューム変更用のDialActionメッセージを構築します
      */

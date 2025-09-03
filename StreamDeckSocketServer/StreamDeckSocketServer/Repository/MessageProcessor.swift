@@ -50,10 +50,19 @@ final class MessageProcessor {
             switch entity.command {
             case .playSound:
                 DispatchQueue.main.async {
-                    AdvancedSoundPlayer.shared.play(named: entity.sound, on: entity.channelType)
+                    AdvancedSoundPlayer.shared.play(
+                        named: entity.sound ?? "",
+                        on: entity.channelType
+                    )
                 }
-            default:
-                break
+            case .setLoopState:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.toggleLoop(on: entity.channelType)
+                }
+            case .changeVolume,
+                 .changeRate,
+                 .changePitch,
+                 .changeFrequency: break
             }
         case .keyUp:
             break
@@ -66,7 +75,9 @@ final class MessageProcessor {
             case .changeVolume:
                 DispatchQueue.main.async {
                     // TODO: これは全体なので音源ごとに調整する場合は別途実装が
-                    SystemVolumeManager.shared.adjustVolume(by: (Float(entity.volume ?? 0) / 20.0))
+                    SystemVolumeManager.shared.adjustVolume(
+                        by: (Float(entity.volume ?? 0) / 20.0)
+                    )
                 }
             case .changeRate:
                 DispatchQueue.main.async {
@@ -89,6 +100,7 @@ final class MessageProcessor {
                         value: Float(entity.frequency ?? 0)
                     )
                 }
+            case .setLoopState:
                 break
             }
         case .dialDown(let entity):
@@ -111,6 +123,8 @@ final class MessageProcessor {
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.resetIsolator(on: entity.channelType)
                 }
+            case .setLoopState:
+                break
             }
         case .dialUp:
             break // NOP
