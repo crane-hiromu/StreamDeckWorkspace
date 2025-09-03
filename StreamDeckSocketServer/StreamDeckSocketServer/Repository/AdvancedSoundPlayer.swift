@@ -54,6 +54,7 @@ final class AdvancedSoundPlayer {
     private var pitchNodes: [Channel: AVAudioUnitTimePitch] = [:]
     private var currentFiles: [Channel: AVAudioFile] = [:]
     private var cumulativeSteps: [Channel: Float] = [:]
+    private var cumulativePitchCents: [Channel: Float] = [:]
 
     private init() {}
 
@@ -92,7 +93,7 @@ final class AdvancedSoundPlayer {
         return min(max(computed, Self.rateMin), Self.rateMax)
     }
 
-    // ステップ指定でレート変更（感度1/5・累積可逆）
+    // ステップ指定でレート変更
     func changeRate(on channel: Channel, step: Int) {
         let rawDelta = max(min(step, 8), -8)
         guard rawDelta != 0 else { return }
@@ -122,10 +123,47 @@ final class AdvancedSoundPlayer {
         print("🎵 [Channel \(channel.rawValue+1)] rate -> \(rate)")
     }
 
+    // ステップ指定でピッチ変更
+    func changePitch(on channel: Channel, step: Int) {
+        let rawDelta = max(min(step, 8), -8)
+        guard rawDelta != 0 else { return }
+
+        // 感度を1/5に減衰し、セント換算（1.0 -> 100 cents として扱う）
+        let attenuated = Float(rawDelta) / 5.0
+        let deltaCents = attenuated * 100.0
+
+        let current = cumulativePitchCents[channel] ?? 0
+        let updated = max(min(current + deltaCents, 2400.0), -2400.0)
+        cumulativePitchCents[channel] = updated
+
+        setPitch(on: channel, pitch: updated)
+    }
+    // 指定されたチャンネルのピッチを変更
+    func setPitch(on channel: Channel, pitch: Float) {
+        guard let pitchNode = pitchNodes[channel],
+              let player = playerNodes[channel],
+              player.isPlaying else {
+            print("❌ No audio playing or components not available for channel \(channel)")
+            return
+        }
+        
+        // ピッチ値を-2400〜2400の範囲に制限
+        let clampedPitch = min(max(pitch, -2400), 2400)
+        pitchNode.pitch = clampedPitch
+        
+        print("🎵 [Channel \(channel.rawValue+1)] pitch -> \(clampedPitch) cents")
+    }
+
     // レートをデフォルト(1.0)に戻す（指定チャンネル）
     func resetRate(on channel: Channel) {
         setRate(on: channel, rate: 1.0)
         cumulativeSteps[channel] = 0
+    }
+
+    // 指定されたチャンネルのピッチをデフォルト（0セント）に戻します
+    func resetPitch(on channel: Channel) {
+        setPitch(on: channel, pitch: 0.0)
+        cumulativePitchCents[channel] = 0
     }
 
     // 現在の再生速度を取得
@@ -157,6 +195,13 @@ final class AdvancedSoundPlayer {
     func resetAllRates() {
         Channel.allCases.forEach { ch in
             resetRate(on: ch)
+        }
+    }
+
+    // 全チャンネルのピッチをデフォルトに戻す
+    func resetAllPitch() {
+        Channel.allCases.forEach { ch in
+            resetPitch(on: ch)
         }
     }
 
@@ -249,7 +294,7 @@ final class AdvancedSoundPlayer {
         }
         
         try ensureEngine()
-        guard let engine = audioEngine else {
+        guard audioEngine != nil else {
             throw AdvancedSoundPlayerError.audioEngineNotFound.nsError
         }
         
@@ -301,7 +346,6 @@ final class AdvancedSoundPlayer {
         if let engine = audioEngine, !engine.isRunning {
             try? engine.start()
         }
-        
         // エンジン起動後にスケジュールと再生
         scheduleAndPlay(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop)
     }

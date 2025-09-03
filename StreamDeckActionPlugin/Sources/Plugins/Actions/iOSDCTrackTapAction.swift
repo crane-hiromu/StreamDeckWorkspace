@@ -32,7 +32,7 @@ final class iOSDCTrackTapAction: KeyAction {
     }
 
     func keyDown(device: String, payload: KeyEvent<NoSettings>) {
-        let message = MessageBuilder.buildSocketTapMessage(
+        let message = MessageBuilder.buildTapMessage(
             type: .keyDown,
             command: .playSound,
             sound: .iosdc,

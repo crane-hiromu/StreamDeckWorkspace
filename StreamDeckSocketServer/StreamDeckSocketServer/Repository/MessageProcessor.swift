@@ -61,22 +61,33 @@ final class MessageProcessor {
             break
         case .dialRotate(let entity):
             switch entity.command {
+            case .playSound:
+                break
             case .changeVolume:
-                let volume = Float(entity.volume ?? 0) / 20.0
                 DispatchQueue.main.async {
                     // TODO: これは全体なので音源ごとに調整する場合は別途実装が
-                    SystemVolumeManager.shared.adjustVolume(by: volume)
+                    SystemVolumeManager.shared.adjustVolume(by: (Float(entity.volume ?? 0) / 20.0))
                 }
             case .changeRate:
-                let rate = entity.rate ?? 0
                 DispatchQueue.main.async {
-                    AdvancedSoundPlayer.shared.changeRate(on: entity.channelType, step: rate)
+                    AdvancedSoundPlayer.shared.changeRate(
+                        on: entity.channelType,
+                        step: entity.rate ?? 0
+                    )
                 }
-            default:
+            case .changePitch:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.changePitch(
+                        on: entity.channelType,
+                        step: entity.pitch ?? 0
+                    )
+                }
                 break
             }
         case .dialDown(let entity):
             switch entity.command {
+            case .playSound:
+                break
             case .changeVolume:
                 DispatchQueue.main.async {
                     SystemVolumeManager.shared.toggleMute()
@@ -85,8 +96,10 @@ final class MessageProcessor {
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.resetRate(on: entity.channelType)
                 }
-            default:
-                break
+            case .changePitch:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.resetPitch(on: entity.channelType)
+                }
             }
         case .dialUp:
             break // NOP

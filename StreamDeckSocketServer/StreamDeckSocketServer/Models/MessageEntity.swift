@@ -74,6 +74,7 @@ struct DialRotateEntity: DialEntity, Codable {
     let channel: Int
     let volume: Int?
     let rate: Int?
+    let pitch: Int?
 }
 
 struct DialDownEntity: DialEntity, Codable {

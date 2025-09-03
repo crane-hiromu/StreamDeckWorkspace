@@ -20,6 +20,7 @@ final class MessageBuilder {
              command,
              channel,
              volume,
+             pitch,
              rate,
              coordinates,
              column,
@@ -47,6 +48,7 @@ final class MessageBuilder {
         case playSound = 0
         case changeVolume = 1
         case changeRate = 2
+        case changePitch = 3
 
         var value: Int { rawValue }
     }
@@ -69,13 +71,13 @@ final class MessageBuilder {
     }
 
     /**
-     * SocketTapAction用のメッセージを構築します
+     * TapAction用のメッセージを構築します
      */
-    static func buildSocketTapMessage(type: MessageType,
-                                      command: MessageCommandType,
-                                      sound: SoundType,
-                                      channel: ChannelType,
-                                      coordinates: Coordinates?) -> String {
+    static func buildTapMessage(type: MessageType,
+                                command: MessageCommandType,
+                                sound: SoundType,
+                                channel: ChannelType,
+                                coordinates: Coordinates?) -> String {
         """
         {
             "\(MessageKeys.type.key)": "\(type.key)",
@@ -93,14 +95,15 @@ final class MessageBuilder {
     }
     
     /**
-     * VolumeDialAction用のメッセージを構築します
+     * DialAction用のメッセージを構築します
      */
-    static func buildVolumeDialMessage(type: MessageType,
-                                       command: MessageCommandType,
-                                       channel: ChannelType,
-                                       coordinates: Coordinates?,
-                                       volume: Int = 0,
-                                       rate: Int = 0) -> String {
+    static func buildDialMessage(type: MessageType,
+                                 command: MessageCommandType,
+                                 channel: ChannelType,
+                                 coordinates: Coordinates?,
+                                 volume: Int = 0,
+                                 rate: Int = 0,
+                                 pitch: Int = 0) -> String {
         """
         {
             "\(MessageKeys.type.key)": "\(type.key)",
@@ -113,6 +116,7 @@ final class MessageBuilder {
                 },
                 "\(MessageKeys.volume.key)": \(volume),
                 "\(MessageKeys.rate.key)": \(rate),
+                "\(MessageKeys.pitch.key)": \(pitch),
             }
         }
         """

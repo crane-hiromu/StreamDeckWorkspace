@@ -12,7 +12,7 @@ import StreamDeck
 final class VolumeDialAction: EncoderAction {
     typealias Settings = NoSettings
 
-    static var name: String = "Volume Control"
+    static var name: String = "Volume"
     static var uuid: String = "volumedial.rotary"
     static var icon: String = "Icons/actionIcon"
 
@@ -34,17 +34,13 @@ final class VolumeDialAction: EncoderAction {
         self.coordinates = coordinates
     }
 
-    func didReceiveGlobalSettings() {
-        // NOP
-    }
-
     // MARK: Dial Action
 
     func dialRotate(device: String, payload: EncoderEvent<Settings>) {
         // 画面に音量を出したかったが、処理が複雑になるので一旦出していない
         setFeedback([VolumeDialType.currentVolume.key: payload.ticks > 0 ? "+" : "-"])
 
-        let message = MessageBuilder.buildVolumeDialMessage(
+        let message = MessageBuilder.buildDialMessage(
             type: .dialRotate,
             command: .changeVolume,
             channel: .main, // non related
@@ -57,7 +53,7 @@ final class VolumeDialAction: EncoderAction {
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
         setFeedback([VolumeDialType.currentVolume.key: ""])
 
-        let message = MessageBuilder.buildVolumeDialMessage(
+        let message = MessageBuilder.buildDialMessage(
             type: .dialDown,
             command: .changeVolume,
             channel: .main, // non related
