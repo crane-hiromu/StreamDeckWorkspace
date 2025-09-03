@@ -37,12 +37,12 @@ enum AdvancedSoundPlayerError: Int, Error {
 // MARK: - Advanced Player (Pitch Preservation)
 final class AdvancedSoundPlayer {
     static let shared = AdvancedSoundPlayer()
-
+    
     // レート調整用定数
     private static let rateMin: Float = 0.5
     private static let rateMax: Float = 3.0
     private static let rateBase: Float = 1.2
-
+    
     // チャンネル
     enum Channel: Int, CaseIterable {
         case main, sub, two, three, four, other
@@ -52,12 +52,14 @@ final class AdvancedSoundPlayer {
     private var audioEngine: AVAudioEngine?
     private var playerNodes: [Channel: AVAudioPlayerNode] = [:]
     private var pitchNodes: [Channel: AVAudioUnitTimePitch] = [:]
+    private var eqNodes: [Channel: AVAudioUnitEQ] = [:]
     private var currentFiles: [Channel: AVAudioFile] = [:]
     private var cumulativeSteps: [Channel: Float] = [:]
     private var cumulativePitchCents: [Channel: Float] = [:]
-
+    private var isolatorBalance: [Channel: Float] = [:] // -1.0 (LOW boost) ... 0 ... +1.0 (HIGH boost)
+    
     private init() {}
-
+    
     // MARK: - Public API
 
     func play(
@@ -71,28 +73,28 @@ final class AdvancedSoundPlayer {
             let audioFile = try setupAudioFile(named: soundName, ext: ext)
             let nodes = try ensureNodes(for: channel, format: audioFile.processingFormat)
             // レート設定（ピッチ保持）
-            setupRate(nodes: nodes, channel: channel, rate: rate)
+            setupRate(nodes: (nodes.player, nodes.pitch), channel: channel, rate: rate)
             // 既存再生の処理
-            if handleExistingPlayback(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop) {
-                return
+            if handleExistingPlayback(nodes: (nodes.player, nodes.pitch), audioFile: audioFile, channel: channel, loop: loop) {
+                return 
             }
             // 初回再生の開始
-            startPlayback(nodes: nodes, audioFile: audioFile, channel: channel, loop: loop)
+            startPlayback(nodes: (nodes.player, nodes.pitch), audioFile: audioFile, channel: channel, loop: loop)
             
             print("🎵 [Channel \(channel.rawValue+1)] Playing \(soundName) rate=\(rate) loop=\(loop)")
-
+            
         } catch {
             print("❌ Failed to play on channel \(channel): \(error)")
         }
     }
-
+        
     // ステップ値から再生レートを算出（等比スケール）
     static func rate(for step: Int) -> Float {
         let clampedStep = max(min(step, 8), -8)
         let computed = powf(Self.rateBase, Float(clampedStep))
         return min(max(computed, Self.rateMin), Self.rateMax)
     }
-
+    
     // ステップ指定でレート変更
     func changeRate(on channel: Channel, step: Int) {
         let rawDelta = max(min(step, 8), -8)
@@ -170,7 +172,7 @@ final class AdvancedSoundPlayer {
     func currentRate(on channel: Channel) -> Float {
         pitchNodes[channel]?.rate ?? 1.0
     }
-
+    
     // 再生中かどうか確認
     func isPlaying(on channel: Channel) -> Bool {
         playerNodes[channel]?.isPlaying ?? false
@@ -232,10 +234,10 @@ final class AdvancedSoundPlayer {
     private func ensureNodes(
         for channel: Channel,
         format: AVAudioFormat
-    ) throws -> (player: AVAudioPlayerNode, pitch: AVAudioUnitTimePitch) {
+    ) throws -> (player: AVAudioPlayerNode, pitch: AVAudioUnitTimePitch, eq: AVAudioUnitEQ) {
 
-        if let player = playerNodes[channel], let pitch = pitchNodes[channel] {
-            return (player, pitch)
+        if let player = playerNodes[channel], let pitch = pitchNodes[channel], let eq = eqNodes[channel] {
+            return (player, pitch, eq)
         }
         guard let engine = audioEngine else {
             throw AdvancedSoundPlayerError.audioEngineNotFound.nsError
@@ -243,15 +245,51 @@ final class AdvancedSoundPlayer {
 
         let player = AVAudioPlayerNode()
         let pitch = AVAudioUnitTimePitch()
+        let eq = makeIsolatorEQ()
         engine.attach(player)
         engine.attach(pitch)
+        engine.attach(eq)
 
         engine.connect(player, to: pitch, format: format)
-        engine.connect(pitch, to: engine.mainMixerNode, format: format)
+        engine.connect(pitch, to: eq, format: format)
+        engine.connect(eq, to: engine.mainMixerNode, format: format)
 
         playerNodes[channel] = player
         pitchNodes[channel] = pitch
-        return (player, pitch)
+        eqNodes[channel] = eq
+        return (player, pitch, eq)
+    }
+
+    // Isolator EQ Factory
+    private func makeIsolatorEQ() -> AVAudioUnitEQ {
+        let eq = AVAudioUnitEQ(numberOfBands: 3)
+        guard eq.bands.count >= 3 else { return eq }
+
+        // LOW (LowShelf)
+        let low = eq.bands[0]
+        low.filterType = .lowShelf
+        low.frequency = 200
+        low.bandwidth = 0.7
+        low.gain = 0
+        low.bypass = false
+
+        // MID (Parametric)
+        let mid = eq.bands[1]
+        mid.filterType = .parametric
+        mid.frequency = 1000
+        mid.bandwidth = 1.0
+        mid.gain = 0
+        mid.bypass = false
+
+        // HIGH (HighShelf)
+        let high = eq.bands[2]
+        high.filterType = .highShelf
+        high.frequency = 10000
+        high.bandwidth = 0.7
+        high.gain = 0
+        high.bypass = false
+
+        return eq
     }
 
     /**
@@ -283,6 +321,71 @@ final class AdvancedSoundPlayer {
         }
         
         nodes.player.play()
+    }
+
+    // MARK: Isolator (1-knob)
+
+    /// ノブ値（トグルの累積）を -1...1 に正規化して、LOW/MID/HIGH のゲインを更新
+    /// s < 0: 低音ブースト / s > 0: 高音ブースト / s ≈ 0: フラット
+    func updateIsolatorBalance(on channel: Channel, step: Int, sensitivity: Float = 1.0/20.0) {
+        // 累積
+        let delta = Float(step) * sensitivity
+        let current = isolatorBalance[channel] ?? 0
+        let clamped = max(min(current + delta, 1.0), -1.0)
+        isolatorBalance[channel] = clamped
+
+        applyIsolator(on: channel, state: clamped)
+    }
+
+    /// アイソレーター状態を直接設定（スムージング対応）
+    /// - Parameters:
+    ///   - channel: 対象チャンネル
+    ///   - value: 設定するターゲット値（-1.0...1.0）
+    ///   - smoothing: スムージング係数（0.0...1.0）小さいほど1回の変化量が小さい。既定: 0.25
+    func setIsolatorBalance(on channel: Channel, value s: Float, smoothing: Float = 0.15) {
+        let clamped = max(min(s, 1.0), -1.0)
+        let current = isolatorBalance[channel] ?? 0
+        let k = max(0.0, min(smoothing, 1.0))
+        let blended = current + (clamped - current) * k
+        isolatorBalance[channel] = blended
+        applyIsolator(on: channel, state: blended)
+    }
+
+    /// 内部: バランス値から各バンドのゲインを決定して適用
+    private func applyIsolator(on channel: Channel, state s: Float) {
+        guard let eq = eqNodes[channel] else { return }
+        guard eq.bands.count >= 3 else { return }
+
+        // マッピング関数
+        func boost(_ x: Float) -> Float { return 24.0 * powf(x, 1.6) }   // dB
+        func cut(_ x: Float)   -> Float { return -60.0 * powf(x, 1.2) }  // dB (負値)
+
+        let pos = max(0,  s)   // 高音側（右）
+        let neg = max(0, -s)   // 低音側（左）
+        // 反対側も比例カットする対称マッピング
+        let lowGain  = neg > 0 ? boost(neg) : cut(pos)
+        let highGain = pos > 0 ? boost(pos) : cut(neg)
+        let midGain  = cut(abs(s))
+
+        // 適用
+        eq.bands[0].gain = lowGain
+        eq.bands[1].gain = midGain
+        eq.bands[2].gain = highGain
+    }
+
+    /// 指定チャンネルのアイソレーターをリセット（フラット）
+    func resetIsolator(on channel: Channel) {
+        isolatorBalance[channel] = 0
+        guard let eq = eqNodes[channel] else { return }
+        guard eq.bands.count >= 3 else { return }
+        eq.bands[0].gain = 0
+        eq.bands[1].gain = 0
+        eq.bands[2].gain = 0
+    }
+
+    /// 全チャンネルのアイソレーターをリセット（フラット）
+    func resetAllIsolators() {
+        Channel.allCases.forEach { resetIsolator(on: $0) }
     }
 
     /**

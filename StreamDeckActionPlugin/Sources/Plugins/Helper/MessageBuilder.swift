@@ -22,6 +22,7 @@ final class MessageBuilder {
              volume,
              pitch,
              rate,
+             frequency,
              coordinates,
              column,
              row
@@ -49,6 +50,7 @@ final class MessageBuilder {
         case changeVolume = 1
         case changeRate = 2
         case changePitch = 3
+        case changeFrequency = 4
 
         var value: Int { rawValue }
     }
@@ -103,7 +105,8 @@ final class MessageBuilder {
                                  coordinates: Coordinates?,
                                  volume: Int = 0,
                                  rate: Int = 0,
-                                 pitch: Int = 0) -> String {
+                                 pitch: Int = 0,
+                                 frequency: Int = 0) -> String {
         """
         {
             "\(MessageKeys.type.key)": "\(type.key)",
@@ -117,6 +120,7 @@ final class MessageBuilder {
                 "\(MessageKeys.volume.key)": \(volume),
                 "\(MessageKeys.rate.key)": \(rate),
                 "\(MessageKeys.pitch.key)": \(pitch),
+                "\(MessageKeys.frequency.key)": \(frequency),
             }
         }
         """

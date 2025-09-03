@@ -19,6 +19,7 @@ final class SocketPlugin: Plugin {
         iOSDCTrackTapAction.self
         LongTrackTapAction.self
         // Socket Server Dial Action
+        IsolatorDialAction.self
         PitchDialAction.self
         RateDialAction.self
         VolumeDialAction.self
@@ -29,6 +30,7 @@ final class SocketPlugin: Plugin {
         // Sample Layout
         sampleDialLayout
         // Socket Server Layout
+        isolatorDialLayout
         pitchDialLayout
         rateDialLayout
         volumeDialLayout

@@ -82,6 +82,13 @@ final class MessageProcessor {
                         step: entity.pitch ?? 0
                     )
                 }
+            case .changeFrequency:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.setIsolatorBalance(
+                        on: entity.channelType,
+                        value: Float(entity.frequency ?? 0)
+                    )
+                }
                 break
             }
         case .dialDown(let entity):
@@ -99,6 +106,10 @@ final class MessageProcessor {
             case .changePitch:
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.resetPitch(on: entity.channelType)
+                }
+            case .changeFrequency:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.resetIsolator(on: entity.channelType)
                 }
             }
         case .dialUp:

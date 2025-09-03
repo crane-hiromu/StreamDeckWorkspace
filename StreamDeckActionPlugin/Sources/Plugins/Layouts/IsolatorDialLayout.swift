@@ -1,17 +1,17 @@
 //
-//  VolumeDialLayout.swift
+//  IsolatorDialLayout.swift
 //  StreamDeckActionPlugin
 //
-//  Created by h.tsuruta on 2025/09/02.
+//  Created by h.tsuruta on 2025/09/03.
 //
 
 import Foundation
 import StreamDeck
 
 // MARK: - Layout
-var volumeDialLayout: Layout {
-    Layout(id: .volumedial) {
-        Text(title: "Current Volume")
+var isolatorDialLayout: Layout {
+    Layout(id: .isolatorDial) {
+        Text(title: "Current Frequency")
             .textAlignment(.center)
             .frame(width: 180, height: 24)
             .position(x: (200 - 180) / 2, y: 10)
@@ -25,8 +25,8 @@ var volumeDialLayout: Layout {
 }
 
 // MARK: - Key
-enum VolumeDialType: String {
-    case currentVolume
+enum IsolatorDialType: String {
+    case currentValue
 
     var key: String { rawValue }
 }

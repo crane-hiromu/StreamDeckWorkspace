@@ -13,4 +13,5 @@ enum CommandType: Int, Codable {
     case changeVolume = 1
     case changeRate = 2
     case changePitch = 3
+    case changeFrequency = 4
 }
