@@ -53,6 +53,7 @@ final class AdvancedSoundPlayer {
     private var playerNodes: [Channel: AVAudioPlayerNode] = [:]
     private var pitchNodes: [Channel: AVAudioUnitTimePitch] = [:]
     private var eqNodes: [Channel: AVAudioUnitEQ] = [:]
+    private let isolatorController = IsolatorController()
     private var currentFiles: [Channel: AVAudioFile] = [:]
     // レート制御（等比）をチャンネルごとに管理
     private var rateControllers: [Channel: RateController] = [:]
@@ -226,7 +227,7 @@ final class AdvancedSoundPlayer {
 
         let player = AVAudioPlayerNode()
         let pitch = AVAudioUnitTimePitch()
-        let eq = makeIsolatorEQ()
+        let eq = isolatorController.makeEQ()
         engine.attach(player)
         engine.attach(pitch)
         engine.attach(eq)
@@ -257,37 +258,7 @@ final class AdvancedSoundPlayer {
         return pc
     }
 
-    // Isolator EQ Factory
-    private func makeIsolatorEQ() -> AVAudioUnitEQ {
-        let eq = AVAudioUnitEQ(numberOfBands: 3)
-        guard eq.bands.count >= 3 else { return eq }
-
-        // LOW (LowShelf)
-        let low = eq.bands[0]
-        low.filterType = .lowShelf
-        low.frequency = 200
-        low.bandwidth = 0.7
-        low.gain = 0
-        low.bypass = false
-
-        // MID (Parametric)
-        let mid = eq.bands[1]
-        mid.filterType = .parametric
-        mid.frequency = 1000
-        mid.bandwidth = 1.0
-        mid.gain = 0
-        mid.bypass = false
-
-        // HIGH (HighShelf)
-        let high = eq.bands[2]
-        high.filterType = .highShelf
-        high.frequency = 10000
-        high.bandwidth = 0.7
-        high.gain = 0
-        high.bypass = false
-
-        return eq
-    }
+    // Isolator EQ は IsolatorController へ移譲
 
     /**
      * オーディオファイルをスケジュールして再生を開始します
@@ -325,13 +296,8 @@ final class AdvancedSoundPlayer {
     /// ノブ値（トグルの累積）を -1...1 に正規化して、LOW/MID/HIGH のゲインを更新
     /// s < 0: 低音ブースト / s > 0: 高音ブースト / s ≈ 0: フラット
     func updateIsolatorBalance(on channel: Channel, step: Int, sensitivity: Float = 1.0/20.0) {
-        // 累積
-        let delta = Float(step) * sensitivity
-        let current = isolatorBalance[channel] ?? 0
-        let clamped = max(min(current + delta, 1.0), -1.0)
-        isolatorBalance[channel] = clamped
-
-        applyIsolator(on: channel, state: clamped)
+        guard let eq = eqNodes[channel] else { return }
+        isolatorController.updateBalance(on: channel, eq: eq, step: step, sensitivity: sensitivity)
     }
 
     /// アイソレーター状態を直接設定（スムージング対応）
@@ -340,44 +306,17 @@ final class AdvancedSoundPlayer {
     ///   - value: 設定するターゲット値（-1.0...1.0）
     ///   - smoothing: スムージング係数（0.0...1.0）小さいほど1回の変化量が小さい。既定: 0.25
     func setIsolatorBalance(on channel: Channel, value s: Float, smoothing: Float = 0.15) {
-        let clamped = max(min(s, 1.0), -1.0)
-        let current = isolatorBalance[channel] ?? 0
-        let k = max(0.0, min(smoothing, 1.0))
-        let blended = current + (clamped - current) * k
-        isolatorBalance[channel] = blended
-        applyIsolator(on: channel, state: blended)
+        guard let eq = eqNodes[channel] else { return }
+        isolatorController.setBalance(on: channel, eq: eq, value: s, smoothing: smoothing)
     }
 
     /// 内部: バランス値から各バンドのゲインを決定して適用
-    private func applyIsolator(on channel: Channel, state s: Float) {
-        guard let eq = eqNodes[channel] else { return }
-        guard eq.bands.count >= 3 else { return }
-
-        // マッピング関数
-        func boost(_ x: Float) -> Float { return 24.0 * powf(x, 1.6) }   // dB
-        func cut(_ x: Float)   -> Float { return -60.0 * powf(x, 1.2) }  // dB (負値)
-
-        let pos = max(0,  s)   // 高音側（右）
-        let neg = max(0, -s)   // 低音側（左）
-        // 反対側も比例カットする対称マッピング
-        let lowGain  = neg > 0 ? boost(neg) : cut(pos)
-        let highGain = pos > 0 ? boost(pos) : cut(neg)
-        let midGain  = cut(abs(s))
-
-        // 適用
-        eq.bands[0].gain = lowGain
-        eq.bands[1].gain = midGain
-        eq.bands[2].gain = highGain
-    }
+    // Isolator適用ロジックは IsolatorController へ移譲
 
     /// 指定チャンネルのアイソレーターをリセット（フラット）
     func resetIsolator(on channel: Channel) {
-        isolatorBalance[channel] = 0
         guard let eq = eqNodes[channel] else { return }
-        guard eq.bands.count >= 3 else { return }
-        eq.bands[0].gain = 0
-        eq.bands[1].gain = 0
-        eq.bands[2].gain = 0
+        isolatorController.reset(on: channel, eq: eq)
     }
 
     /// 全チャンネルのアイソレーターをリセット（フラット）
