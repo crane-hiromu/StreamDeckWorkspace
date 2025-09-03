@@ -40,9 +40,8 @@ final class PitchDialAction: EncoderAction {
         // 画面にピッチを出したかったが、処理が複雑になるので一旦出していない
         setFeedback([PitchDialType.currentPitch.key: payload.ticks > 0 ? "+" : "-"])
 
-        let message = MessageBuilder.buildDialMessage(
+        let message = MessageBuilder.buildPitchDialMessage(
             type: .dialRotate,
-            command: .changePitch,
             channel: .main,
             coordinates: payload.coordinates,
             pitch: payload.ticks
@@ -53,9 +52,8 @@ final class PitchDialAction: EncoderAction {
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
         setFeedback([PitchDialType.currentPitch.key: ""])
 
-        let message = MessageBuilder.buildDialMessage(
+        let message = MessageBuilder.buildPitchDialMessage(
             type: .dialDown,
-            command: .changePitch,
             channel: .main,
             coordinates: payload.coordinates
         )

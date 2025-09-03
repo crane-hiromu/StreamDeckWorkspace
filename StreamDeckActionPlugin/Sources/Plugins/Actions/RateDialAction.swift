@@ -40,9 +40,8 @@ final class RateDialAction: EncoderAction {
         // 画面にレートを出したかったが、処理が複雑になるので一旦出していない
         setFeedback([RateDialType.currentRate.key: payload.ticks > 0 ? "+" : "-"])
 
-        let message = MessageBuilder.buildDialMessage(
+        let message = MessageBuilder.buildRateDialMessage(
             type: .dialRotate,
-            command: .changeRate,
             channel: .main,
             coordinates: payload.coordinates,
             rate: payload.ticks
@@ -53,9 +52,8 @@ final class RateDialAction: EncoderAction {
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
         setFeedback([RateDialType.currentRate.key: ""])
 
-        let message = MessageBuilder.buildDialMessage(
+        let message = MessageBuilder.buildRateDialMessage(
             type: .dialDown,
-            command: .changeRate,
             channel: .main,
             coordinates: payload.coordinates
         )

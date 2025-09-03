@@ -40,9 +40,8 @@ final class VolumeDialAction: EncoderAction {
         // 画面に音量を出したかったが、処理が複雑になるので一旦出していない
         setFeedback([VolumeDialType.currentVolume.key: payload.ticks > 0 ? "+" : "-"])
 
-        let message = MessageBuilder.buildDialMessage(
+        let message = MessageBuilder.buildVolumeDialMessage(
             type: .dialRotate,
-            command: .changeVolume,
             channel: .main, // non related
             coordinates: payload.coordinates,
             volume: payload.ticks
@@ -53,9 +52,8 @@ final class VolumeDialAction: EncoderAction {
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
         setFeedback([VolumeDialType.currentVolume.key: ""])
 
-        let message = MessageBuilder.buildDialMessage(
+        let message = MessageBuilder.buildVolumeDialMessage(
             type: .dialDown,
-            command: .changeVolume,
             channel: .main, // non related
             coordinates: payload.coordinates
         )

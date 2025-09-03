@@ -40,9 +40,8 @@ final class IsolatorDialAction: EncoderAction {
         // 画面に数値を出したかったが、処理が複雑になるので一旦出していない
         setFeedback([IsolatorDialType.currentValue.key: payload.ticks > 0 ? "+" : "-"])
 
-        let message = MessageBuilder.buildDialMessage(
+        let message = MessageBuilder.buildFrequencyDialMessage(
             type: .dialRotate,
-            command: .changeFrequency,
             channel: .main, // non related
             coordinates: payload.coordinates,
             frequency: payload.ticks
@@ -53,11 +52,11 @@ final class IsolatorDialAction: EncoderAction {
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
         setFeedback([VolumeDialType.currentVolume.key: ""])
 
-        let message = MessageBuilder.buildDialMessage(
+        let message = MessageBuilder.buildFrequencyDialMessage(
             type: .dialDown,
-            command: .changeFrequency,
             channel: .main, // non related
-            coordinates: payload.coordinates
+            coordinates: payload.coordinates,
+            frequency: 0
         )
         UnixSocketClient.shared.sendMessage(message)
     }

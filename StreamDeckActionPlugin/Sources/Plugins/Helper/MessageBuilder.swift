@@ -97,30 +97,92 @@ final class MessageBuilder {
     }
     
     /**
-     * DialAction用のメッセージを構築します
+     * ボリューム変更用のDialActionメッセージを構築します
      */
-    static func buildDialMessage(type: MessageType,
-                                 command: MessageCommandType,
-                                 channel: ChannelType,
-                                 coordinates: Coordinates?,
-                                 volume: Int = 0,
-                                 rate: Int = 0,
-                                 pitch: Int = 0,
-                                 frequency: Int = 0) -> String {
+    static func buildVolumeDialMessage(type: MessageType,
+                                       channel: ChannelType,
+                                       coordinates: Coordinates?,
+                                       volume: Int = 0) -> String {
         """
         {
             "\(MessageKeys.type.key)": "\(type.key)",
             "\(MessageKeys.data.key)": {
-                "\(MessageKeys.command.key)": \(command.value),
+                "\(MessageKeys.command.key)": \(MessageCommandType.changeVolume.value),
                 "\(MessageKeys.channel.key)": \(channel.id),
                 "\(MessageKeys.coordinates.key)": {
                     "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
                     "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
                 },
-                "\(MessageKeys.volume.key)": \(volume),
-                "\(MessageKeys.rate.key)": \(rate),
-                "\(MessageKeys.pitch.key)": \(pitch),
-                "\(MessageKeys.frequency.key)": \(frequency),
+                "\(MessageKeys.volume.key)": \(volume)
+            }
+        }
+        """
+    }
+    
+    /**
+     * レート変更用のDialActionメッセージを構築します
+     */
+    static func buildRateDialMessage(type: MessageType,
+                                     channel: ChannelType,
+                                     coordinates: Coordinates?,
+                                     rate: Int = 0) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(MessageCommandType.changeRate.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                },
+                "\(MessageKeys.rate.key)": \(rate)
+            }
+        }
+        """
+    }
+    
+    /**
+     * ピッチ変更用のDialActionメッセージを構築します
+     */
+    static func buildPitchDialMessage(type: MessageType,
+                                      channel: ChannelType,
+                                      coordinates: Coordinates?,
+                                      pitch: Int = 0) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(MessageCommandType.changePitch.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                },
+                "\(MessageKeys.pitch.key)": \(pitch)
+            }
+        }
+        """
+    }
+    
+    /**
+     * 周波数変更用のDialActionメッセージを構築します
+     */
+    static func buildFrequencyDialMessage(type: MessageType,
+                                          channel: ChannelType,
+                                          coordinates: Coordinates?,
+                                          frequency: Int = 0) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(MessageCommandType.changeFrequency.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                },
+                "\(MessageKeys.frequency.key)": \(frequency)
             }
         }
         """

@@ -81,7 +81,6 @@ struct DialRotateEntity: DialEntity, Codable {
 struct DialDownEntity: DialEntity, Codable {
     let command: CommandType
     let channel: Int
-    let volume: Int
 }
 
 struct DialUpEntity: DialEntity, Codable {
