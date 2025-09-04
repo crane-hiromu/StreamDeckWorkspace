@@ -15,4 +15,5 @@ enum CommandType: Int, Codable {
     case changePitch = 3
     case changeFrequency = 4
     case setLoopState = 5
+    case stopSound = 6
 }

@@ -116,8 +116,9 @@ final class PlaybackChannel {
                 }
             // 通常再生の場合、再生完了したファイルが同じかチェック（これがないと連打できない）
             } else if self?.currentFile === file {
-                // 完了コールバックを実行。最後の音がカットされないように終了を遅らせる。
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                // 完了コールバックを実行。
+                // 終了の検知が少し早いため最後の音がカットされないように終了を遅らせる。
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     completion?()
                 }
             }
@@ -140,7 +141,7 @@ final class PlaybackChannel {
             self.playerNode?.stop()
         }
         currentFile = nil
-        // isLoop = false
+        isLoop = false
         rateController.reset()
         pitchController.reset()
     }

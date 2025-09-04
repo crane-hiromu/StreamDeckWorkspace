@@ -1,19 +1,19 @@
 //
-//  LoopTapAction.swift
+//  StopTapAction.swift
 //  StreamDeckActionPlugin
 //
 //  Created by h.tsuruta on 2025/09/04.
 //
 
+import Foundation
 import StreamDeck
-import OSLog
 
 // MARK: - Action
-final class LoopTapAction: KeyAction {
+final class StopTapAction: KeyAction {
     typealias Settings = NoSettings
 
-    static var name: String = "Loop Tap"
-    static var uuid: String = "looptap.tap"
+    static var name: String = "Stop Tap"
+    static var uuid: String = "stoptap.tap"
     static var icon: String = "Icons/actionIcon"
 
     static var states: [PluginActionState]? = [
@@ -25,31 +25,20 @@ final class LoopTapAction: KeyAction {
     var context: String
     var coordinates: Coordinates?
 
-    private var loop: Bool = false
-
     required init(context: String, coordinates: Coordinates?) {
         self.context = context
         self.coordinates = coordinates
-        updateTitle()
+        setTitle(to: "Stop")
     }
 
     func keyDown(device: String, payload: KeyEvent<NoSettings>) {
-        let message = MessageBuilder.buildLoopTapMessage(
+        let message = MessageBuilder.buildStopTapMessage(
             type: .keyDown,
-            command: .setLoopState,
+            command: .stopSound,
             channel: .main,
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
-
-        loop.toggle()
-        updateTitle()
-    }
-
-    private func updateTitle() {
-        setTitle(to: "Loop")
-        // 本体と同期できるようになれば実装する
-        // setTitle(to: "Loop\n\(loop ? "ON" : "OFF")")
     }
 }
 

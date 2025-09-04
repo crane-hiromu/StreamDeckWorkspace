@@ -52,6 +52,7 @@ final class MessageBuilder {
         case changePitch = 3
         case changeFrequency = 4
         case setLoopState = 5
+        case stopSound = 6
 
         var value: Int { rawValue }
     }
@@ -72,6 +73,8 @@ final class MessageBuilder {
 
         var id: Int { rawValue }
     }
+
+    // MARK: Tap Action
 
     /**
      * TapAction用のメッセージを構築します
@@ -118,6 +121,30 @@ final class MessageBuilder {
         }
         """
     }
+
+    /**
+     * StopAction用のメッセージを構築します（sound不要）
+     */
+    static func buildStopTapMessage(type: MessageType,
+                                    command: MessageCommandType,
+                                    channel: ChannelType,
+                                    coordinates: Coordinates?) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(command.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                }
+            }
+        }
+        """
+    }
+
+    // MARK: Dial Action
 
     /**
      * ボリューム変更用のDialActionメッセージを構築します

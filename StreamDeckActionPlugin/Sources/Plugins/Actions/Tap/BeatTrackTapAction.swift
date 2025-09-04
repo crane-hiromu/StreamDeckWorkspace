@@ -5,8 +5,8 @@
 //  Created by h.tsuruta on 2025/09/04.
 //
 
+import Foundation
 import StreamDeck
-import OSLog
 
 // MARK: - Action
 final class BeatTrackTapAction: KeyAction {

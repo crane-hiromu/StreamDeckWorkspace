@@ -20,6 +20,7 @@ final class SocketPlugin: Plugin {
         BeatTrackTapAction.self
         LongBeatTrackTapAction.self
         LoopTapAction.self
+        StopTapAction.self
         // Socket Server Dial Action
         IsolatorDialAction.self
         PitchDialAction.self

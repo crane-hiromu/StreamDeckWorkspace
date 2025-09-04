@@ -59,6 +59,10 @@ final class MessageProcessor {
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.toggleLoop(on: entity.channelType)
                 }
+            case .stopSound:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.stop(entity.channelType)
+                }
             case .changeVolume,
                  .changeRate,
                  .changePitch,
@@ -102,6 +106,8 @@ final class MessageProcessor {
                 }
             case .setLoopState:
                 break
+            case .stopSound:
+                break
             }
         case .dialDown(let entity):
             switch entity.command {
@@ -124,6 +130,8 @@ final class MessageProcessor {
                     AdvancedSoundPlayer.shared.resetIsolator(on: entity.channelType)
                 }
             case .setLoopState:
+                break
+            case .stopSound:
                 break
             }
         case .dialUp:
