@@ -23,6 +23,7 @@ final class SocketPlugin: Plugin {
         StopTapAction.self
         // Socket Server Dial Action
         DelayDialAction.self
+        FlangerDialAction.self
         IsolatorDialAction.self
         PitchDialAction.self
         RateDialAction.self
@@ -36,6 +37,7 @@ final class SocketPlugin: Plugin {
         sampleDialLayout
         // Socket Server Layout
         delayDialLayout
+        flangerDialLayout
         isolatorDialLayout
         pitchDialLayout
         rateDialLayout

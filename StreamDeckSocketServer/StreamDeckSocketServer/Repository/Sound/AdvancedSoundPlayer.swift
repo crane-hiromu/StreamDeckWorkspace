@@ -335,6 +335,44 @@ final class AdvancedSoundPlayer {
         playbackChannel.changeReverbWetDryMix(step)
     }
 
+    // MARK: - Flanger Control
+
+    func enableFlanger(on channel: Channel, _ enabled: Bool) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.enableFlanger(enabled)
+    }
+
+    func setFlanger(on channel: Channel,
+                    delayTime time: Double? = nil,
+                    feedback: Float? = nil,
+                    wetDryMix mix: Float? = nil) {
+        guard let playbackChannel = channels[channel] else { return }
+        if let time { playbackChannel.setFlangerDelayTime(time) }
+        if let feedback { playbackChannel.setFlangerFeedback(feedback) }
+        if let mix { playbackChannel.setFlangerWetDryMix(mix) }
+    }
+
+    func resetFlanger(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.resetFlanger()
+    }
+
+    func resetAllFlangers() {
+        channels.values.forEach { $0.resetFlanger() }
+    }
+
+    /// ステップ値でフランジャーのwetDryMixを変更
+    func changeFlangerWetDryMix(on channel: Channel, step: Int) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.changeFlangerWetDryMix(step)
+    }
+
+    /// k ∈ [-1, 1] でフランジャーをマクロ一括制御
+    func setFlangerMacro(on channel: Channel, k: Float) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.setFlangerMacro(k)
+    }
+
     // MARK: - Private helpers
 
     /// オーディオエンジンが存在しない場合に作成

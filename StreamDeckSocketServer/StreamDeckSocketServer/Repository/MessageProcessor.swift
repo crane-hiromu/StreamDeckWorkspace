@@ -68,7 +68,8 @@ final class MessageProcessor {
                  .changePitch,
                  .changeFrequency,
                  .changeDelay,
-                 .changeReverb: break
+                 .changeReverb,
+                 .changeFlanger: break
             }
         case .keyUp:
             break
@@ -118,6 +119,13 @@ final class MessageProcessor {
                         step: entity.reverb ?? 0
                     )
                 }
+            case .changeFlanger:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.changeFlangerWetDryMix(
+                        on: entity.channelType,
+                        step: entity.flanger ?? 0
+                    )
+                }
             case .playSound,
                  .setLoopState,
                  .stopSound: break
@@ -147,6 +155,10 @@ final class MessageProcessor {
             case .changeReverb:
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.resetReverb(on: entity.channelType)
+                }
+            case .changeFlanger:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.resetFlanger(on: entity.channelType)
                 }
             case .playSound,
                  .setLoopState,

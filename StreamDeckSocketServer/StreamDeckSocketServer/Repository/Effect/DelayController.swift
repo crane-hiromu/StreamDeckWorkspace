@@ -44,7 +44,6 @@ final class DelayController {
     func setEnabled(_ enabled: Bool, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitDelay) {
         enabledByChannel[channel] = enabled
         node.bypass = !enabled
-        print("🎛️ [Delay] Channel \(channel) enabled -> \(enabled), bypass -> \(node.bypass)")
     }
 
     func set(time: Float, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitDelay) {
@@ -57,14 +56,12 @@ final class DelayController {
         let v = max(min(feedback, feedbackMax), feedbackMin)
         feedbackByChannel[channel] = v
         node.feedback = v
-        print("🎛️ [Delay] Channel \(channel) feedback -> \(v)%")
     }
 
     func set(wetDryMix: Float, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitDelay) {
         let v = max(min(wetDryMix, mixMax), mixMin)
         mixByChannel[channel] = v
         node.wetDryMix = v
-        print("🎛️ [Delay] Channel \(channel) wetDryMix -> \(v)%")
     }
 
     /// ダイヤル等のステップ入力で time を変更

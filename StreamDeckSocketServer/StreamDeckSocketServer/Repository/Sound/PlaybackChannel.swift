@@ -19,6 +19,7 @@ final class PlaybackChannel {
     private var pitchNode: AVAudioUnitTimePitch?
     private var delayNode: AVAudioUnitDelay?
     private var reverbNode: AVAudioUnitReverb?
+    private var flangerNode: AVAudioUnitDelay?
     private var eqNode: AVAudioUnitEQ?
     private var currentFile: AVAudioFile?
     private var isLoop: Bool = false  // ループ状態を管理
@@ -31,6 +32,7 @@ final class PlaybackChannel {
     let isolatorController: IsolatorController
     let delayController: DelayController
     let reverbController: ReverbController
+    let flangerController: FlangerController
 
     // MARK: - Init
 
@@ -41,6 +43,7 @@ final class PlaybackChannel {
         self.isolatorController = IsolatorController()
         self.delayController = DelayController()
         self.reverbController = ReverbController()
+        self.flangerController = FlangerController()
     }
 
     // MARK: - Node Management
@@ -55,6 +58,7 @@ final class PlaybackChannel {
         let pitch = AVAudioUnitTimePitch()
         let delay = AVAudioUnitDelay()
         let reverb = AVAudioUnitReverb()
+        let flanger = AVAudioUnitDelay()
         let eq = isolatorController.makeEQ()
 
         // エンジンに接続
@@ -62,13 +66,15 @@ final class PlaybackChannel {
         engine.attach(pitch)
         engine.attach(delay)
         engine.attach(reverb)
+        engine.attach(flanger)
         engine.attach(eq)
 
         // チェーン接続
         engine.connect(player, to: pitch, format: format)
         engine.connect(pitch, to: delay, format: format)
         engine.connect(delay, to: reverb, format: format)
-        engine.connect(reverb, to: eq, format: format)
+        engine.connect(reverb, to: flanger, format: format)
+        engine.connect(flanger, to: eq, format: format)
         engine.connect(eq, to: engine.mainMixerNode, format: format)
 
         // 保存
@@ -76,14 +82,15 @@ final class PlaybackChannel {
         pitchNode = pitch
         delayNode = delay
         reverbNode = reverb
+        flangerNode = flanger
         eqNode = eq
 
         // ディレイを初期状態（無効）に設定
         delayController.reset(on: channel, node: delay)
-        print("🔧 [Delay] Channel \(channel) node setup complete, bypass=\(delay.bypass), feedback=\(delay.feedback), wetDryMix=\(delay.wetDryMix)")
         // リバーブを初期状態（無効）に設定
         reverbController.reset(on: channel, node: reverb)
-        print("🔧 [Reverb] Channel \(channel) node setup complete, bypass=\(reverb.bypass), wetDryMix=\(reverb.wetDryMix)")
+        // フランジャーを初期状態（無効）に設定
+        flangerController.reset(on: channel, node: flanger)
     }
 
     /// ノードをクリーンアップ
@@ -95,6 +102,7 @@ final class PlaybackChannel {
         pitchNode = nil
         delayNode = nil
         reverbNode = nil
+        flangerNode = nil
         eqNode = nil
     }
 
@@ -259,6 +267,45 @@ final class PlaybackChannel {
         reverbController.setMacro(k: k, on: channel, node: reverb)
     }
 
+    // MARK: - Flanger Control
+
+    func enableFlanger(_ enabled: Bool) {
+        guard let flanger = flangerNode else { return }
+        flangerController.setEnabled(enabled, on: channel, node: flanger)
+    }
+
+    func setFlangerDelayTime(_ time: Double) {
+        guard let flanger = flangerNode else { return }
+        flangerController.set(delayTime: time, on: channel, node: flanger)
+    }
+
+    func setFlangerFeedback(_ feedback: Float) {
+        guard let flanger = flangerNode else { return }
+        flangerController.set(feedback: feedback, on: channel, node: flanger)
+    }
+
+    func setFlangerWetDryMix(_ mix: Float) {
+        guard let flanger = flangerNode else { return }
+        flangerController.set(wetDryMix: mix, on: channel, node: flanger)
+    }
+
+    func resetFlanger() {
+        guard let flanger = flangerNode else { return }
+        flangerController.reset(on: channel, node: flanger)
+    }
+
+    /// ステップ値でフランジャーのwetDryMixを変更
+    func changeFlangerWetDryMix(_ step: Int) {
+        guard let flanger = flangerNode else { return }
+        flangerController.changeWetDryMix(step: step, on: channel, node: flanger)
+    }
+
+    /// k ∈ [-1, 1] でマクロ一括制御（delayTime/feedback/wetDryMix 同時）
+    func setFlangerMacro(_ k: Float) {
+        guard let flanger = flangerNode else { return }
+        flangerController.setMacro(k: k, on: channel, node: flanger)
+    }
+
     /// ステップ値でリバーブのwetDryMixを変更
     func changeReverbWetDryMix(_ step: Int) {
         guard let reverb = reverbNode else { return }
@@ -292,4 +339,5 @@ final class PlaybackChannel {
     var eq: AVAudioUnitEQ? { eqNode }
     var delay: AVAudioUnitDelay? { delayNode }
     var reverb: AVAudioUnitReverb? { reverbNode }
+    var flanger: AVAudioUnitDelay? { flangerNode }
 }

@@ -73,6 +73,7 @@ struct DialRotateEntity: DialEntity, Codable {
     let frequency: Int?
     let delay: Int?
     let reverb: Int?
+    let flanger: Int?
 }
 
 struct DialDownEntity: DialEntity, Codable {

@@ -25,6 +25,7 @@ final class MessageBuilder {
              frequency,
              delay,
              reverb,
+             flanger,
              coordinates,
              column,
              row
@@ -57,6 +58,7 @@ final class MessageBuilder {
         case stopSound = 6
         case changeDelay = 7
         case changeReverb = 8
+        case changeFlanger = 9
 
         var value: Int { rawValue }
     }
@@ -285,6 +287,30 @@ final class MessageBuilder {
                     "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
                 },
                 "\(MessageKeys.reverb.key)": \(reverb)
+            }
+        }
+        """
+    }
+
+    /**
+     * フランジャー変更（マクロ一括）用のDialActionメッセージを構築します
+     * - parameter flanger: 回転ステップ値（サーバ側で正規化して k∈[-1,1] に変換）
+     */
+    static func buildFlangerDialMessage(type: MessageType,
+                                        channel: ChannelType,
+                                        coordinates: Coordinates?,
+                                        flanger: Int = 0) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(MessageCommandType.changeFlanger.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                },
+                "\(MessageKeys.flanger.key)": \(flanger)
             }
         }
         """
