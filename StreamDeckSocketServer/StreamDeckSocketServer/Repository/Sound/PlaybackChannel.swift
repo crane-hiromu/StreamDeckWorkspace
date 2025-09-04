@@ -80,6 +80,7 @@ final class PlaybackChannel {
 
         // ディレイを初期状態（無効）に設定
         delayController.reset(on: channel, node: delay)
+        print("🔧 [Delay] Channel \(channel) node setup complete, bypass=\(delay.bypass), feedback=\(delay.feedback), wetDryMix=\(delay.wetDryMix)")
         // リバーブを初期状態（無効）に設定
         reverbController.reset(on: channel, node: reverb)
         print("🔧 [Reverb] Channel \(channel) node setup complete, bypass=\(reverb.bypass), wetDryMix=\(reverb.wetDryMix)")
@@ -219,6 +220,18 @@ final class PlaybackChannel {
     func setDelayMacro(_ k: Float) {
         guard let delay = delayNode else { return }
         delayController.setMacro(k: k, on: channel, node: delay)
+    }
+
+    /// ステップ値でディレイのfeedbackを変更
+    func changeDelayFeedback(_ step: Int) {
+        guard let delay = delayNode else { return }
+        delayController.changeFeedback(step: step, on: channel, node: delay)
+    }
+
+    /// ステップ値でディレイのwetDryMixを変更
+    func changeDelayMix(_ step: Int) {
+        guard let delay = delayNode else { return }
+        delayController.changeMix(step: step, on: channel, node: delay)
     }
 
     // MARK: - Reverb Control

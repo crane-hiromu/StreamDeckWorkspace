@@ -106,9 +106,9 @@ final class MessageProcessor {
                 }
             case .changeDelay:
                 DispatchQueue.main.async {
-                    AdvancedSoundPlayer.shared.setDelayMacro(
+                    AdvancedSoundPlayer.shared.changeDelayMix(
                         on: entity.channelType,
-                        k: Float(entity.delay ?? 0)
+                        step: entity.delay ?? 0
                     )
                 }
             case .changeReverb:

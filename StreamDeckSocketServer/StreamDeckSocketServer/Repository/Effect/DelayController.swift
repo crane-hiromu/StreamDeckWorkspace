@@ -22,11 +22,11 @@ final class DelayController {
 
     private let feedbackMin: Float = 0.0
     private let feedbackMax: Float = 95.0           // ハウリング防止でやや控えめ
-    private let feedbackStepSensitivity: Float = 2.5
+    private let feedbackStepSensitivity: Float = 5.0
 
     private let mixMin: Float = 0.0
-    private let mixMax: Float = 100.0
-    private let mixStepSensitivity: Float = 5.0
+    private let mixMax: Float = 80.0
+    private let mixStepSensitivity: Float = 8.0
 
     /// マクロ一括の感度（0〜1に掛けるゲイン）とカーブ（>1で弱く、<1で強く）
     private let macroGain: Float = 0.6
@@ -44,6 +44,7 @@ final class DelayController {
     func setEnabled(_ enabled: Bool, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitDelay) {
         enabledByChannel[channel] = enabled
         node.bypass = !enabled
+        print("🎛️ [Delay] Channel \(channel) enabled -> \(enabled), bypass -> \(node.bypass)")
     }
 
     func set(time: Float, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitDelay) {
@@ -56,12 +57,14 @@ final class DelayController {
         let v = max(min(feedback, feedbackMax), feedbackMin)
         feedbackByChannel[channel] = v
         node.feedback = v
+        print("🎛️ [Delay] Channel \(channel) feedback -> \(v)%")
     }
 
     func set(wetDryMix: Float, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitDelay) {
         let v = max(min(wetDryMix, mixMax), mixMin)
         mixByChannel[channel] = v
         node.wetDryMix = v
+        print("🎛️ [Delay] Channel \(channel) wetDryMix -> \(v)%")
     }
 
     /// ダイヤル等のステップ入力で time を変更
@@ -77,9 +80,16 @@ final class DelayController {
     /// ダイヤル等のステップ入力で feedback を変更
     @discardableResult
     func changeFeedback(step: Int, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitDelay) -> Float {
-        let clamped = Float(max(min(step, 8), -8))
-        let current = feedbackByChannel[channel] ?? 25.0
-        let next = max(min(current + clamped * feedbackStepSensitivity, feedbackMax), feedbackMin)
+        // 初期化されていない場合は20%から開始
+        let current = feedbackByChannel[channel] ?? 20.0
+        // step の正負に応じて値を増減
+        let delta = Float(step) * feedbackStepSensitivity
+        let next = max(min(current + delta, feedbackMax), feedbackMin)
+        
+        // ディレイを有効化してから値を設定
+        setEnabled(true, on: channel, node: node)
+        set(time: 0.1, on: channel, node: node)  // 固定のディレイ時間を設定
+        set(wetDryMix: 40.0, on: channel, node: node)  // 適切なwetDryMix値を設定
         set(feedback: next, on: channel, node: node)
         return next
     }
@@ -87,9 +97,16 @@ final class DelayController {
     /// ダイヤル等のステップ入力で wetDryMix を変更
     @discardableResult
     func changeMix(step: Int, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitDelay) -> Float {
-        let clamped = Float(max(min(step, 8), -8))
-        let current = mixByChannel[channel] ?? 30.0
-        let next = max(min(current + clamped * mixStepSensitivity, mixMax), mixMin)
+        // 初期化されていない場合は25%から開始
+        let current = mixByChannel[channel] ?? 25.0
+        // step の正負に応じて値を増減
+        let delta = Float(step) * mixStepSensitivity
+        let next = max(min(current + delta, mixMax), mixMin)
+        
+        // ディレイを有効化してから値を設定
+        setEnabled(true, on: channel, node: node)
+        set(time: 0.1, on: channel, node: node)  // 固定のディレイ時間を設定
+        set(feedback: 30.0, on: channel, node: node)  // 適切なfeedback値を設定
         set(wetDryMix: next, on: channel, node: node)
         return next
     }
@@ -110,9 +127,9 @@ final class DelayController {
 
     /// k ∈ [-1, 1] を受け取り、time/feedback/mix を一括設定
     /// - マッピング例:
-    ///   - time: 固定（約 90ms）にして変化を感じにくくする
-    ///   - feedback: 5% → 40% を線形
-    ///   - mix: 5% → 30% を線形
+    ///   - time: 固定（約 100ms）にして変化を感じにくくする
+    ///   - feedback: 15% → 70% を線形
+    ///   - mix: 20% → 80% を線形
     func setMacro(k: Float, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitDelay) {
         let clamped = max(min(k, 1.0), -1.0)
         let aRaw = abs(clamped)
@@ -122,9 +139,9 @@ final class DelayController {
         // time: 固定（スラップバック系の浅いディレイ感）
         let timeF: Float = 0.1
 
-        // feedback: 5%〜40% / mix: 5%〜30%
-        let fb = 5.0 + 35.0 * a
-        let mx = 5.0 + 25.0 * a
+        // feedback: 15%〜70% / mix: 20%〜80%
+        let fb = 15.0 + 55.0 * a
+        let mx = 20.0 + 60.0 * a
 
         setEnabled(true, on: channel, node: node)
         set(time: timeF, on: channel, node: node)

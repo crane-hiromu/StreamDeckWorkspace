@@ -289,6 +289,18 @@ final class AdvancedSoundPlayer {
         playbackChannel.setDelayMacro(k)
     }
 
+    /// ステップ値でディレイのfeedbackを変更
+    func changeDelayFeedback(on channel: Channel, step: Int) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.changeDelayFeedback(step)
+    }
+
+    /// ステップ値でディレイのwetDryMixを変更
+    func changeDelayMix(on channel: Channel, step: Int) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.changeDelayMix(step)
+    }
+
     // MARK: - Reverb Control
 
     func enableReverb(on channel: Channel, _ enabled: Bool) {
