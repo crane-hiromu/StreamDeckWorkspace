@@ -66,7 +66,8 @@ final class MessageProcessor {
             case .changeVolume,
                  .changeRate,
                  .changePitch,
-                 .changeFrequency: break
+                 .changeFrequency,
+                 .changeDelay: break
             }
         case .keyUp:
             break
@@ -108,6 +109,13 @@ final class MessageProcessor {
                 break
             case .stopSound:
                 break
+            case .changeDelay:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.setDelayMacro(
+                        on: entity.channelType,
+                        k: Float(entity.delay ?? 0)
+                    )
+                }
             }
         case .dialDown(let entity):
             switch entity.command {
@@ -133,6 +141,10 @@ final class MessageProcessor {
                 break
             case .stopSound:
                 break
+            case .changeDelay:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.resetDelay(on: entity.channelType)
+                }
             }
         case .dialUp:
             break // NOP

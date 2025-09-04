@@ -257,6 +257,38 @@ final class AdvancedSoundPlayer {
         channels.values.forEach { $0.resetIsolator() }
     }
 
+    // MARK: - Delay Control
+
+    func enableDelay(on channel: Channel, _ enabled: Bool) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.enableDelay(enabled)
+    }
+
+    func setDelay(on channel: Channel,
+                  time seconds: Float? = nil,
+                  feedback percent: Float? = nil,
+                  mix wetDryMix: Float? = nil) {
+        guard let playbackChannel = channels[channel] else { return }
+        if let seconds { playbackChannel.setDelayTime(seconds) }
+        if let percent { playbackChannel.setDelayFeedback(percent) }
+        if let wetDryMix { playbackChannel.setDelayMix(wetDryMix) }
+    }
+
+    func resetDelay(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.resetDelay()
+    }
+
+    func resetAllDelays() {
+        channels.values.forEach { $0.resetDelay() }
+    }
+
+    /// k ∈ [-1, 1] でディレイをマクロ一括制御
+    func setDelayMacro(on channel: Channel, k: Float) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.setDelayMacro(k)
+    }
+
     // MARK: - Private helpers
 
     /// オーディオエンジンが存在しない場合に作成

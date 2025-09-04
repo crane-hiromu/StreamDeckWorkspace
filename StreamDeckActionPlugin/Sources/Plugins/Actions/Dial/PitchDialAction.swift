@@ -59,12 +59,4 @@ final class PitchDialAction: EncoderAction {
         )
         UnixSocketClient.shared.sendMessage(message)
     }
-
-    func dialUp(device: String, payload: EncoderPressEvent<Settings>) {
-        // NOP
-    }
-
-    func dialUp(device: String, payload: EncoderPressEvent<Settings>, longPress: Bool) {
-        // NOP
-    }
 }

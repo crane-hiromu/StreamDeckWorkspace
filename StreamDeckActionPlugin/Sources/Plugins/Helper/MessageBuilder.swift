@@ -23,6 +23,7 @@ final class MessageBuilder {
              pitch,
              rate,
              frequency,
+             delay,
              coordinates,
              column,
              row
@@ -53,6 +54,7 @@ final class MessageBuilder {
         case changeFrequency = 4
         case setLoopState = 5
         case stopSound = 6
+        case changeDelay = 7
 
         var value: Int { rawValue }
     }
@@ -233,6 +235,30 @@ final class MessageBuilder {
                     "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
                 },
                 "\(MessageKeys.frequency.key)": \(frequency)
+            }
+        }
+        """
+    }
+
+    /**
+     * ディレイ変更（マクロ一括）用のDialActionメッセージを構築します
+     * - parameter delay: 回転ステップ値（サーバ側で正規化して k∈[-1,1] に変換）
+     */
+    static func buildDelayDialMessage(type: MessageType,
+                                      channel: ChannelType,
+                                      coordinates: Coordinates?,
+                                      delay: Int = 0) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(MessageCommandType.changeDelay.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                },
+                "\(MessageKeys.delay.key)": \(delay)
             }
         }
         """
