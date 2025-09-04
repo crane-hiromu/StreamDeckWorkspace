@@ -24,6 +24,7 @@ final class MessageBuilder {
              rate,
              frequency,
              delay,
+             reverb,
              coordinates,
              column,
              row
@@ -55,6 +56,7 @@ final class MessageBuilder {
         case setLoopState = 5
         case stopSound = 6
         case changeDelay = 7
+        case changeReverb = 8
 
         var value: Int { rawValue }
     }
@@ -259,6 +261,30 @@ final class MessageBuilder {
                     "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
                 },
                 "\(MessageKeys.delay.key)": \(delay)
+            }
+        }
+        """
+    }
+
+    /**
+     * リバーブ変更（マクロ一括）用のDialActionメッセージを構築します
+     * - parameter reverb: 回転ステップ値（サーバ側で正規化して k∈[-1,1] に変換）
+     */
+    static func buildReverbDialMessage(type: MessageType,
+                                       channel: ChannelType,
+                                       coordinates: Coordinates?,
+                                       reverb: Int = 0) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(MessageCommandType.changeReverb.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                },
+                "\(MessageKeys.reverb.key)": \(reverb)
             }
         }
         """

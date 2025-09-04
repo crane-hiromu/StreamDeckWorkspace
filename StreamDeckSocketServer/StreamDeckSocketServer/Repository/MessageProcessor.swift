@@ -67,7 +67,8 @@ final class MessageProcessor {
                  .changeRate,
                  .changePitch,
                  .changeFrequency,
-                 .changeDelay: break
+                 .changeDelay,
+                 .changeReverb: break
             }
         case .keyUp:
             break
@@ -75,8 +76,6 @@ final class MessageProcessor {
             break
         case .dialRotate(let entity):
             switch entity.command {
-            case .playSound:
-                break
             case .changeVolume:
                 DispatchQueue.main.async {
                     // TODO: これは全体なので音源ごとに調整する場合は別途実装が
@@ -105,10 +104,6 @@ final class MessageProcessor {
                         value: Float(entity.frequency ?? 0)
                     )
                 }
-            case .setLoopState:
-                break
-            case .stopSound:
-                break
             case .changeDelay:
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.setDelayMacro(
@@ -116,11 +111,19 @@ final class MessageProcessor {
                         k: Float(entity.delay ?? 0)
                     )
                 }
+            case .changeReverb:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.changeReverbWetDryMix(
+                        on: entity.channelType,
+                        step: entity.reverb ?? 0
+                    )
+                }
+            case .playSound,
+                 .setLoopState,
+                 .stopSound: break
             }
         case .dialDown(let entity):
             switch entity.command {
-            case .playSound:
-                break
             case .changeVolume:
                 DispatchQueue.main.async {
                     SystemVolumeManager.shared.toggleMute()
@@ -137,14 +140,17 @@ final class MessageProcessor {
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.resetIsolator(on: entity.channelType)
                 }
-            case .setLoopState:
-                break
-            case .stopSound:
-                break
             case .changeDelay:
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.resetDelay(on: entity.channelType)
                 }
+            case .changeReverb:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.resetReverb(on: entity.channelType)
+                }
+            case .playSound,
+                 .setLoopState,
+                 .stopSound: break
             }
         case .dialUp:
             break // NOP

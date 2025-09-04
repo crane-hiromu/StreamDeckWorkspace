@@ -289,6 +289,40 @@ final class AdvancedSoundPlayer {
         playbackChannel.setDelayMacro(k)
     }
 
+    // MARK: - Reverb Control
+
+    func enableReverb(on channel: Channel, _ enabled: Bool) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.enableReverb(enabled)
+    }
+
+    func setReverb(on channel: Channel,
+                   mix wetDryMix: Float? = nil) {
+        guard let playbackChannel = channels[channel] else { return }
+        if let wetDryMix { playbackChannel.setReverbMix(wetDryMix) }
+    }
+
+    func resetReverb(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.resetReverb()
+    }
+
+    func resetAllReverbs() {
+        channels.values.forEach { $0.resetReverb() }
+    }
+
+    /// k ∈ [-1, 1] でリバーブをマクロ一括制御
+    func setReverbMacro(on channel: Channel, k: Float) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.setReverbMacro(k)
+    }
+
+    /// ステップ値でリバーブのwetDryMixを変更
+    func changeReverbWetDryMix(on channel: Channel, step: Int) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.changeReverbWetDryMix(step)
+    }
+
     // MARK: - Private helpers
 
     /// オーディオエンジンが存在しない場合に作成

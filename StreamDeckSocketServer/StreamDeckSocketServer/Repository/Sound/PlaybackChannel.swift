@@ -18,6 +18,7 @@ final class PlaybackChannel {
     private var playerNode: AVAudioPlayerNode?
     private var pitchNode: AVAudioUnitTimePitch?
     private var delayNode: AVAudioUnitDelay?
+    private var reverbNode: AVAudioUnitReverb?
     private var eqNode: AVAudioUnitEQ?
     private var currentFile: AVAudioFile?
     private var isLoop: Bool = false  // ループ状態を管理
@@ -29,6 +30,7 @@ final class PlaybackChannel {
     let pitchController: PitchController
     let isolatorController: IsolatorController
     let delayController: DelayController
+    let reverbController: ReverbController
 
     // MARK: - Init
 
@@ -38,6 +40,7 @@ final class PlaybackChannel {
         self.pitchController = PitchController()
         self.isolatorController = IsolatorController()
         self.delayController = DelayController()
+        self.reverbController = ReverbController()
     }
 
     // MARK: - Node Management
@@ -51,28 +54,35 @@ final class PlaybackChannel {
         let player = AVAudioPlayerNode()
         let pitch = AVAudioUnitTimePitch()
         let delay = AVAudioUnitDelay()
+        let reverb = AVAudioUnitReverb()
         let eq = isolatorController.makeEQ()
 
         // エンジンに接続
         engine.attach(player)
         engine.attach(pitch)
         engine.attach(delay)
+        engine.attach(reverb)
         engine.attach(eq)
 
         // チェーン接続
         engine.connect(player, to: pitch, format: format)
         engine.connect(pitch, to: delay, format: format)
-        engine.connect(delay, to: eq, format: format)
+        engine.connect(delay, to: reverb, format: format)
+        engine.connect(reverb, to: eq, format: format)
         engine.connect(eq, to: engine.mainMixerNode, format: format)
 
         // 保存
         playerNode = player
         pitchNode = pitch
         delayNode = delay
+        reverbNode = reverb
         eqNode = eq
 
         // ディレイを初期状態（無効）に設定
         delayController.reset(on: channel, node: delay)
+        // リバーブを初期状態（無効）に設定
+        reverbController.reset(on: channel, node: reverb)
+        print("🔧 [Reverb] Channel \(channel) node setup complete, bypass=\(reverb.bypass), wetDryMix=\(reverb.wetDryMix)")
     }
 
     /// ノードをクリーンアップ
@@ -83,6 +93,7 @@ final class PlaybackChannel {
         playerNode = nil
         pitchNode = nil
         delayNode = nil
+        reverbNode = nil
         eqNode = nil
     }
 
@@ -210,6 +221,37 @@ final class PlaybackChannel {
         delayController.setMacro(k: k, on: channel, node: delay)
     }
 
+    // MARK: - Reverb Control
+
+    func enableReverb(_ enabled: Bool) {
+        guard let reverb = reverbNode else { return }
+        reverbController.setEnabled(enabled, on: channel, node: reverb)
+    }
+
+    func setReverbMix(_ percent: Float) {
+        guard let reverb = reverbNode else { return }
+        reverbController.set(wetDryMix: percent, on: channel, node: reverb)
+    }
+
+
+
+    func resetReverb() {
+        guard let reverb = reverbNode else { return }
+        reverbController.reset(on: channel, node: reverb)
+    }
+
+    /// k ∈ [-1, 1] でマクロ一括制御（wetDryMix のみ）
+    func setReverbMacro(_ k: Float) {
+        guard let reverb = reverbNode else { return }
+        reverbController.setMacro(k: k, on: channel, node: reverb)
+    }
+
+    /// ステップ値でリバーブのwetDryMixを変更
+    func changeReverbWetDryMix(_ step: Int) {
+        guard let reverb = reverbNode else { return }
+        reverbController.changeWetDryMix(step: step, on: channel, node: reverb)
+    }
+
     // MARK: - Isolator Control
 
     /// ノブ値（トグルの累積）を -1...1 に正規化して、LOW/MID/HIGH のゲインを更新
@@ -236,4 +278,5 @@ final class PlaybackChannel {
     var pitch: AVAudioUnitTimePitch? { pitchNode }
     var eq: AVAudioUnitEQ? { eqNode }
     var delay: AVAudioUnitDelay? { delayNode }
+    var reverb: AVAudioUnitReverb? { reverbNode }
 }
