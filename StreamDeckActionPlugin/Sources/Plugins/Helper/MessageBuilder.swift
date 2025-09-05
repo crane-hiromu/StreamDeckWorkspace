@@ -79,7 +79,10 @@ final class MessageBuilder {
     }
 
     enum ChannelType: Int {
-        case main, sub, two, three, four
+        // トラック用のチャンネル
+        case main, sub
+        // 効果音用のチャンネル
+        case sound
 
         var id: Int { rawValue }
     }

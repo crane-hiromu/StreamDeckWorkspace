@@ -36,7 +36,7 @@ final class iOSDCTrackTapAction: KeyAction {
             type: .keyDown,
             command: .playSound,
             sound: .iosdc,
-            channel: .sub,
+            channel: .sound,
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)

@@ -14,7 +14,12 @@ final class AdvancedSoundPlayer {
 
     // チャンネル
     enum Channel: Int, CaseIterable {
-        case main, sub, two, three, four, other
+        // トラック用のチャンネル
+        case main, sub
+        // 効果音用のチャンネル
+        case sound
+        // 予備のチャンネル
+        case other
     }
 
     // エンジンとチャンネル管理
