@@ -25,6 +25,8 @@ final class PlaybackChannel {
     private var isLoop: Bool = false  // ループ状態を管理
     private var fileDuration: Double = 0.0 // 再生中のファイルの長さ
     private var playbackStartTime: Double = 0.0 // 再生開始時刻
+    private var currentCompletionId: Int = 0 // 現在の完了コールバックのID
+    private var completionCounter: Int = 0 // 完了コールバックのカウンター
 
     // 各機能のコントローラ
     let rateController: RateController
@@ -114,6 +116,9 @@ final class PlaybackChannel {
     func play(file: AVAudioFile, loop: Bool = false, completion: (() -> Void)? = nil) {
         guard let player = playerNode else { return }
 
+        // 新しい再生時は古い完了コールバックを無効化
+        completionCounter += 1
+        currentCompletionId = completionCounter
         currentFile = file
         isLoop = loop
 
@@ -121,8 +126,8 @@ final class PlaybackChannel {
         if player.isPlaying {
             DispatchQueue.main.async {
                 player.stop()
-                // 停止完了を待つ（少し遅延）
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                // 停止完了を待つ（連打対応で短縮）
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
                     self.playAgain(file: file, completion: completion)
                 }
             }
@@ -133,12 +138,12 @@ final class PlaybackChannel {
 
     func playAgain(file: AVAudioFile, completion: (() -> Void)? = nil) {
          guard let player = playerNode else { return }
-        scheduleFileForPlayback(file: file, completion: completion)
+        scheduleFileForPlayback(file: file, completion: completion, completionId: currentCompletionId)
         player.play()
     }
 
     /// ファイルをスケジュール（ループ対応）
-    private func scheduleFileForPlayback(file: AVAudioFile, completion: (() -> Void)?) {
+    private func scheduleFileForPlayback(file: AVAudioFile, completion: (() -> Void)?, completionId: Int) {
         guard let player = playerNode else { return }
         
         player.scheduleFile(file, at: nil) { [weak self] in
@@ -152,7 +157,10 @@ final class PlaybackChannel {
                 // 完了コールバックを実行。
                 // 終了の検知が少し早いため最後の音がカットされないように終了を遅らせる。
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    completion?()
+                    // 現在の完了コールバックIDと一致する場合のみ実行（連打対応）
+                    if self?.currentCompletionId == completionId {
+                        completion?()
+                    }
                 }
             }
         }

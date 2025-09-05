@@ -70,10 +70,21 @@ final class MessageBuilder {
     enum SoundType: String {
         // 効果音
         case puf
+        
+        // ドラム音
+        case drumBass = "DRUM_D_BASS"
+        case drumCymbal = "DRUM_D_CYMBAL"
+        case drumHat = "DRUM_D_HAT"
+        case drumSnareS = "DRUM_D_SNARE_S"
+        case drumSnareW = "DRUM_D_SNARE_W"
+        case drumTom = "DRUM_D_TOM"
+        case drumEl1 = "DRUM_EL_1"
+        case drumEl2 = "DRUM_EL_2"
+        case drumEl3 = "DRUM_EL_3"
+        
         // iOSDC素材
         case iosdc = "S_iOSDCJP"
         case beat = "S_BEAT"
-        case beatL = "S_BEAT_L"
 
         var name: String { rawValue }
     }

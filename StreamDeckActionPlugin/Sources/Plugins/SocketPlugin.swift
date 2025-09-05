@@ -18,9 +18,18 @@ final class SocketPlugin: Plugin {
         // Socket Server Tap Action
         iOSDCTrackTapAction.self
         BeatTrackTapAction.self
-        LongBeatTrackTapAction.self
         LoopTapAction.self
         StopTapAction.self
+        DrumBassTapAction.self
+        DrumCymbalTapAction.self
+        DrumHatTapAction.self
+        DrumSnareTapAction.self
+        DrumSnareWTapAction.self
+        DrumTomTapAction.self
+        DrumEl1TapAction.self
+        DrumEl2TapAction.self
+        DrumEl3TapAction.self
+        EffectPufTapAction.self
         // Socket Server Dial Action
         DelayDialAction.self
         FlangerDialAction.self
