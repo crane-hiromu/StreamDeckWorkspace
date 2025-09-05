@@ -28,6 +28,7 @@ final class SocketPlugin: Plugin {
         PitchDialAction.self
         RateDialAction.self
         ReverbDialAction.self
+        ScratchDialAction.self
         VolumeDialAction.self
     }
 
@@ -42,6 +43,7 @@ final class SocketPlugin: Plugin {
         pitchDialLayout
         rateDialLayout
         reverbDialLayout
+        scratchDialLayout
         volumeDialLayout
     }
 

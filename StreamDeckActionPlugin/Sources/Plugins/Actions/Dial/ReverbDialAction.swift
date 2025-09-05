@@ -60,6 +60,3 @@ final class ReverbDialAction: EncoderAction {
         UnixSocketClient.shared.sendMessage(message)
     }
 }
-
-
-

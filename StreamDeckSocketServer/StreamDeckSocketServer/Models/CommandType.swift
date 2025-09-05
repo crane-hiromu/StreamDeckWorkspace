@@ -19,4 +19,7 @@ enum CommandType: Int, Codable {
     case changeDelay = 7
     case changeReverb = 8
     case changeFlanger = 9
+    case scratch = 10
+    case scratchWithInertia = 11
+    case scratchWithBounce = 12
 }

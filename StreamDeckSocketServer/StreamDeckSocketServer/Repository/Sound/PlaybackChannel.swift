@@ -33,6 +33,7 @@ final class PlaybackChannel {
     let delayController: DelayController
     let reverbController: ReverbController
     let flangerController: FlangerController
+    let scratchController: ScratchController
 
     // MARK: - Init
 
@@ -44,6 +45,7 @@ final class PlaybackChannel {
         self.delayController = DelayController()
         self.reverbController = ReverbController()
         self.flangerController = FlangerController()
+        self.scratchController = ScratchController()
     }
 
     // MARK: - Node Management
@@ -175,6 +177,8 @@ final class PlaybackChannel {
         isLoop = false
         rateController.reset()
         pitchController.reset()
+        setPitch(0.0)
+        stopScratching()
     }
 
     /// 再生中かどうか
@@ -331,6 +335,45 @@ final class PlaybackChannel {
         guard let eq = eqNode else { return }
         isolatorController.reset(on: channel, eq: eq)
     }
+
+    // MARK: - Scratch Control
+    
+    /// スクラッチ開始（-1.0 〜 1.0の値で制御）
+    /// - Parameter value: スクラッチの強度（-1.0: 最大逆再生, 0.0: 停止, 1.0: 最大順再生）
+    func startScratch(value: Float) {
+        guard let pitch = pitchNode else { return }
+        scratchController.startScratch(value: value, pitchNode: pitch, channel: channel)
+    }
+    
+    /// スクラッチ停止（通常再生に戻す）
+    func stopScratching() {
+        guard let pitch = pitchNode else { return }
+        scratchController.stopScratching(pitchNode: pitch, channel: channel)
+    }
+    
+    /// スクラッチ値の更新（リアルタイム制御用）
+    func updateScratch(value: Float) {
+        guard let pitch = pitchNode else { return }
+        scratchController.updateScratch(value: value, pitchNode: pitch, channel: channel)
+    }
+    
+    /// スクラッチの慣性をシミュレート（より自然なスクラッチ感）
+    func scratchWithInertia(value: Float, sensitivity: Float = 1.0) {
+        guard let pitch = pitchNode else { return }
+        scratchController.scratchWithInertia(value: value, sensitivity: sensitivity, pitchNode: pitch, channel: channel)
+    }
+    
+    /// スクラッチのバウンス効果
+    func scratchWithBounce(value: Float) {
+        guard let pitch = pitchNode else { return }
+        scratchController.scratchWithBounce(value: value, pitchNode: pitch, channel: channel)
+    }
+    
+    /// スクラッチ中かどうか
+    var scratching: Bool {
+        return scratchController.scratching
+    }
+    
 
     // MARK: - Getters
 

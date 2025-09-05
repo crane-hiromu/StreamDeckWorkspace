@@ -1,5 +1,5 @@
 //
-//  FlangerDialAction.swift
+//  ScratchDialAction.swift
 //  StreamDeckActionPlugin
 //
 //  Created by h.tsuruta on 2025/09/05.
@@ -9,18 +9,18 @@ import Foundation
 import StreamDeck
 
 // MARK: - Action
-final class FlangerDialAction: EncoderAction {
+final class ScratchDialAction: EncoderAction {
     typealias Settings = NoSettings
 
-    static var name: String = "Flanger"
-    static var uuid: String = "flanger.rotary"
+    static var name: String = "Scratch"
+    static var uuid: String = "scratch.rotary"
     static var icon: String = "Icons/actionIcon"
 
     static var encoder: RotaryEncoder? = RotaryEncoder(
         layout: .layout(name: .volumedial),
         stackColor: "#f1184c",
         icon: "Icons/stopwatch",
-        rotate: "Delay",
+        rotate: "Scratch",
         push: "Reset"
     )
 
@@ -38,21 +38,21 @@ final class FlangerDialAction: EncoderAction {
 
     func dialRotate(device: String, payload: EncoderEvent<Settings>) {
         // 画面に数値を出したかったが、処理が複雑になるので一旦出していない
-        setFeedback([FlangerDialType.currentValue.key: payload.ticks > 0 ? "+" : "-"])
+        setFeedback([ScratchDialType.currentValue.key: payload.ticks > 0 ? "+" : "-"])
 
-        let message = MessageBuilder.buildFlangerDialMessage(
+        let message = MessageBuilder.buildScratchDialMessage(
             type: .dialRotate,
             channel: .main,
             coordinates: payload.coordinates,
-            flanger: payload.ticks
+            scratch: payload.ticks
         )
         UnixSocketClient.shared.sendMessage(message)
     }
 
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
-        setFeedback([FlangerDialType.currentValue.key: ""])
+        setFeedback([ScratchDialType.currentValue.key: ""])
 
-        let message = MessageBuilder.buildFlangerDialMessage(
+        let message = MessageBuilder.buildScratchDialMessage(
             type: .dialDown,
             channel: .main,
             coordinates: payload.coordinates

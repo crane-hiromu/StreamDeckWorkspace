@@ -26,6 +26,7 @@ final class MessageBuilder {
              delay,
              reverb,
              flanger,
+             scratch,
              coordinates,
              column,
              row
@@ -59,6 +60,9 @@ final class MessageBuilder {
         case changeDelay = 7
         case changeReverb = 8
         case changeFlanger = 9
+        case scratch = 10
+        case scratchWithInertia = 11
+        case scratchWithBounce = 12
 
         var value: Int { rawValue }
     }
@@ -311,6 +315,29 @@ final class MessageBuilder {
                     "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
                 },
                 "\(MessageKeys.flanger.key)": \(flanger)
+            }
+        }
+        """
+    }
+
+    /**
+     * スクラッチ用ダイヤルメッセージを構築
+     */
+    static func buildScratchDialMessage(type: MessageType,
+                                        channel: ChannelType,
+                                        coordinates: Coordinates?,
+                                        scratch: Int = 0) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(MessageCommandType.scratchWithInertia.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                },
+                "\(MessageKeys.scratch.key)": \(scratch)
             }
         }
         """

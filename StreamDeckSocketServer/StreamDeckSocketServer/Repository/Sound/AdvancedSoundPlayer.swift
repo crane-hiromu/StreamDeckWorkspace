@@ -373,6 +373,65 @@ final class AdvancedSoundPlayer {
         playbackChannel.setFlangerMacro(k)
     }
 
+    // MARK: - Scratch Control
+
+    /// 指定されたチャンネルでスクラッチ開始（-1.0 〜 1.0の値で制御）
+    /// - Parameters:
+    ///   - channel: 対象チャンネル
+    ///   - value: スクラッチの強度（-1.0: 最大逆再生, 0.0: 停止, 1.0: 最大順再生）
+    func startScratch(on channel: Channel, value: Float) {
+        guard let playbackChannel = channels[channel] else { return }
+        guard playbackChannel.isPlaying else {
+            print("❌ No audio playing for channel \(channel)")
+            return
+        }
+        playbackChannel.startScratch(value: value)
+    }
+
+    /// 指定されたチャンネルのスクラッチ停止（通常再生に戻す）
+    func stopScratching(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.stopScratching()
+    }
+
+    /// 指定されたチャンネルのスクラッチ値更新（リアルタイム制御用）
+    func updateScratch(on channel: Channel, value: Float) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.updateScratch(value: value)
+    }
+
+    /// 指定されたチャンネルでスクラッチの慣性をシミュレート
+    func scratchWithInertia(on channel: Channel, value: Float, sensitivity: Float = 1.0) {
+        guard let playbackChannel = channels[channel] else { return }
+        guard playbackChannel.isPlaying else {
+            print("❌ No audio playing for channel \(channel)")
+            return
+        }
+        playbackChannel.scratchWithInertia(value: value, sensitivity: sensitivity)
+    }
+
+    /// 指定されたチャンネルでスクラッチのバウンス効果
+    func scratchWithBounce(on channel: Channel, value: Float) {
+        guard let playbackChannel = channels[channel] else { return }
+        guard playbackChannel.isPlaying else {
+            print("❌ No audio playing for channel \(channel)")
+            return
+        }
+        playbackChannel.scratchWithBounce(value: value)
+    }
+
+    /// 指定されたチャンネルがスクラッチ中かどうか
+    func isScratching(on channel: Channel) -> Bool {
+        guard let playbackChannel = channels[channel] else { return false }
+        return playbackChannel.scratching
+    }
+
+    /// 全チャンネルのスクラッチを停止
+    func stopAllScratching() {
+        channels.values.forEach { $0.stopScratching() }
+        print("🎵 All channels scratch stopped")
+    }
+
     // MARK: - Private helpers
 
     /// オーディオエンジンが存在しない場合に作成

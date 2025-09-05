@@ -69,7 +69,10 @@ final class MessageProcessor {
                  .changeFrequency,
                  .changeDelay,
                  .changeReverb,
-                 .changeFlanger: break
+                 .changeFlanger,
+                 .scratch,
+                 .scratchWithInertia,
+                 .scratchWithBounce: break
             }
         case .keyUp:
             break
@@ -126,6 +129,28 @@ final class MessageProcessor {
                         step: entity.flanger ?? 0
                     )
                 }
+            case .scratch:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.startScratch(
+                        on: entity.channelType,
+                        value: entity.scratch ?? 0
+                    )
+                }
+            case .scratchWithInertia:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.scratchWithInertia(
+                        on: entity.channelType,
+                        value: entity.scratch ?? 0,
+                        sensitivity: entity.scratchSensitivity ?? 1.0
+                    )
+                }
+            case .scratchWithBounce:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.scratchWithBounce(
+                        on: entity.channelType,
+                        value: entity.scratch ?? 0
+                    )
+                }
             case .playSound,
                  .setLoopState,
                  .stopSound: break
@@ -159,6 +184,12 @@ final class MessageProcessor {
             case .changeFlanger:
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.resetFlanger(on: entity.channelType)
+                }
+            case .scratch,
+                 .scratchWithInertia,
+                 .scratchWithBounce:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.stopScratching(on: entity.channelType)
                 }
             case .playSound,
                  .setLoopState,
