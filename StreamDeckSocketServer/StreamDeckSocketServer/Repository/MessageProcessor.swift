@@ -55,6 +55,13 @@ final class MessageProcessor {
                         on: entity.channelType
                     )
                 }
+            case .playTone:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.playTone(
+                        entity.note ?? "C",
+                        on: entity.channelType
+                    )
+                }
             case .setLoopState:
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.toggleLoop(on: entity.channelType)
@@ -152,6 +159,7 @@ final class MessageProcessor {
                     )
                 }
             case .playSound,
+                 .playTone,
                  .setLoopState,
                  .stopSound: break
             }
@@ -192,6 +200,7 @@ final class MessageProcessor {
                     AdvancedSoundPlayer.shared.stopScratching(on: entity.channelType)
                 }
             case .playSound,
+                 .playTone,
                  .setLoopState,
                  .stopSound: break
             }

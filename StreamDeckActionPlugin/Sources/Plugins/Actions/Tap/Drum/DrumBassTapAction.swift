@@ -36,7 +36,7 @@ final class DrumBassTapAction: KeyAction {
             type: .keyDown,
             command: .playSound,
             sound: .drumBass,
-            channel: .sound,
+            channel: .drum,
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)

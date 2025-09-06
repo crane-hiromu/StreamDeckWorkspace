@@ -15,11 +15,13 @@ final class SocketPlugin: Plugin {
         // Sample Action
         SampleTapAction.self
         SampleDialAction.self
-        // Socket Server Tap Action
+
+        // MARK: Socket Server Tap Action
         iOSDCTrackTapAction.self
         BeatTrackTapAction.self
         LoopTapAction.self
         StopTapAction.self
+        // Drum Tap Actions
         DrumBassTapAction.self
         DrumCymbalTapAction.self
         DrumHatTapAction.self
@@ -30,7 +32,16 @@ final class SocketPlugin: Plugin {
         DrumEl2TapAction.self
         DrumEl3TapAction.self
         EffectPufTapAction.self
-        // Socket Server Dial Action
+        // Tone Tap Actions
+        ToneCTapAction.self
+        ToneDTapAction.self
+        ToneETapAction.self
+        ToneFTapAction.self
+        ToneGTapAction.self
+        ToneATapAction.self
+        ToneBTapAction.self
+
+        // MARK: Socket Server Dial Action
         DelayDialAction.self
         FlangerDialAction.self
         IsolatorDialAction.self

@@ -49,6 +49,7 @@ protocol DialEntity: BaseEntity {}
 struct KeyDownEntity: KeyEntity, Codable {
     let command: CommandType
     let sound: String?
+    let note: String?
     let channel: Int
 }
 

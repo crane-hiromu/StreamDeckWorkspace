@@ -1,5 +1,5 @@
 //
-//  DrumTomTapAction.swift
+//  DrumSnareWTapAction.swift
 //  StreamDeckActionPlugin
 //
 //  Created by h.tsuruta on 2025/09/04.
@@ -9,11 +9,11 @@ import Foundation
 import StreamDeck
 
 // MARK: - Action
-final class DrumTomTapAction: KeyAction {
+final class DrumSnareWTapAction: KeyAction {
     typealias Settings = NoSettings
 
-    static var name: String = "Drum Tom Sound"
-    static var uuid: String = "drum.tom.tap"
+    static var name: String = "Drum Snare W Sound"
+    static var uuid: String = "drum.snare.w.tap"
     static var icon: String = "Icons/actionIcon"
 
     static var states: [PluginActionState]? = [
@@ -28,15 +28,15 @@ final class DrumTomTapAction: KeyAction {
     required init(context: String, coordinates: Coordinates?) {
         self.context = context
         self.coordinates = coordinates
-        setTitle(to: "Drum\nTom")
+        setTitle(to: "Drum\nSnare W")
     }
 
     func keyDown(device: String, payload: KeyEvent<NoSettings>) {
         let message = MessageBuilder.buildTapMessage(
             type: .keyDown,
             command: .playSound,
-            sound: .drumTom,
-            channel: .sound,
+            sound: .drumSnareW,
+            channel: .drum,
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)

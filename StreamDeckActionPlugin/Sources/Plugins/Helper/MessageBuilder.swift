@@ -29,7 +29,8 @@ final class MessageBuilder {
              scratch,
              coordinates,
              column,
-             row
+             row,
+             note
 
         var key: String { rawValue }
     }
@@ -63,6 +64,7 @@ final class MessageBuilder {
         case scratch = 10
         case scratchWithInertia = 11
         case scratchWithBounce = 12
+        case playTone = 13
 
         var value: Int { rawValue }
     }
@@ -94,6 +96,10 @@ final class MessageBuilder {
         case main, sub
         // 効果音用のチャンネル
         case sound
+        // ドラム専用チャンネル
+        case drum
+        // 鍵盤専用チャンネル
+        case keyboard
 
         var id: Int { rawValue }
     }
@@ -352,6 +358,30 @@ final class MessageBuilder {
                     "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
                 },
                 "\(MessageKeys.scratch.key)": \(scratch)
+            }
+        }
+        """
+    }
+    
+    /**
+     * トーン再生用のTapActionメッセージを構築します
+     */
+    static func buildToneTapMessage(type: MessageType,
+                                    command: MessageCommandType,
+                                    channel: ChannelType,
+                                    coordinates: Coordinates?,
+                                    note: String) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(command.value),
+                "\(MessageKeys.note.key)": "\(note)",
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                }
             }
         }
         """

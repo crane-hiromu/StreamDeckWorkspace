@@ -10,7 +10,9 @@ import AVFoundation
 
 // MARK: - Advanced Player (Pitch Preservation)
 final class AdvancedSoundPlayer {
+    // Singleton
     static let shared = AdvancedSoundPlayer()
+    private init() {}
 
     // チャンネル
     enum Channel: Int, CaseIterable {
@@ -18,6 +20,10 @@ final class AdvancedSoundPlayer {
         case main, sub
         // 効果音用のチャンネル
         case sound
+        // ドラム専用チャンネル
+        case drum
+        // 鍵盤専用チャンネル
+        case keyboard
         // 予備のチャンネル
         case other
     }
@@ -25,8 +31,8 @@ final class AdvancedSoundPlayer {
     // エンジンとチャンネル管理
     private var audioEngine: AVAudioEngine?
     private var channels: [Channel: PlaybackChannel] = [:]
-
-    private init() {}
+    // トーンコントローラ
+    private let toneController = ToneController()
 
     // MARK: - Public API
     
@@ -55,6 +61,10 @@ final class AdvancedSoundPlayer {
                 try engine.start()
                 print("🔧 Audio engine prewarmed successfully")
             }
+            
+            // トーンコントローラにオーディオエンジンを設定
+            toneController.setAudioEngine(engine)
+            
         } catch {
             print("❌ Failed to prewarm audio engine: \(error)")
         }
@@ -434,7 +444,22 @@ final class AdvancedSoundPlayer {
     /// 全チャンネルのスクラッチを停止
     func stopAllScratching() {
         channels.values.forEach { $0.stopScratching() }
-        print("🎵 All channels scratch stopped")
+    }
+    
+    // MARK: - Tone Generation
+    
+    /// 指定された音階を指定されたチャンネルで再生（低遅延）
+    func playTone(_ note: String, on channel: Channel) {
+        do {
+            try toneController.playTone(note)
+        } catch {
+            print("❌ Failed to play tone \(note): \(error)")
+        }
+    }
+    
+    /// 利用可能な音階のリストを取得
+    var availableTones: [String] {
+        return toneController.availableTones
     }
 
     // MARK: - Private helpers
