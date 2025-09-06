@@ -74,6 +74,7 @@ final class SocketPlugin: Plugin {
         logMessage(#function)
         // Unix socketクライアントを接続
         UnixSocketClient.shared.connect()
+        MessageReceiver.shared.startReceiving()
     }
 }
 

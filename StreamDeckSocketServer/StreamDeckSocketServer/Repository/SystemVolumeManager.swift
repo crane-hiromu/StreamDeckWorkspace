@@ -89,11 +89,12 @@ final class SystemVolumeManager {
             let newVolume = min(max(prev + delta, 0.0), 1.0)
             setVolume(newVolume)
             previousVolume = nil
-
+            ServerMessageSender.shared.sendVolumeChange(channel: 0, volume: Int(newVolume * 100))
         // 通常状態 → 現在の音量に delta を加算
         } else if let current = getVolume() {
             let newVolume = min(max(current + delta, 0.0), 1.0)
             setVolume(newVolume)
+            ServerMessageSender.shared.sendVolumeChange(channel: 0, volume: Int(newVolume * 100))
         }
     }
 
@@ -102,10 +103,12 @@ final class SystemVolumeManager {
             // ミュートする前に音量を保存
             previousVolume = current
             setVolume(0.0)
+            ServerMessageSender.shared.sendVolumeChange(channel: 0, volume: Int(0))
         } else if let prev = previousVolume {
             // 前の音量に戻す
             setVolume(prev)
             previousVolume = nil
+            ServerMessageSender.shared.sendVolumeChange(channel: 0, volume: Int(prev * 100))
         }
     }
 

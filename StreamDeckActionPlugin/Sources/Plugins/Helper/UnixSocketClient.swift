@@ -13,7 +13,6 @@ final class UnixSocketClient {
     // MARK: Properties
 
     private var socket: Int32 = -1
-    private let logger = Logger(subsystem: "com.hiromu.streamdeck", category: "UnixSocketClient")
     // サーバー側の NSHomeDirectory() で生成される実際のパスをセット
     private let socketPath = "\(NSHomeDirectory())/Library/Containers/h.crane.t.StreamDeckSocketServer/Data/tmp/streamdeck.sock"
     private let log = Logger(subsystem: "StreamDeckPlugin", category: "Action")
@@ -75,6 +74,38 @@ final class UnixSocketClient {
             logMessage(#function + " Message sent successfully: \(message)")
         } else {
             logMessage(#function + " Failed to send message: \(errno)")
+        }
+    }
+    
+    /// サーバーからのメッセージを受信する
+    /// - Parameter completion: 受信したメッセージを処理するクロージャ
+    func startReceivingMessages(completion: @escaping (String) -> Void) {
+        guard socket != -1 else {
+            logMessage("startReceivingMessages: Unix socket not connected")
+            return
+        }
+        
+        DispatchQueue.global(qos: .background).async {
+            let bufferSize = 1024
+            var buffer = [UInt8](repeating: 0, count: bufferSize)
+            
+            while self.socket != -1 {
+                let bytesRead = Darwin.read(self.socket, &buffer, bufferSize)
+                
+                if bytesRead > 0 {
+                    if let message = String(data: Data(buffer.prefix(bytesRead)), encoding: .utf8) {
+                        DispatchQueue.main.async {
+                            completion(message)
+                        }
+                    }
+                } else if bytesRead == 0 {
+                    self.logMessage("Server disconnected")
+                    break
+                } else {
+                    self.logMessage("Failed to read from socket: \(errno)")
+                    break
+                }
+            }
         }
     }
     

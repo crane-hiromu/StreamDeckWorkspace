@@ -32,14 +32,12 @@ final class VolumeDialAction: EncoderAction {
     required init(context: String, coordinates: StreamDeck.Coordinates?) {
         self.context = context
         self.coordinates = coordinates
+        configure()
     }
 
     // MARK: Dial Action
 
     func dialRotate(device: String, payload: EncoderEvent<Settings>) {
-        // 画面に音量を出したかったが、処理が複雑になるので一旦出していない
-        setFeedback([VolumeDialType.currentVolume.key: payload.ticks > 0 ? "+" : "-"])
-
         let message = MessageBuilder.buildVolumeDialMessage(
             type: .dialRotate,
             channel: .main, // non related
@@ -50,13 +48,31 @@ final class VolumeDialAction: EncoderAction {
     }
 
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
-        setFeedback([VolumeDialType.currentVolume.key: ""])
-
         let message = MessageBuilder.buildVolumeDialMessage(
             type: .dialDown,
             channel: .main, // non related
             coordinates: payload.coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
+    }
+}
+
+// MARK: - Private
+private extension VolumeDialAction {
+
+    func configure() {
+        // サーバー接続前は数値をセットしない
+        setFeedback([VolumeDialType.currentVolume.key: "-"])
+
+        NotificationCenter.default.addObserver(
+            forName: .volumeChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] nofi in
+            let data = nofi.userInfo?[MessageReceiver.entityKey]
+            guard let entity = data as? VolumeChangeEntity else { return }
+            // todo channel 判定
+            self?.setFeedback([VolumeDialType.currentVolume.key: "\(entity.volume)"])
+        }
     }
 }

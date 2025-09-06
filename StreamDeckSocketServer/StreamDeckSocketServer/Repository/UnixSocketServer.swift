@@ -106,6 +106,30 @@ final class UnixSocketServer {
         clientSocket.reset()
     }
 
+    /// クライアントにメッセージを送信する
+    /// - Parameter message: 送信するメッセージ
+    func sendMessageToClient(_ message: String) {
+        guard clientSocket.isValid else {
+            print("❌ No client connected to send message")
+            return
+        }
+        
+        guard let data = message.data(using: .utf8) else {
+            print("❌ Failed to convert message to data")
+            return
+        }
+        
+        let result = data.withUnsafeBytes { buffer in
+            Darwin.write(clientSocket.value, buffer.baseAddress, buffer.count)
+        }
+        
+        if result > 0 {
+            print("📤 Message sent to client: \(message)")
+        } else {
+            print("❌ Failed to send message to client: \(errno)")
+        }
+    }
+
     /// Unixソケットサーバーを停止する
     /// 
     /// サーバーソケットとクライアントソケットを閉じ、
