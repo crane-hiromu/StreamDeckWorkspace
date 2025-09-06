@@ -50,6 +50,7 @@ struct KeyDownEntity: KeyEntity, Codable {
     let command: CommandType
     let sound: String?
     let note: String?
+    let stutterSegmentLength: Double?
     let channel: Int
 }
 
@@ -77,6 +78,7 @@ struct DialRotateEntity: DialEntity, Codable {
     let flanger: Int?
     let scratch: Float?
     let scratchSensitivity: Float?
+    let stutterSegmentLength: Double?
 }
 
 struct DialDownEntity: DialEntity, Codable {

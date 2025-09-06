@@ -23,4 +23,5 @@ enum CommandType: Int, Codable {
     case scratchWithInertia = 11
     case scratchWithBounce = 12
     case playTone = 13
+    case stutter = 14
 }

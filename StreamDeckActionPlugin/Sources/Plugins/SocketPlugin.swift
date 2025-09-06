@@ -32,6 +32,7 @@ final class SocketPlugin: Plugin {
         DrumEl2TapAction.self
         DrumEl3TapAction.self
         EffectPufTapAction.self
+        StutterTapAction.self
         // Tone Tap Actions
         ToneCTapAction.self
         ToneDTapAction.self
@@ -49,6 +50,7 @@ final class SocketPlugin: Plugin {
         RateDialAction.self
         ReverbDialAction.self
         ScratchDialAction.self
+        StutterDialAction.self
         VolumeDialAction.self
     }
 
@@ -64,6 +66,7 @@ final class SocketPlugin: Plugin {
         rateDialLayout
         reverbDialLayout
         scratchDialLayout
+        stutterDialLayout
         volumeDialLayout
     }
 

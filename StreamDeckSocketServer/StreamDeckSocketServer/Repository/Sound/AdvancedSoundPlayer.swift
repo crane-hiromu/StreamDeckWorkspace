@@ -93,16 +93,12 @@ final class AdvancedSoundPlayer {
             // 初回再生時は読み込みに時間がかかるため、少し待機してから再生開始
             let isFirstPlaybackForChannel = !playbackChannel.isPlaying
             if isFirstPlaybackForChannel {
-                print("🔍 [DEBUG] First playback for channel \(channel) detected, waiting for engine to be ready...")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.startPlaybackAfterDelay(channel: channel, playbackChannel: playbackChannel, audioFile: audioFile, loop: loop)
                 }
             } else {
                 startPlaybackAfterDelay(channel: channel, playbackChannel: playbackChannel, audioFile: audioFile, loop: loop)
             }
-            
-            print("🎵 [Channel \(channel.rawValue+1)] Playing \(soundName) rate=\(rate) loop=\(loop)")
-            
         } catch {
             print("❌ Failed to play on channel \(channel): \(error)")
         }
@@ -146,7 +142,6 @@ final class AdvancedSoundPlayer {
             return
         }
         playbackChannel.setPitch(pitch)
-        print("🎵 [Channel \(channel.rawValue+1)] pitch -> \(pitch) cents")
     }
 
     // レートをデフォルト(1.0)に戻す（指定チャンネル）
@@ -173,7 +168,6 @@ final class AdvancedSoundPlayer {
             return
         }
         playbackChannel.setLoop(loop)
-        print("🎵 [Channel \(channel.rawValue+1)] loop -> \(loop)")
     }
 
     /// 指定されたチャンネルの現在のループ設定を取得
@@ -184,14 +178,12 @@ final class AdvancedSoundPlayer {
 
     /// 全チャンネルのループ設定を変更
     func setAllLoops(_ loop: Bool) {
-        channels.values.forEach { $0.setLoop(loop) }
-        print("🎵 All channels loop -> \(loop)")
+        channels.values.forEach { $0.setLoop(loop) }        
     }
 
     /// 全チャンネルのループ設定をリセット（false）
     func resetAllLoops() {
         channels.values.forEach { $0.setLoop(false) }
-        print("🎵 All channels loop reset to false")
     }
 
     /// 指定されたチャンネルのループ設定を反転
@@ -203,7 +195,6 @@ final class AdvancedSoundPlayer {
         }
         let newLoopState = !playbackChannel.looping
         playbackChannel.setLoop(newLoopState)
-        print("🎵 [Channel \(channel.rawValue+1)] loop toggled -> \(newLoopState)")
     }
 
     /// 全チャンネルのループ設定を反転
@@ -212,7 +203,6 @@ final class AdvancedSoundPlayer {
             let newLoopState = !channel.looping
             channel.setLoop(newLoopState)
         }
-        print("🎵 All channels loop toggled")
     }
 
     // 現在の再生速度を取得
@@ -444,6 +434,50 @@ final class AdvancedSoundPlayer {
     /// 全チャンネルのスクラッチを停止
     func stopAllScratching() {
         channels.values.forEach { $0.stopScratching() }
+    }
+
+    // MARK: - Stutter Control
+
+    /// 指定されたチャンネルでストッター開始（指定された秒数分の音をループで流す）
+    /// - Parameters:
+    ///   - channel: 対象チャンネル
+    ///   - segmentLength: ストッターのセグメント長（秒、デフォルト: 0.25）
+    func startStutter(on channel: Channel, segmentLength: Double = 0.25) {
+        guard let playbackChannel = channels[channel] else { return }
+        guard playbackChannel.isPlaying else {
+            print("❌ No audio playing for stutter on channel \(channel)")
+            return
+        }
+        playbackChannel.startStutter(segmentLength: segmentLength)
+    }
+
+    /// 指定されたチャンネルのストッター停止（通常再生に戻す）
+    func stopStutter(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.stopStutter()
+    }
+
+    /// 指定されたチャンネルがストッター中かどうか
+    func isStuttering(on channel: Channel) -> Bool {
+        guard let playbackChannel = channels[channel] else { return false }
+        return playbackChannel.stuttering
+    }
+
+    /// 指定されたチャンネルのストッターセグメント長を取得
+    func stutterSegmentLength(on channel: Channel) -> Double {
+        guard let playbackChannel = channels[channel] else { return 0.25 }
+        return playbackChannel.stutterSegmentLength
+    }
+
+    /// 指定されたチャンネルのストッターセグメント長を変更
+    func updateStutterSegmentLength(on channel: Channel, newLength: Double) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.updateStutterSegmentLength(newLength)
+    }
+
+    /// 全チャンネルのストッターを停止
+    func stopAllStuttering() {
+        channels.values.forEach { $0.stopStutter() }
     }
     
     // MARK: - Tone Generation

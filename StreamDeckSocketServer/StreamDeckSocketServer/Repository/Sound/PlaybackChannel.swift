@@ -36,6 +36,7 @@ final class PlaybackChannel {
     let reverbController: ReverbController
     let flangerController: FlangerController
     let scratchController: ScratchController
+    let stutterController: StutterController
 
     // MARK: - Init
 
@@ -48,6 +49,7 @@ final class PlaybackChannel {
         self.reverbController = ReverbController()
         self.flangerController = FlangerController()
         self.scratchController = ScratchController()
+        self.stutterController = StutterController()
     }
 
     // MARK: - Node Management
@@ -139,6 +141,10 @@ final class PlaybackChannel {
     func playAgain(file: AVAudioFile, completion: (() -> Void)? = nil) {
          guard let player = playerNode else { return }
         scheduleFileForPlayback(file: file, completion: completion, completionId: currentCompletionId)
+        
+        // 再生開始時刻を記録
+        playbackStartTime = Date().timeIntervalSince1970
+        
         player.play()
     }
 
@@ -186,10 +192,13 @@ final class PlaybackChannel {
         rateController.reset()
         pitchController.reset()
         setPitch(0.0)
+        resetIsolator()
         resetReverb()
         resetFlanger()
         resetDelay()
         stopScratching()
+        stopStutter()
+        stutterController.reset()
     }
 
     /// 再生中かどうか
@@ -383,6 +392,190 @@ final class PlaybackChannel {
         return scratchController.scratching
     }
     
+    // MARK: - Stutter Control
+    
+    /// ストッター開始（指定された秒数分の音をループで流す）
+    /// - Parameter segmentLength: ストッターのセグメント長（秒）
+    func startStutter(segmentLength: Double = 0.25) {
+        guard let player = playerNode, let file = currentFile else { return }
+        guard isPlaying else {
+            print("❌ No audio playing for stutter on channel \(channel)")
+            return
+        }
+        
+        // ストッター中なら停止、そうでなければ開始
+        if stutterController.stuttering {
+            stopStutter()
+        } else {
+            // ループ再生中でも即座にストッターを開始
+            // 現在の再生位置を簡易計算（ループ対応）
+            let currentTime = getCurrentPlaybackTimeForLoop(file: file)
+            
+            // ストッター開始時のループ状態を記録
+            stutterController.setStutterStartLoop(isLoop)
+            
+            stutterController.startStutter(
+                segmentLength: segmentLength,
+                playerNode: player,
+                channel: channel,
+                currentTime: currentTime,
+                audioFile: file
+            )
+        }
+    }
+    
+    /// 現在の再生位置を取得
+    private func getCurrentPlaybackTime() -> Double {
+        guard playerNode != nil else { return 0.0 }
+        
+        // より実用的な方法で現在の再生位置を取得
+        // 再生開始からの経過時間を簡易計算
+        let currentTime = Date().timeIntervalSince1970
+        let playbackStartTime = playbackStartTime
+        
+        // 再生開始からの経過時間を返す（簡易版）
+        return max(0.0, currentTime - playbackStartTime)
+    }
+    
+    /// ループ対応の現在の再生位置を取得
+    private func getCurrentPlaybackTimeForLoop(file: AVAudioFile) -> Double {
+        guard playerNode != nil else { return 0.0 }
+        
+        // 再生開始からの経過時間を計算
+        let currentTime = Date().timeIntervalSince1970
+        let elapsedTime = currentTime - playbackStartTime
+        
+        // ファイルの長さを取得
+        let fileDuration = Double(file.length) / file.fileFormat.sampleRate
+        
+        // ループ再生の場合、ファイル長で割った余りを返す
+        if isLoop && fileDuration > 0 {
+            return elapsedTime.truncatingRemainder(dividingBy: fileDuration)
+        }
+        
+        // 通常再生の場合は経過時間をそのまま返す
+        return max(0.0, elapsedTime)
+    }
+    
+    /// ストッター停止（通常再生に戻す）
+    func stopStutter() {
+        guard let player = playerNode, let file = currentFile else { return }
+        stutterController.stopStutter(playerNode: player, channel: channel)
+        
+        // ストッター開始時の位置から通常再生を再開
+        let stutterStartTime = stutterController.getStutterStartTime()
+        let stutterStartLoop = stutterController.getStutterStartLoop()
+        
+        // ストッター開始時のループ状態に戻す
+        isLoop = stutterStartLoop
+        
+        // ストッター開始時の位置から再生を再開
+        if stutterStartLoop {
+            // ループ再生を再開（ストッター開始時の位置から）
+            resumeFromPosition(file: file, startTime: stutterStartTime, loop: true)
+        } else {
+            // 通常再生を再開（ストッター開始時の位置から）
+            resumeFromPosition(file: file, startTime: stutterStartTime, loop: false)
+        }
+    }
+    
+    /// ストッター中かどうか
+    var stuttering: Bool {
+        return stutterController.stuttering
+    }
+    
+    /// ストッターのセグメント長を取得
+    var stutterSegmentLength: Double {
+        return stutterController.currentSegmentLength
+    }
+    
+    /// ストッターのセグメント長を変更
+    func updateStutterSegmentLength(_ newLength: Double) {
+        stutterController.updateSegmentLength(newLength)
+    }
+    
+    /// 指定された位置から再生を再開
+    private func resumeFromPosition(file: AVAudioFile, startTime: Double, loop: Bool) {
+        guard let player = playerNode else { return }
+        
+        // 新しい再生時は古い完了コールバックを無効化
+        completionCounter += 1
+        currentCompletionId = completionCounter
+        currentFile = file
+        isLoop = loop
+        
+        // 再生開始時刻を記録（ストッター開始時の位置を考慮）
+        playbackStartTime = Date().timeIntervalSince1970 - startTime
+        
+        // ファイルをスケジュール（特定位置から再生）
+        scheduleFileFromPosition(file: file, startTime: startTime, completion: nil, completionId: currentCompletionId)
+        
+        // 再生開始
+        player.play()
+        
+        print("🎛️ [Channel \(channel.rawValue+1)] Resumed from position: \(startTime)s, loop: \(loop)")
+    }
+    
+    /// ファイルを特定位置からスケジュール（ループ対応）
+    private func scheduleFileFromPosition(file: AVAudioFile, startTime: Double, completion: (() -> Void)?, completionId: Int) {
+        guard let player = playerNode else { return }
+        
+        // ファイルの長さを取得
+        let fileDuration = Double(file.length) / file.fileFormat.sampleRate
+        
+        // ループ再生の場合、ファイル長で割った余りを使用
+        let actualStartTime = startTime.truncatingRemainder(dividingBy: fileDuration)
+        
+        // 残りの長さを計算
+        let remainingDuration = fileDuration - actualStartTime
+        
+        // 残りの部分をバッファとして読み込み
+        let format = file.processingFormat
+        let remainingFrames = UInt32(remainingDuration * format.sampleRate)
+        
+        if remainingFrames > 0 {
+            // 残りの部分をバッファとして作成
+            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: remainingFrames) else {
+                print("❌ Failed to create resume buffer")
+                return
+            }
+            
+            do {
+                // 指定位置から残りの部分を読み込み
+                file.framePosition = AVAudioFramePosition(actualStartTime * format.sampleRate)
+                try file.read(into: buffer, frameCount: remainingFrames)
+                
+                // バッファをスケジュール
+                player.scheduleBuffer(buffer, at: nil, options: [], completionHandler: { [weak self] in
+                    // ループ再生の場合、再度スケジュール
+                    if self?.isLoop == true {
+                        DispatchQueue.main.async {
+                            self?.playAgain(file: file, completion: completion)
+                        }
+                    // 通常再生の場合、再生完了したファイルが同じかチェック
+                    } else if self?.currentFile === file {
+                        // 完了コールバックを実行
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            // 現在の完了コールバックIDと一致する場合のみ実行
+                            if self?.currentCompletionId == completionId {
+                                completion?()
+                            }
+                        }
+                    }
+                })
+                
+                print("🎛️ [Channel \(channel.rawValue+1)] Scheduled resume buffer from \(actualStartTime)s, duration: \(remainingDuration)s")
+                
+            } catch {
+                print("❌ Failed to read resume buffer: \(error)")
+            }
+        } else {
+            // 残り時間がない場合、ループ再生なら最初から
+            if isLoop {
+                playAgain(file: file, completion: completion)
+            }
+        }
+    }
 
     // MARK: - Getters
 

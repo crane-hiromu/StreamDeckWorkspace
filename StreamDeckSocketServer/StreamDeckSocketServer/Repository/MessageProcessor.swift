@@ -80,6 +80,13 @@ final class MessageProcessor {
                  .scratch,
                  .scratchWithInertia,
                  .scratchWithBounce: break
+            case .stutter:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.startStutter(
+                        on: entity.channelType,
+                        segmentLength: entity.stutterSegmentLength ?? 0.25
+                    )
+                }
             }
         case .keyUp:
             break
@@ -158,6 +165,13 @@ final class MessageProcessor {
                         value: entity.scratch ?? 0
                     )
                 }
+            case .stutter:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.updateStutterSegmentLength(
+                        on: entity.channelType,
+                        newLength: entity.stutterSegmentLength ?? 0.25
+                    )
+                }
             case .playSound,
                  .playTone,
                  .setLoopState,
@@ -198,6 +212,10 @@ final class MessageProcessor {
                  .scratchWithBounce:
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.stopScratching(on: entity.channelType)
+                }
+            case .stutter:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.stopStutter(on: entity.channelType)
                 }
             case .playSound,
                  .playTone,

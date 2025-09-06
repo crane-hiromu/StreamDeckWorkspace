@@ -143,7 +143,7 @@ extension ToneGenerator {
     
     /// 指定された音階を指定されたチャンネルで再生
     func playNote(_ note: String, on channel: AdvancedSoundPlayer.Channel) {
-        guard let buffer = getAudioBuffer(for: note) else {
+        guard getAudioBuffer(for: note) != nil else {
             print("❌ Failed to get audio buffer for note: \(note)")
             return
         }

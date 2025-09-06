@@ -18,6 +18,7 @@ extension LayoutName {
     static let delayDial: LayoutName = "delaydial"
     static let flangerDial: LayoutName = "flangerdial"
     static let scratchDial: LayoutName = "scratchdial"
+    static let stutterDial: LayoutName = "stutterdial"
 
     static func layout(name: LayoutName) -> Self {
         .init("Layouts/\(name).json")

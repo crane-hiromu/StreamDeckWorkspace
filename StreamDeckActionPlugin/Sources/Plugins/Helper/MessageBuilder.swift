@@ -30,7 +30,8 @@ final class MessageBuilder {
              coordinates,
              column,
              row,
-             note
+             note,
+             stutterSegmentLength
 
         var key: String { rawValue }
     }
@@ -65,6 +66,7 @@ final class MessageBuilder {
         case scratchWithInertia = 11
         case scratchWithBounce = 12
         case playTone = 13
+        case stutter = 14
 
         var value: Int { rawValue }
     }
@@ -382,6 +384,53 @@ final class MessageBuilder {
                     "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
                     "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
                 }
+            }
+        }
+        """
+    }
+    
+    /**
+     * ストッター用のTapActionメッセージを構築します
+     */
+    static func buildStutterTapMessage(type: MessageType,
+                                       command: MessageCommandType,
+                                       channel: ChannelType,
+                                       segmentLength: Double,
+                                       coordinates: Coordinates?) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(command.value),
+                "\(MessageKeys.stutterSegmentLength.key)": \(segmentLength),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                }
+            }
+        }
+        """
+    }
+    
+    /**
+     * ストッター用のDialActionメッセージを構築します
+     */
+    static func buildStutterDialMessage(type: MessageType,
+                                        channel: ChannelType,
+                                        coordinates: Coordinates?,
+                                        segmentLength: Double = 0.25) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(MessageCommandType.stutter.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                },
+                "\(MessageKeys.stutterSegmentLength.key)": \(segmentLength)
             }
         }
         """
