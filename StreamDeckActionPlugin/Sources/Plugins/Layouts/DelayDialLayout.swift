@@ -16,7 +16,7 @@ var delayDialLayout: Layout {
             .frame(width: 180, height: 24)
             .position(x: (200 - 180) / 2, y: 10)
 
-        Text(key: DelayDialType.currentValue.key, value: "")
+        Text(key: DelayDialType.currentValue.key, value: "-")
             .textAlignment(.center)
             .font(size: 16, weight: 600)
             .frame(width: 180, height: 24)

@@ -13,6 +13,7 @@ extension LayoutName {
     static let sampledial: LayoutName = "sampledial"
     static let volumedial: LayoutName = "volumedial"
     static let ratedial: LayoutName = "ratedial"
+    static let reverbDial: LayoutName = "reverbDial"
     static let pitchdial: LayoutName = "pitchdial"
     static let isolatorDial: LayoutName = "isolatordial"
     static let delayDial: LayoutName = "delaydial"

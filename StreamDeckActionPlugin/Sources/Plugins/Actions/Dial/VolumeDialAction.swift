@@ -61,9 +61,6 @@ final class VolumeDialAction: EncoderAction {
 private extension VolumeDialAction {
 
     func configure() {
-        // サーバー接続前は数値をセットしない
-        setFeedback([VolumeDialType.currentVolume.key: "-"])
-
         NotificationCenter.default.addObserver(
             forName: .volumeChanged,
             object: nil,

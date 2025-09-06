@@ -57,6 +57,7 @@ final class UnixSocketClient {
         guard socket != -1 else {
             logMessage(#function + " Unix socket not connected, attempting to reconnect...")
             connect()
+            MessageReceiver.shared.startReceiving()
             return
         }
         

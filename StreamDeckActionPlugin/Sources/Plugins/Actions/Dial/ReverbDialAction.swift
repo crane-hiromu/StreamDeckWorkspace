@@ -17,7 +17,7 @@ final class ReverbDialAction: EncoderAction {
     static var icon: String = "Icons/actionIcon"
 
     static var encoder: RotaryEncoder? = RotaryEncoder(
-        layout: .layout(name: .volumedial),
+        layout: .layout(name: .reverbDial),
         stackColor: "#f1184c",
         icon: "Icons/stopwatch",
         rotate: "Delay",

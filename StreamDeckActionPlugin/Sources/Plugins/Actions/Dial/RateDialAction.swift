@@ -17,7 +17,7 @@ final class RateDialAction: EncoderAction {
     static var icon: String = "Icons/actionIcon"
 
     static var encoder: RotaryEncoder? = RotaryEncoder(
-        layout: .layout(name: .volumedial),
+        layout: .layout(name: .ratedial),
         stackColor: "#f1184c",
         icon: "Icons/stopwatch",
         rotate: "Rate",
