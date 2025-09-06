@@ -186,6 +186,9 @@ final class PlaybackChannel {
         rateController.reset()
         pitchController.reset()
         setPitch(0.0)
+        resetReverb()
+        resetFlanger()
+        resetDelay()
         stopScratching()
     }
 
@@ -265,8 +268,6 @@ final class PlaybackChannel {
         guard let reverb = reverbNode else { return }
         reverbController.set(wetDryMix: percent, on: channel, node: reverb)
     }
-
-
 
     func resetReverb() {
         guard let reverb = reverbNode else { return }
