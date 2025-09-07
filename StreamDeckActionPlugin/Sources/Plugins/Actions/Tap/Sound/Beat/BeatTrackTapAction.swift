@@ -1,5 +1,5 @@
 //
-//  DrumHatTapAction.swift
+//  BeatTrackTapAction.swift
 //  StreamDeckActionPlugin
 //
 //  Created by h.tsuruta on 2025/09/04.
@@ -9,13 +9,14 @@ import Foundation
 import StreamDeck
 
 // MARK: - Action
-final class DrumHatTapAction: DrumTapAction {
+final class BeatTrackTapAction: SoundTapAction {
     typealias Settings = NoSettings
 
-    static var actionName: String { "Drum Hi-Hat Sound" }
-    static var actionUUID: String { "drum.hat.tap" }
-    static var actionTitle: String { "Drum\nHi-Hat" }
-    static var soundType: MessageBuilder.SoundType { .drumHat }
+    static var actionName: String { "Beat Track Sound" }
+    static var actionUUID: String { "beattrack.tap" }
+    static var actionTitle: String { "Beat\nTrack" }
+    static var soundType: MessageBuilder.SoundType { .beat }
+    static var channelType: MessageBuilder.ChannelType { .main }
 
     var context: String
     var coordinates: Coordinates?
@@ -26,3 +27,4 @@ final class DrumHatTapAction: DrumTapAction {
         setDefaultTitle()
     }
 }
+

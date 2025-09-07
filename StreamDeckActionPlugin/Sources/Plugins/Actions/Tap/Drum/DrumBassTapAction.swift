@@ -9,18 +9,13 @@ import Foundation
 import StreamDeck
 
 // MARK: - Action
-final class DrumBassTapAction: KeyAction {
+final class DrumBassTapAction: DrumTapAction {
     typealias Settings = NoSettings
 
-    static var name: String = "Drum Bass Sound"
-    static var uuid: String = "drum.bass.tap"
-    static var icon: String = "Icons/actionIcon"
-
-    static var states: [PluginActionState]? = [
-        PluginActionState(image: "Icons/actionDefaultImage", titleAlignment: .middle)
-    ]
-
-    static var userTitleEnabled: Bool? = false
+    static var actionName: String { "Drum Bass Sound" }
+    static var actionUUID: String { "drum.bass.tap" }
+    static var actionTitle: String { "Drum\nBass" }
+    static var soundType: MessageBuilder.SoundType { .drumBass }
 
     var context: String
     var coordinates: Coordinates?
@@ -28,17 +23,6 @@ final class DrumBassTapAction: KeyAction {
     required init(context: String, coordinates: Coordinates?) {
         self.context = context
         self.coordinates = coordinates
-        setTitle(to: "Drum\nBass")
-    }
-
-    func keyDown(device: String, payload: KeyEvent<NoSettings>) {
-        let message = MessageBuilder.buildTapMessage(
-            type: .keyDown,
-            command: .playSound,
-            sound: .drumBass,
-            channel: .drum,
-            coordinates: coordinates
-        )
-        UnixSocketClient.shared.sendMessage(message)
+        setDefaultTitle()
     }
 }

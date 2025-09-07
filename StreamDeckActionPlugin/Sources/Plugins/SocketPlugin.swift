@@ -18,7 +18,11 @@ final class SocketPlugin: Plugin {
 
         // MARK: Socket Server Tap Action
         iOSDCTrackTapAction.self
+        // Beat Tap Actions
         BeatTrackTapAction.self
+        TrackIntro106TapAction.self
+        WaitingBass104TapAction.self
+        // Effect Tap Actions
         LoopTapAction.self
         StopTapAction.self
         // Drum Tap Actions

@@ -90,6 +90,8 @@ final class MessageBuilder {
         // iOSDC素材
         case iosdc = "S_iOSDCJP"
         case beat = "S_BEAT"
+        case trackIntro106 = "TRACK_INTRO_106"
+        case waitingBass104 = "WAITING_BASS_104"
 
         // 効果音（Voice）
         case haseVoice1Minna = "HASE_VOICE_1_MINNA"
