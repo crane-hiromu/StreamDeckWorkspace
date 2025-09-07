@@ -502,7 +502,6 @@ final class AdvancedSoundPlayer {
     
     /// 指定されたチャンネルの音量を調整（相対値）
     func adjustChannelVolume(by delta: Float, on channel: Channel) {
-        print("🔊 AdvancedSoundPlayer.adjustChannelVolume: delta=\(delta), channel=\(channel)")
         guard let playbackChannel = channels[channel] else { 
             print("❌ No playback channel found for \(channel)")
             return 
@@ -511,7 +510,6 @@ final class AdvancedSoundPlayer {
         
         // サーバーメッセージで音量変更を通知
         let newVolume = playbackChannel.getChannelVolume()
-        print("🔊 AdvancedSoundPlayer.adjustChannelVolume: sending message - channel=\(channel.rawValue), volume=\(Int(newVolume * 100))")
         ServerMessageSender.shared.sendChannelVolumeChange(
             channel: channel.rawValue,
             volume: Int(newVolume * 100)

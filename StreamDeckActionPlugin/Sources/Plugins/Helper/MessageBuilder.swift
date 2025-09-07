@@ -91,6 +91,23 @@ final class MessageBuilder {
         case iosdc = "S_iOSDCJP"
         case beat = "S_BEAT"
 
+        // 効果音（Voice）
+        case haseVoice1Minna = "HASE_VOICE_1_MINNA"
+        case haseVoice2Blog = "HASE_VOICE_2_BLOG"
+        case haseVoice3Oha = "HASE_VOICE_3_OHA"
+        case haseVoice4Oha = "HASE_VOICE_4_OHA"
+        case haseVoice5Oha = "HASE_VOICE_5_OHA"
+        case haseVoice6Toiuwakde = "HASE_VOICE_6_TOIUWAKDE"
+        case haseVoice7Kyuomo = "HASE_VOICE_7_KYUOMO"
+        case maVoice1Singleton = "MA_VOICE_1_SINGLETON"
+        case maVoice2Instance = "MA_VOICE_2_INSTANCE"
+        case maVoice3Pattern = "MA_VOICE_3_PATTERN"
+        case maVoice4Sumimasen = "MA_VOICE_4_SUMIMASEN"
+        case maVoice5Two = "MA_VOICE_5_TWO"
+        case maVoice6Oioi = "MA_VOICE_6_OIOI"
+        case maVoice7Tashikani = "MA_VOICE_7_TASHIKANI"
+        
+
         var name: String { rawValue }
     }
 

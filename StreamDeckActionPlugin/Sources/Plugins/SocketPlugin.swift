@@ -33,6 +33,21 @@ final class SocketPlugin: Plugin {
         DrumEl3TapAction.self
         EffectPufTapAction.self
         StutterTapAction.self
+        // Voice Tap Actions
+        HaseVoice1MinnaTapAction.self
+        HaseVoice2BlogTapAction.self
+        HaseVoice3OhaTapAction.self
+        HaseVoice4OhaTapAction.self
+        HaseVoice5OhaTapAction.self
+        HaseVoice6ToiuwakdeTapAction.self
+        HaseVoice7KyuomoTapAction.self
+        MaVoice1SingletonTapAction.self
+        MaVoice2InstanceTapAction.self
+        MaVoice3PatternTapAction.self
+        MaVoice4SumimasenTapAction.self
+        MaVoice5TwoTapAction.self
+        MaVoice6OioiTapAction.self
+        MaVoice7TashikaniTapAction.self
         // Tone Tap Actions
         ToneCTapAction.self
         ToneDTapAction.self
