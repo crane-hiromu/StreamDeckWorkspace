@@ -42,12 +42,12 @@ final class ServerMessageBuilder {
     /**
      * VolumeChange用のメッセージを構築します
      */
-    static func buildVolumeChangeMessage(channel: Int, volume: Int) -> String {
+    static func buildVolumeChangeMessage(channel: Int? = nil, volume: Int) -> String {
         """
         {
             "\(MessageKeys.type.key)": "\(MessageType.volumeChange.key)",
             "\(MessageKeys.data.key)": {
-                "\(MessageKeys.channel.key)": \(channel),
+                "\(MessageKeys.channel.key)": \(channel ?? -1),
                 "\(MessageKeys.volume.key)": \(volume)
             }
         }

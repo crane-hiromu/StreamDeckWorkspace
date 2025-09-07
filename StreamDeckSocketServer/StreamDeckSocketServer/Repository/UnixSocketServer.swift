@@ -124,7 +124,7 @@ final class UnixSocketServer {
         }
         
         if result > 0 {
-            print("📤 Message sent to client: \(message)")
+            // print("📤 Message sent to client: \(message)")
         } else {
             print("❌ Failed to send message to client: \(errno)")
         }

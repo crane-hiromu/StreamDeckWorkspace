@@ -10,18 +10,19 @@ import Foundation
 // MARK: - Command
 enum CommandType: Int, Codable {
     case playSound = 0
-    case changeVolume = 1
-    case changeRate = 2
-    case changePitch = 3
-    case changeFrequency = 4
-    case setLoopState = 5
-    case stopSound = 6
-    case changeDelay = 7
-    case changeReverb = 8
-    case changeFlanger = 9
-    case scratch = 10
-    case scratchWithInertia = 11
-    case scratchWithBounce = 12
-    case playTone = 13
-    case stutter = 14
+    case changeSystemVolume
+    case changeChannelVolume
+    case changeRate
+    case changePitch
+    case changeFrequency
+    case setLoopState
+    case stopSound
+    case changeDelay
+    case changeReverb
+    case changeFlanger
+    case scratch
+    case scratchWithInertia
+    case scratchWithBounce
+    case playTone
+    case stutter
 }

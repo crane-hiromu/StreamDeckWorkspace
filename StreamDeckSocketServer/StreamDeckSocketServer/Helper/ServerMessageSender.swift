@@ -32,8 +32,15 @@ final class ServerMessageSender {
         server.sendMessageToClient(message)
     }
 
-    /// ボリューム変更メッセージを送信
-    func sendVolumeChange(channel: Int, volume: Int) {
+    /// システムボリューム変更メッセージを送信
+    func sendSystemVolumeChange(volume: Int) {
+        sendMessage(ServerMessageBuilder.buildVolumeChangeMessage(
+            volume: volume
+        ))
+    }
+
+    /// チャンネルボリューム変更メッセージを送信
+    func sendChannelVolumeChange(channel: Int, volume: Int) {
         sendMessage(ServerMessageBuilder.buildVolumeChangeMessage(
             channel: channel,
             volume: volume

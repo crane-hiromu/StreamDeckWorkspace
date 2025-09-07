@@ -480,6 +480,82 @@ final class AdvancedSoundPlayer {
         channels.values.forEach { $0.stopStutter() }
     }
     
+    // MARK: - Channel Volume Control
+    
+    /// 指定されたチャンネルの音量を設定（0.0-1.0）
+    func setChannelVolume(_ volume: Float, on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.setChannelVolume(volume)
+        
+        // サーバーメッセージで音量変更を通知
+        ServerMessageSender.shared.sendChannelVolumeChange(
+            channel: channel.rawValue,
+            volume: Int(volume * 100)
+        )
+    }
+    
+    /// 指定されたチャンネルの音量を取得
+    func getChannelVolume(on channel: Channel) -> Float {
+        guard let playbackChannel = channels[channel] else { return 1.0 }
+        return playbackChannel.getChannelVolume()
+    }
+    
+    /// 指定されたチャンネルの音量を調整（相対値）
+    func adjustChannelVolume(by delta: Float, on channel: Channel) {
+        print("🔊 AdvancedSoundPlayer.adjustChannelVolume: delta=\(delta), channel=\(channel)")
+        guard let playbackChannel = channels[channel] else { 
+            print("❌ No playback channel found for \(channel)")
+            return 
+        }
+        playbackChannel.adjustChannelVolume(by: delta)
+        
+        // サーバーメッセージで音量変更を通知
+        let newVolume = playbackChannel.getChannelVolume()
+        print("🔊 AdvancedSoundPlayer.adjustChannelVolume: sending message - channel=\(channel.rawValue), volume=\(Int(newVolume * 100))")
+        ServerMessageSender.shared.sendChannelVolumeChange(
+            channel: channel.rawValue,
+            volume: Int(newVolume * 100)
+        )
+    }
+    
+    /// 指定されたチャンネルの音量をリセット（1.0）
+    func resetChannelVolume(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.resetChannelVolume()
+        
+        // サーバーメッセージで音量変更を通知
+        ServerMessageSender.shared.sendChannelVolumeChange(
+            channel: channel.rawValue,
+            volume: 0
+        )
+    }
+    
+    /// 全チャンネルの音量をリセット（1.0）
+    func resetAllChannelVolumes() {
+        channels.values.forEach { $0.resetChannelVolume() }
+        
+        // 全チャンネルの音量変更を通知
+        for channel in Channel.allCases {
+            ServerMessageSender.shared.sendChannelVolumeChange(
+                channel: channel.rawValue,
+                volume: 0
+            )
+        }
+    }
+    
+    /// 指定されたチャンネルの音量をミュート/アンミュート
+    func toggleChannelMute(on channel: Channel) {
+        guard let playbackChannel = channels[channel] else { return }
+        playbackChannel.toggleChannelMute()
+        
+        // サーバーメッセージで音量変更を通知
+        let newVolume = playbackChannel.getChannelVolume()
+        ServerMessageSender.shared.sendChannelVolumeChange(
+            channel: channel.rawValue,
+            volume: Int(newVolume * 100)
+        )
+    }
+
     // MARK: - Tone Generation
     
     /// 指定された音階を指定されたチャンネルで再生（低遅延）
@@ -507,8 +583,12 @@ final class AdvancedSoundPlayer {
 
     /// 指定されたチャンネルのPlaybackChannelインスタンスを取得または作成
     private func ensureChannel(for channel: Channel, format: AVAudioFormat) -> PlaybackChannel {
-        if let existing = channels[channel] { return existing }
+        if let existing = channels[channel] { 
+            print("🔊 [Channel \(channel.rawValue+1)] Using existing playback channel")
+            return existing 
+        }
         
+        print("🔊 [Channel \(channel.rawValue+1)] Creating new playback channel")
         let playbackChannel = PlaybackChannel(channel: channel)
         try? playbackChannel.setupNodes(engine: audioEngine!, format: format)
         channels[channel] = playbackChannel

@@ -43,7 +43,7 @@ final class MessageProcessor {
     /// メッセージエンティティを処理する
     /// - Parameter message: 処理するメッセージエンティティ
     private func handleMessage(_ entity: MessageEntity) {
-        print("📨 Processing message: \(entity)")
+        debugPrint("📨 Processing message: \(entity)")
 
         switch entity.action {
         case .keyDown(let entity):
@@ -70,7 +70,8 @@ final class MessageProcessor {
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.stop(entity.channelType)
                 }
-            case .changeVolume,
+            case .changeSystemVolume,
+                 .changeChannelVolume,
                  .changeRate,
                  .changePitch,
                  .changeFrequency,
@@ -94,11 +95,17 @@ final class MessageProcessor {
             break
         case .dialRotate(let entity):
             switch entity.command {
-            case .changeVolume:
+            case .changeSystemVolume:
                 DispatchQueue.main.async {
-                    // TODO: これは全体なので音源ごとに調整する場合は別途実装が
                     SystemVolumeManager.shared.adjustVolume(
                         by: (Float(entity.volume ?? 0) / 20.0)
+                    )
+                }
+            case .changeChannelVolume:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.adjustChannelVolume(
+                        by: (Float(entity.volume ?? 0) / 20.0),
+                        on: entity.channelType
                     )
                 }
             case .changeRate:
@@ -179,9 +186,13 @@ final class MessageProcessor {
             }
         case .dialDown(let entity):
             switch entity.command {
-            case .changeVolume:
+            case .changeSystemVolume:
                 DispatchQueue.main.async {
                     SystemVolumeManager.shared.toggleMute()
+                }
+            case .changeChannelVolume:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.toggleChannelMute(on: entity.channelType)
                 }
             case .changeRate:
                 DispatchQueue.main.async {

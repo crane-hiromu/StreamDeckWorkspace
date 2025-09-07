@@ -51,7 +51,10 @@ final class SocketPlugin: Plugin {
         ReverbDialAction.self
         ScratchDialAction.self
         StutterDialAction.self
-        VolumeDialAction.self
+        // Volume
+        VolumeSystemDialAction.self
+        VolumeMainDialAction.self
+        VolumeSubDialAction.self
     }
 
     // ダイアルで使うディスプレイのレイアウトのみ
@@ -67,7 +70,10 @@ final class SocketPlugin: Plugin {
         reverbDialLayout
         scratchDialLayout
         stutterDialLayout
-        volumeDialLayout
+        // volume
+        volumeSystemDialLayout
+        volumeMainDialLayout
+        volumeSubDialLayout
     }
 
     required init() {

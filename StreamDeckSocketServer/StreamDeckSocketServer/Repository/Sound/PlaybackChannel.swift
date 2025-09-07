@@ -27,6 +27,11 @@ final class PlaybackChannel {
     private var playbackStartTime: Double = 0.0 // 再生開始時刻
     private var currentCompletionId: Int = 0 // 現在の完了コールバックのID
     private var completionCounter: Int = 0 // 完了コールバックのカウンター
+    
+    // チャンネル固有の音量制御
+    private var channelVolume: Float = 1.0 // チャンネル音量（0.0-1.0）
+    private var previousChannelVolume: Float? = nil // ミュート前の音量を記憶
+    private var volumeNode: AVAudioUnitEQ? // 音量制御用のEQノード
 
     // 各機能のコントローラ
     let rateController: RateController
@@ -66,6 +71,7 @@ final class PlaybackChannel {
         let reverb = AVAudioUnitReverb()
         let flanger = AVAudioUnitDelay()
         let eq = isolatorController.makeEQ()
+        let volume = AVAudioUnitEQ(numberOfBands: 1) // 音量制御用のEQノード
 
         // エンジンに接続
         engine.attach(player)
@@ -74,6 +80,7 @@ final class PlaybackChannel {
         engine.attach(reverb)
         engine.attach(flanger)
         engine.attach(eq)
+        engine.attach(volume)
 
         // チェーン接続
         engine.connect(player, to: pitch, format: format)
@@ -81,7 +88,8 @@ final class PlaybackChannel {
         engine.connect(delay, to: reverb, format: format)
         engine.connect(reverb, to: flanger, format: format)
         engine.connect(flanger, to: eq, format: format)
-        engine.connect(eq, to: engine.mainMixerNode, format: format)
+        engine.connect(eq, to: volume, format: format)
+        engine.connect(volume, to: engine.mainMixerNode, format: format)
 
         // 保存
         playerNode = player
@@ -90,6 +98,13 @@ final class PlaybackChannel {
         reverbNode = reverb
         flangerNode = flanger
         eqNode = eq
+        volumeNode = volume
+        
+        // 音量制御用EQノードの設定
+        setupVolumeNode()
+        
+        // 初期音量を設定（1.0 = 100%）
+        setChannelVolume(1.0)
 
         // ディレイを初期状態（無効）に設定
         delayController.reset(on: channel, node: delay)
@@ -110,6 +125,7 @@ final class PlaybackChannel {
         reverbNode = nil
         flangerNode = nil
         eqNode = nil
+        volumeNode = nil
     }
 
     // MARK: - Playback Control
@@ -144,6 +160,10 @@ final class PlaybackChannel {
         
         // 再生開始時刻を記録
         playbackStartTime = Date().timeIntervalSince1970
+        
+        // 再生開始前に音量を確認・設定
+        print("🔊 [Channel \(channel.rawValue+1)] Starting playback with volume: \(Int(channelVolume * 100))%")
+        player.volume = channelVolume
         
         player.play()
     }
@@ -191,6 +211,7 @@ final class PlaybackChannel {
         isLoop = false
         rateController.reset()
         pitchController.reset()
+        stutterController.reset()
         setPitch(0.0)
         resetIsolator()
         resetReverb()
@@ -198,12 +219,81 @@ final class PlaybackChannel {
         resetDelay()
         stopScratching()
         stopStutter()
-        stutterController.reset()
+        resetChannelVolume()
     }
 
     /// 再生中かどうか
     var isPlaying: Bool {
         playerNode?.isPlaying ?? false
+    }
+
+    // MARK: - Volume Control
+    
+    /// 音量制御用EQノードの設定
+    private func setupVolumeNode() {
+        guard let volume = volumeNode else { 
+            print("❌ [Channel \(channel.rawValue+1)] Volume node is nil in setupVolumeNode")
+            return 
+        }
+        
+        // 音量制御用のEQバンドを設定（全周波数帯域でゲイン調整）
+        let band = volume.bands[0]
+        band.filterType = .lowShelf // より広い周波数帯域をカバー
+        band.frequency = 80.0 // 低周波数で設定
+        band.gain = 0.0 // 初期値は0dB
+        band.bypass = false
+    }
+    
+    /// チャンネル音量を設定（0.0-1.0）
+    func setChannelVolume(_ volume: Float) {
+        let clampedVolume = min(max(volume, 0.0), 1.0)
+        channelVolume = clampedVolume
+        
+        // 方法1: AVAudioPlayerNodeのvolumeプロパティを使用
+        if let player = playerNode {
+            player.volume = clampedVolume
+        } else {
+            print("❌ [Channel \(channel.rawValue+1)] PlayerNode is nil!")
+        }
+        
+        // 方法2: EQノードのゲインも設定（バックアップ）
+        if let volumeNode = volumeNode {
+            let gainInDB = clampedVolume > 0.0 ? 20.0 * log10(clampedVolume) : -96.0
+            volumeNode.bands[0].gain = gainInDB
+        }
+    }
+    
+    /// チャンネル音量を取得
+    func getChannelVolume() -> Float {
+        return channelVolume
+    }
+    
+    /// チャンネル音量を調整（相対値）
+    func adjustChannelVolume(by delta: Float) {
+        let newVolume = min(max(channelVolume + delta, 0.0), 1.0)
+        setChannelVolume(newVolume)
+    }
+    
+    /// チャンネル音量をリセット（1.0）
+    func resetChannelVolume() {
+        setChannelVolume(1.0)
+        previousChannelVolume = nil // 前回の音量もクリア
+    }
+    
+    /// チャンネル音量をミュート/アンミュート
+    func toggleChannelMute() {
+        if channelVolume > 0 {
+            // ミュートする前に音量を保存
+            previousChannelVolume = channelVolume
+            setChannelVolume(0.0)
+        } else if let prev = previousChannelVolume {
+            // 前の音量に戻す
+            setChannelVolume(prev)
+            previousChannelVolume = nil
+        } else {
+            // 前の音量がない場合は1.0に設定
+            setChannelVolume(1.0)
+        }
     }
 
     // MARK: - Effect Control
@@ -512,8 +602,6 @@ final class PlaybackChannel {
         
         // 再生開始
         player.play()
-        
-        print("🎛️ [Channel \(channel.rawValue+1)] Resumed from position: \(startTime)s, loop: \(loop)")
     }
     
     /// ファイルを特定位置からスケジュール（ループ対応）
@@ -564,8 +652,6 @@ final class PlaybackChannel {
                     }
                 })
                 
-                print("🎛️ [Channel \(channel.rawValue+1)] Scheduled resume buffer from \(actualStartTime)s, duration: \(remainingDuration)s")
-                
             } catch {
                 print("❌ Failed to read resume buffer: \(error)")
             }
@@ -585,4 +671,5 @@ final class PlaybackChannel {
     var delay: AVAudioUnitDelay? { delayNode }
     var reverb: AVAudioUnitReverb? { reverbNode }
     var flanger: AVAudioUnitDelay? { flangerNode }
+    var volume: AVAudioUnitEQ? { volumeNode }
 }

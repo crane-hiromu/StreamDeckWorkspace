@@ -11,7 +11,9 @@ import StreamDeck
 // MARK: - Extension
 extension LayoutName {
     static let sampledial: LayoutName = "sampledial"
-    static let volumedial: LayoutName = "volumedial"
+    static let volumedialSystem: LayoutName = "volumedialsystem"
+    static let volumedialMain: LayoutName = "volumedialmain"
+    static let volumedialSub: LayoutName = "volumedialsub"
     static let ratedial: LayoutName = "ratedial"
     static let reverbDial: LayoutName = "reverbDial"
     static let pitchdial: LayoutName = "pitchdial"
