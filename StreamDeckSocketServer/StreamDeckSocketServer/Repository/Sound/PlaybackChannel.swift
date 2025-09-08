@@ -162,9 +162,7 @@ final class PlaybackChannel {
         playbackStartTime = Date().timeIntervalSince1970
         
         // 再生開始前に音量を確認・設定
-        print("🔊 [Channel \(channel.rawValue+1)] Starting playback with volume: \(Int(channelVolume * 100))%")
         player.volume = channelVolume
-        
         player.play()
     }
 
