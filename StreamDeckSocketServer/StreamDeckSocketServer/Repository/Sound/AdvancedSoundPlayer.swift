@@ -226,11 +226,13 @@ final class AdvancedSoundPlayer {
     func resetAll() {
         channels.values.forEach { $0.stop() }
         // フロント側の全チャンネルのボリュームも初期値(100)に更新
-        ServerMessageSender.shared.sendChannelVolumeResetAllChannels()
+        resetAllChannelVolumes()
         // フロント側の全チャンネルのリバーブ表示もリセット
         ServerMessageSender.shared.sendReverbResetAllChannels()
         // フロント側の全チャンネルのディレイ表示もリセット
         ServerMessageSender.shared.sendDelayResetAllChannels()
+        // フロント側の全チャンネルのフランジャー表示もリセット
+        ServerMessageSender.shared.sendFlangerResetAllChannels()
     }
 
     // 全チャンネルのレートをデフォルトに戻す
@@ -542,7 +544,7 @@ final class AdvancedSoundPlayer {
         for channel in Channel.allCases {
             ServerMessageSender.shared.sendChannelVolumeChange(
                 channel: channel.rawValue,
-                volume: 0
+                volume: 100
             )
         }
     }

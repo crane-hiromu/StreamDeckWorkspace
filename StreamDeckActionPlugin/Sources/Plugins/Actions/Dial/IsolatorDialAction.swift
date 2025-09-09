@@ -40,9 +40,6 @@ final class IsolatorDialAction: EncoderAction {
     // MARK: Dial Action
 
     func dialRotate(device: String, payload: EncoderEvent<Settings>) {
-        // 画面に数値を出したかったが、処理が複雑になるので一旦出していない
-        setFeedback([IsolatorDialType.currentValue.key: payload.ticks > 0 ? "+" : "-"])
-
         let message = MessageBuilder.buildFrequencyDialMessage(
             type: .dialRotate,
             channel: channel,
@@ -53,8 +50,6 @@ final class IsolatorDialAction: EncoderAction {
     }
 
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
-        setFeedback([IsolatorDialType.currentValue.key: ""])
-
         let message = MessageBuilder.buildFrequencyDialMessage(
             type: .dialDown,
             channel: channel,

@@ -9,7 +9,7 @@ import Foundation
 import StreamDeck
 
 // MARK: - Action
-final class DelayDialAction: EncoderAction {
+final class DelayDialAction: EncoderAction, EffectDialActionProtocol {
     typealias Settings = NoSettings
 
     static var name: String = "Delay"
@@ -41,13 +41,10 @@ final class DelayDialAction: EncoderAction {
     // MARK: Dial Action
 
     func willAppear(device: String, payload: AppearEvent<Settings>) {
-        updateValue()
+        updateUI()
     }
 
     func dialRotate(device: String, payload: EncoderEvent<Settings>) {
-        // 画面に数値を出したかったが、処理が複雑になるので一旦出していない
-        setFeedback([DelayDialType.currentValue.key: payload.ticks > 0 ? "+" : "-"])
-
         let message = MessageBuilder.buildDelayDialMessage(
             type: .dialRotate,
             channel: channel,
@@ -58,8 +55,6 @@ final class DelayDialAction: EncoderAction {
     }
 
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
-        setFeedback([DelayDialType.currentValue.key: ""])
-
         let message = MessageBuilder.buildDelayDialMessage(
             type: .dialDown,
             channel: channel,
@@ -71,35 +66,16 @@ final class DelayDialAction: EncoderAction {
     // MARK: Common
 
     func configure() {
-        NotificationCenter.default.addObserver(
-            forName: .delayChanged,
-            object: nil,
-            queue: .main
-        ) { [weak self] nofi in
-            guard let self else { return }
-            let data = nofi.userInfo?[MessageReceiver.entityKey]
-            guard let entity = data as? DelayChangeEntity else { return }
-
-            let type = MessageBuilder.ChannelType(rawValue: entity.channel)
-            guard type == self.channel else { return }
-
-            EffectValueStore.shared.setDelay(entity.delay, for: self.channel)
-            self.setFeedback([DelayDialType.currentValue.key: "\(entity.delay)"])
-        }
-
-        NotificationCenter.default.addObserver(
-            forName: .channelChanged,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            guard let self else { return }
-            self.updateValue()
-        }
+        addEffectChangeObserver(.delayChanged, entityType: DelayChangeEntity.self)
+        addChannelChangeObserver()
     }
-
-    // MARK: Helpers
-
-    private func updateValue() {
+    
+    func updateEffectValue<T: ServerMessageEntity>(entity: T) {
+        guard let delayEntity = entity as? DelayChangeEntity else { return }
+        EffectValueStore.shared.setDelay(delayEntity.delay, for: channel)
+    }
+    
+    func updateUI() {
         let value = EffectValueStore.shared.getDelay(for: channel)
         setFeedback([DelayDialType.currentValue.key: "\(value)"])
     }

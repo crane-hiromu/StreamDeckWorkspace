@@ -15,7 +15,7 @@ final class VolumeSystemDialAction: EncoderAction, VolumeDialActionProtocol {
     // MARK: VolumeDialActionProtocol Property
 
     static var layoutName: LayoutName = .layout(name: .volumedialSystem)
-    var channel: MessageBuilder.ChannelType? { nil }
+    var channel: MessageBuilder.ChannelType { .other }
 
     // MARK: EncoderAction Property
 

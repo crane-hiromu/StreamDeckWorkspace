@@ -32,5 +32,3 @@ extension StopTapActionProtocol {
         UnixSocketClient.shared.sendMessage(message)
     }
 }
-
-

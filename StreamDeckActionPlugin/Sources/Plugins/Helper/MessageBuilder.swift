@@ -123,6 +123,8 @@ final class MessageBuilder {
         case drum
         // 鍵盤専用チャンネル
         case keyboard
+        // 例外・その他
+        case other
 
         var id: Int { rawValue }
     }

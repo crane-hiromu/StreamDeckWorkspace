@@ -24,7 +24,9 @@ struct ServerMessage: Codable {
 
 // MARK: - Server Message Entities
 
-protocol ServerMessageEntity {}
+protocol ServerMessageEntity {
+    var channel: Int { get }
+}
 
 /// ボリューム変更エンティティ
 struct VolumeChangeEntity: Codable, ServerMessageEntity {
@@ -42,4 +44,10 @@ struct ReverbChangeEntity: Codable, ServerMessageEntity {
 struct DelayChangeEntity: Codable, ServerMessageEntity {
     let channel: Int
     let delay: Int
+}
+
+/// フランジャー変更エンティティ
+struct FlangerChangeEntity: Codable, ServerMessageEntity {
+    let channel: Int
+    let flanger: Int
 }

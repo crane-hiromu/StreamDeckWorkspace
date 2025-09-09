@@ -24,7 +24,8 @@ final class ServerMessageBuilder {
              channel,
              volume,
              reverb,
-             delay
+             delay,
+             flanger
 
         var key: String { rawValue }
     }
@@ -37,6 +38,7 @@ final class ServerMessageBuilder {
         case volumeChange
         case reverbChange
         case delayChange
+        case flangerChange
 
         var key: String { rawValue }
     }
@@ -46,12 +48,12 @@ final class ServerMessageBuilder {
     /**
      * VolumeChange用のメッセージを構築します
      */
-    static func buildVolumeChangeMessage(channel: Int? = nil, volume: Int) -> String {
+    static func buildVolumeChangeMessage(channel: Int, volume: Int) -> String {
         """
         {
             "\(MessageKeys.type.key)": "\(MessageType.volumeChange.key)",
             "\(MessageKeys.data.key)": {
-                "\(MessageKeys.channel.key)": \(channel ?? -1),
+                "\(MessageKeys.channel.key)": \(channel),
                 "\(MessageKeys.volume.key)": \(volume)
             }
         }
@@ -83,6 +85,23 @@ final class ServerMessageBuilder {
             "\(MessageKeys.data.key)": {
                 "\(MessageKeys.channel.key)": \(channel),
                 "\(MessageKeys.delay.key)": \(delay)
+            }
+        }
+        """
+    }
+
+    // MARK: Flanger Change
+
+    /**
+     * FlangerChange用のメッセージを構築します
+     */
+    static func buildFlangerChangeMessage(channel: Int, flanger: Int) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(MessageType.flangerChange.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.channel.key)": \(channel),
+                "\(MessageKeys.flanger.key)": \(flanger)
             }
         }
         """

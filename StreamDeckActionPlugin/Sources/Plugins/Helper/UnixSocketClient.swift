@@ -89,14 +89,20 @@ final class UnixSocketClient {
         DispatchQueue.global(qos: .background).async {
             let bufferSize = 1024
             var buffer = [UInt8](repeating: 0, count: bufferSize)
+            var messageBuffer = ""
             
             while self.socket != -1 {
                 let bytesRead = Darwin.read(self.socket, &buffer, bufferSize)
                 
                 if bytesRead > 0 {
-                    if let message = String(data: Data(buffer.prefix(bytesRead)), encoding: .utf8) {
-                        DispatchQueue.main.async {
-                            completion(message)
+                    if let chunk = String(data: Data(buffer.prefix(bytesRead)), encoding: .utf8) {
+                        messageBuffer += chunk
+                        
+                        // JSONブロック単位でメッセージを抽出
+                        while let jsonMessage = self.extractCompleteJSON(from: &messageBuffer) {
+                            DispatchQueue.main.async {
+                                completion(jsonMessage)
+                            }
                         }
                     }
                 } else if bytesRead == 0 {
@@ -108,6 +114,35 @@ final class UnixSocketClient {
                 }
             }
         }
+    }
+    
+    /// バッファから完全なJSONブロックを抽出する
+    /// - Parameter buffer: メッセージバッファ（参照渡しで更新される）
+    /// - Returns: 完全なJSON文字列、またはnil
+    private func extractCompleteJSON(from buffer: inout String) -> String? {
+        var braceCount = 0
+        var startIndex: String.Index?
+        
+        for (index, char) in buffer.enumerated() {
+            let stringIndex = buffer.index(buffer.startIndex, offsetBy: index)
+            
+            if char == "{" {
+                if braceCount == 0 {
+                    startIndex = stringIndex
+                }
+                braceCount += 1
+            } else if char == "}" {
+                braceCount -= 1
+                if braceCount == 0, let start = startIndex {
+                    let endIndex = buffer.index(after: stringIndex)
+                    let jsonMessage = String(buffer[start..<endIndex])
+                    buffer.removeSubrange(start..<endIndex)
+                    return jsonMessage
+                }
+            }
+        }
+        
+        return nil
     }
     
     func disconnect() {

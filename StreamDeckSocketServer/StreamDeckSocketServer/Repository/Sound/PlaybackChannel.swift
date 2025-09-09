@@ -273,7 +273,10 @@ final class PlaybackChannel {
     
     /// チャンネル音量をリセット（1.0）
     func resetChannelVolume() {
-        setChannelVolume(1.0)
+        // 再生が完全に止まってから音を戻したいので、少しだけタイミングをずらす
+        DispatchQueue.main.asyncAfter(deadline: .now()+0.1) {
+            self.setChannelVolume(1.0)
+        }
         previousChannelVolume = nil // 前回の音量もクリア
     }
     

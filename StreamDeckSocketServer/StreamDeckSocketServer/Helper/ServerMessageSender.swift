@@ -37,6 +37,7 @@ final class ServerMessageSender {
     /// システムボリューム変更メッセージを送信
     func sendSystemVolumeChange(volume: Int) {
         sendMessage(ServerMessageBuilder.buildVolumeChangeMessage(
+            channel: -1,
             volume: volume
         ))
     }
@@ -87,6 +88,23 @@ final class ServerMessageSender {
     func sendDelayResetAllChannels() {
         for channel in AdvancedSoundPlayer.Channel.allCases {
             sendDelayChange(channel: channel.rawValue, delay: 0)
+        }
+    }
+
+    // MARK: Flanger
+
+    /// フランジャー変更メッセージを送信
+    func sendFlangerChange(channel: Int, flanger: Int) {
+        sendMessage(ServerMessageBuilder.buildFlangerChangeMessage(
+            channel: channel,
+            flanger: flanger
+        ))
+    }
+
+    /// 全チャンネルのフランジャー値リセットを送信
+    func sendFlangerResetAllChannels() {
+        for channel in AdvancedSoundPlayer.Channel.allCases {
+            sendFlangerChange(channel: channel.rawValue, flanger: 0)
         }
     }
 }

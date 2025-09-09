@@ -9,7 +9,7 @@ import Foundation
 import StreamDeck
 
 // MARK: - Action
-final class FlangerDialAction: EncoderAction {
+final class FlangerDialAction: EncoderAction, EffectDialActionProtocol {
     typealias Settings = NoSettings
 
     static var name: String = "Flanger"
@@ -35,14 +35,18 @@ final class FlangerDialAction: EncoderAction {
     required init(context: String, coordinates: StreamDeck.Coordinates?) {
         self.context = context
         self.coordinates = coordinates
+        configure()
+    }
+
+    // MARK: Life Cycle
+
+    func willAppear(device: String, payload: AppearEvent<Settings>) {
+        updateUI()
     }
 
     // MARK: Dial Action
 
     func dialRotate(device: String, payload: EncoderEvent<Settings>) {
-        // 画面に数値を出したかったが、処理が複雑になるので一旦出していない
-        setFeedback([FlangerDialType.currentValue.key: payload.ticks > 0 ? "+" : "-"])
-
         let message = MessageBuilder.buildFlangerDialMessage(
             type: .dialRotate,
             channel: channel,
@@ -53,13 +57,30 @@ final class FlangerDialAction: EncoderAction {
     }
 
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
-        setFeedback([FlangerDialType.currentValue.key: ""])
-
         let message = MessageBuilder.buildFlangerDialMessage(
             type: .dialDown,
             channel: channel,
             coordinates: payload.coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
+    }
+}
+
+// MARK: - Private
+extension FlangerDialAction {
+
+    func configure() {
+        addEffectChangeObserver(.flangerChanged, entityType: FlangerChangeEntity.self)
+        addChannelChangeObserver()
+    }
+    
+    func updateEffectValue<T: ServerMessageEntity>(entity: T) {
+        guard let flangerEntity = entity as? FlangerChangeEntity else { return }
+        EffectValueStore.shared.setFlanger(flangerEntity.flanger, for: channel)
+    }
+    
+    func updateUI() {
+        let value = EffectValueStore.shared.getFlanger(for: channel)
+        setFeedback([FlangerDialType.currentValue.key: "\(value)"])
     }
 }

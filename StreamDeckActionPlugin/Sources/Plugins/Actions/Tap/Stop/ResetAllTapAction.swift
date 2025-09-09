@@ -39,5 +39,3 @@ final class ResetAllTapAction: StopTapActionProtocol {
         UnixSocketClient.shared.sendMessage(message)
     }
 }
-
-

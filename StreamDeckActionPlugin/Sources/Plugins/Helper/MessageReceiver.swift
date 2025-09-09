@@ -43,7 +43,7 @@ final class MessageReceiver {
             let serverMessage = try decoder.decode(ServerMessage.self, from: data)
             handleServerMessage(serverMessage)
         } catch {
-            logMessage("Failed to parse message: \(error.localizedDescription)")
+            logMessage("Failed to parse message: \(error.localizedDescription), message: \(message)")
         }
     }
     
@@ -52,11 +52,38 @@ final class MessageReceiver {
     private func handleServerMessage(_ message: ServerMessage) {
         switch message.message {
         case .volumeChange(let entity):
+            updateEffectValueStore(entity: entity) { channelType in
+                EffectValueStore.shared.setChannelVolume(entity.volume, for: channelType)
+            }
             post(.volumeChanged, entity: entity)
         case .reverbChange(let entity):
+            updateEffectValueStore(entity: entity) { channelType in
+                EffectValueStore.shared.setReverb(entity.reverb, for: channelType)
+            }
             post(.reverbChanged, entity: entity)
         case .delayChange(let entity):
+            updateEffectValueStore(entity: entity) { channelType in
+                EffectValueStore.shared.setDelay(entity.delay, for: channelType)
+            }
             post(.delayChanged, entity: entity)
+        case .flangerChange(let entity):
+            updateEffectValueStore(entity: entity) { channelType in
+                EffectValueStore.shared.setFlanger(entity.flanger, for: channelType)
+            }
+            post(.flangerChanged, entity: entity)
+        }
+    }
+    
+    /// EffectValueStoreを更新する共通処理
+    /// - Parameters:
+    ///   - entity: エンティティ
+    ///   - updateAction: 更新処理
+    private func updateEffectValueStore<T: ServerMessageEntity>(
+        entity: T,
+        updateAction: (MessageBuilder.ChannelType) -> Void
+    ) {
+        if let channelType = MessageBuilder.ChannelType(rawValue: entity.channel) {
+            updateAction(channelType)
         }
     }
 

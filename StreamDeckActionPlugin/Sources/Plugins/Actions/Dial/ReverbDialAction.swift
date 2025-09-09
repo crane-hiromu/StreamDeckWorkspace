@@ -9,7 +9,7 @@ import Foundation
 import StreamDeck
 
 // MARK: - Action
-final class ReverbDialAction: EncoderAction {
+final class ReverbDialAction: EncoderAction, EffectDialActionProtocol {
     typealias Settings = NoSettings
 
     static var name: String = "Reverb"
@@ -41,15 +41,12 @@ final class ReverbDialAction: EncoderAction {
     // MARK: Life Cycle
 
     func willAppear(device: String, payload: AppearEvent<Settings>) {
-        updateValue()
+        updateUI()
     }
 
     // MARK: Dial Action
 
     func dialRotate(device: String, payload: EncoderEvent<Settings>) {
-        // 画面に数値を出したかったが、処理が複雑になるので一旦出していない
-        setFeedback([ReverbDialType.currentValue.key: payload.ticks > 0 ? "+" : "-"])
-
         let message = MessageBuilder.buildReverbDialMessage(
             type: .dialRotate,
             channel: channel,
@@ -60,8 +57,6 @@ final class ReverbDialAction: EncoderAction {
     }
 
     func dialDown(device: String, payload: EncoderPressEvent<Settings>) {
-        setFeedback([ReverbDialType.currentValue.key: ""])
-
         let message = MessageBuilder.buildReverbDialMessage(
             type: .dialDown,
             channel: channel,
@@ -72,36 +67,19 @@ final class ReverbDialAction: EncoderAction {
 }
 
 // MARK: - Private
-private extension ReverbDialAction {
+extension ReverbDialAction {
 
     func configure() {
-        NotificationCenter.default.addObserver(
-            forName: .reverbChanged,
-            object: nil,
-            queue: .main
-        ) { [weak self] nofi in
-            guard let self else { return }
-            let data = nofi.userInfo?[MessageReceiver.entityKey]
-            guard let entity = data as? ReverbChangeEntity else { return }
-
-            let type = MessageBuilder.ChannelType(rawValue: entity.channel)
-            guard type == self.channel else { return }
-
-            // 値を保存してからUI反映
-            EffectValueStore.shared.setReverb(entity.reverb, for: self.channel)
-            self.setFeedback([ReverbDialType.currentValue.key: "\(entity.reverb)"])
-        }
-
-        NotificationCenter.default.addObserver(
-            forName: .channelChanged,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.updateValue()
-        }
+        addEffectChangeObserver(.reverbChanged, entityType: ReverbChangeEntity.self)
+        addChannelChangeObserver()
     }
-
-    func updateValue() {
+    
+    func updateEffectValue<T: ServerMessageEntity>(entity: T) {
+        guard let reverbEntity = entity as? ReverbChangeEntity else { return }
+        EffectValueStore.shared.setReverb(reverbEntity.reverb, for: channel)
+    }
+    
+    func updateUI() {
         let value = EffectValueStore.shared.getReverb(for: channel)
         setFeedback([ReverbDialType.currentValue.key: "\(value)"])
     }

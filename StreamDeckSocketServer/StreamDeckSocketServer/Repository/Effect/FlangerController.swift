@@ -75,6 +75,7 @@ final class FlangerController {
         let v = max(min(wetDryMix, wetDryMixMax), wetDryMixMin)
         wetDryMixByChannel[channel] = v
         node.wetDryMix = v
+        ServerMessageSender.shared.sendFlangerChange(channel: channel.rawValue, flanger: Int(v))
     }
 
     func set(highFreqBoost: Float, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitDelay) {
@@ -157,6 +158,7 @@ final class FlangerController {
         node.feedback = 70.0
         node.wetDryMix = 10.0
         node.bypass = true
+        ServerMessageSender.shared.sendFlangerChange(channel: channel.rawValue, flanger: 0)
     }
 
     // MARK: Macro control

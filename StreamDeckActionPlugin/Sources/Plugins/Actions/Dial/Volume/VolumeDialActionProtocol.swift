@@ -9,9 +9,11 @@ import Foundation
 import StreamDeck
 
 /// ボリューム調整用のDialActionの共通プロトコル
-protocol VolumeDialActionProtocol: EncoderAction where Settings == NoSettings {
+protocol VolumeDialActionProtocol: EncoderAction, EffectDialActionProtocol
+    where Settings == NoSettings {
+
     static var layoutName: LayoutName { get }
-    var channel: MessageBuilder.ChannelType? { get }
+    var channel: MessageBuilder.ChannelType { get }
 }
 
 extension VolumeDialActionProtocol {
@@ -33,7 +35,7 @@ extension VolumeDialActionProtocol {
     // MARK: Life Cycle
 
     func willAppear(device: String, payload: AppearEvent<Settings>) {
-        updateValue()
+        updateUI()
     }
 
     // MARK: Dial Action
@@ -60,33 +62,16 @@ extension VolumeDialActionProtocol {
     // MARK: Common
 
     func configure() {
-        NotificationCenter.default.addObserver(
-            forName: .volumeChanged,
-            object: nil,
-            queue: .main
-        ) { nofi in
-            let data = nofi.userInfo?[MessageReceiver.entityKey]
-            guard let entity = data as? VolumeChangeEntity else { return }
-
-            let type = MessageBuilder.ChannelType(rawValue: entity.channel)
-            guard type == channel else { return }
-
-            // 値を保存してからUI反映
-            if let type { EffectValueStore.shared.setChannelVolume(entity.volume, for: type) }
-            setFeedback([VolumeDialType.currentVolume.key: "\(entity.volume)"])
-        }
-
-        NotificationCenter.default.addObserver(
-            forName: .channelChanged,
-            object: nil,
-            queue: .main
-        ) { _ in
-            updateValue()
-        }
+        addEffectChangeObserver(.volumeChanged, entityType: VolumeChangeEntity.self)
+        addChannelChangeObserver()
     }
-
-    func updateValue() {
-        guard let channel else { return }
+    
+    func updateEffectValue<T: ServerMessageEntity>(entity: T) {
+        guard let volumeEntity = entity as? VolumeChangeEntity else { return }
+        EffectValueStore.shared.setChannelVolume(volumeEntity.volume, for: channel)
+    }
+    
+    func updateUI() {
         let value = EffectValueStore.shared.getChannelVolume(for: channel)
         setFeedback([VolumeDialType.currentVolume.key: "\(value)"])
     }
