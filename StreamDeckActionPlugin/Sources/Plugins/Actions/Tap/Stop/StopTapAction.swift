@@ -1,0 +1,38 @@
+//
+//  StopTapAction.swift
+//  StreamDeckActionPlugin
+//
+//  Created by h.tsuruta on 2025/09/04.
+//
+
+import Foundation
+import StreamDeck
+
+// MARK: - Action
+final class StopTapAction: StopTapActionProtocol {
+    typealias Settings = NoSettings
+
+    static var name: String = "Stop Tap"
+    static var uuid: String = "stoptap.tap"
+    static var icon: String = "Icons/actionIcon"
+
+    static var states: [PluginActionState]? = [
+        PluginActionState(image: "Icons/actionDefaultImage", titleAlignment: .middle)
+    ]
+
+    static var userTitleEnabled: Bool? = false
+
+    var context: String
+    var coordinates: Coordinates?
+    
+    // 動的チャンネル（デフォルトは現在のチャンネル）
+    var channel: MessageBuilder.ChannelType? { ChannelManager.shared.getCurrentChannel() }
+
+    required init(context: String, coordinates: Coordinates?) {
+        self.context = context
+        self.coordinates = coordinates
+        setTitle(to: "Stop")
+    }
+
+    func updateTitle() { setTitle(to: "Stop") }
+}

@@ -1,19 +1,12 @@
-//
-//  StopTapAction.swift
-//  StreamDeckActionPlugin
-//
-//  Created by h.tsuruta on 2025/09/04.
-//
-
 import Foundation
 import StreamDeck
 
-// MARK: - Action
-final class StopTapAction: KeyAction {
+// MARK: - Action (All Stop)
+final class StopAllTapAction: StopTapActionProtocol {
     typealias Settings = NoSettings
 
-    static var name: String = "Stop Tap"
-    static var uuid: String = "stoptap.tap"
+    static var name: String = "Stop All"
+    static var uuid: String = "stopall.tap"
     static var icon: String = "Icons/actionIcon"
 
     static var states: [PluginActionState]? = [
@@ -24,23 +17,27 @@ final class StopTapAction: KeyAction {
 
     var context: String
     var coordinates: Coordinates?
-    
-    // 動的チャンネル（デフォルトは現在のチャンネル）
-    var channel: MessageBuilder.ChannelType { ChannelManager.shared.getCurrentChannel() }
+
+    // 全停止のため channel は未指定
+    var channel: MessageBuilder.ChannelType? { nil }
 
     required init(context: String, coordinates: Coordinates?) {
         self.context = context
         self.coordinates = coordinates
-        setTitle(to: "Stop")
+        updateTitle()
     }
+
+    func updateTitle() { setTitle(to: "Stop\nAll") }
 
     func keyDown(device: String, payload: KeyEvent<NoSettings>) {
         let message = MessageBuilder.buildStopTapMessage(
             type: .keyDown,
-            command: .stopSound,
+            command: .stopAllSound,
             channel: channel,
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
     }
 }
+
+

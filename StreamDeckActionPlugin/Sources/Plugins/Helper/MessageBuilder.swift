@@ -60,6 +60,7 @@ final class MessageBuilder {
         case changeFrequency
         case setLoopState
         case stopSound
+        case stopAllSound
         case changeDelay
         case changeReverb
         case changeFlanger
@@ -179,14 +180,14 @@ final class MessageBuilder {
      */
     static func buildStopTapMessage(type: MessageType,
                                     command: MessageCommandType,
-                                    channel: ChannelType,
+                                    channel: ChannelType?,
                                     coordinates: Coordinates?) -> String {
         """
         {
             "\(MessageKeys.type.key)": "\(type.key)",
             "\(MessageKeys.data.key)": {
                 "\(MessageKeys.command.key)": \(command.value),
-                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.channel.key)": \(channel?.id ?? -1),
                 "\(MessageKeys.coordinates.key)": {
                     "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
                     "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)

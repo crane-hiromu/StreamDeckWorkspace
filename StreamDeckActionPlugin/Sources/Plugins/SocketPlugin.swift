@@ -25,6 +25,7 @@ final class SocketPlugin: Plugin {
         // Effect Tap Actions
         LoopTapAction.self
         StopTapAction.self
+        StopAllTapAction.self
         ChannelSwitchTapAction.self
         // Drum Tap Actions
         DrumBassTapAction.self

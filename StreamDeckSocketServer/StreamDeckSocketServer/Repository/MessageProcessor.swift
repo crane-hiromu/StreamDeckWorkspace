@@ -70,6 +70,17 @@ final class MessageProcessor {
                 DispatchQueue.main.async {
                     AdvancedSoundPlayer.shared.stop(entity.channelType)
                 }
+            case .stopAllSound:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.stopAll()
+                }
+            case .stutter:
+                DispatchQueue.main.async {
+                    AdvancedSoundPlayer.shared.startStutter(
+                        on: entity.channelType,
+                        segmentLength: entity.stutterSegmentLength ?? 0.25
+                    )
+                }
             case .changeSystemVolume,
                  .changeChannelVolume,
                  .changeRate,
@@ -81,13 +92,6 @@ final class MessageProcessor {
                  .scratch,
                  .scratchWithInertia,
                  .scratchWithBounce: break
-            case .stutter:
-                DispatchQueue.main.async {
-                    AdvancedSoundPlayer.shared.startStutter(
-                        on: entity.channelType,
-                        segmentLength: entity.stutterSegmentLength ?? 0.25
-                    )
-                }
             }
         case .keyUp:
             break
@@ -182,7 +186,8 @@ final class MessageProcessor {
             case .playSound,
                  .playTone,
                  .setLoopState,
-                 .stopSound: break
+                 .stopSound,
+                 .stopAllSound: break
             }
         case .dialDown(let entity):
             switch entity.command {
@@ -231,7 +236,8 @@ final class MessageProcessor {
             case .playSound,
                  .playTone,
                  .setLoopState,
-                 .stopSound: break
+                 .stopSound,
+                 .stopAllSound: break
             }
         case .dialUp:
             break // NOP
