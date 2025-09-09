@@ -13,5 +13,7 @@ extension Notification.Name {
     static let reverbChanged = Self(String(describing: ReverbChangeEntity.self))
     static let delayChanged = Self(String(describing: DelayChangeEntity.self))
     static let flangerChanged = Self(String(describing: FlangerChangeEntity.self))
+    static let pitchChanged = Self(String(describing: PitchChangeEntity.self))
+    static let isolatorChanged = Self(String(describing: IsolatorChangeEntity.self))
     static let channelChanged = Self(String(describing: ChannelManager.self))
 }

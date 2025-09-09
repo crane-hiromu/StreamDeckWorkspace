@@ -71,6 +71,16 @@ final class MessageReceiver {
                 EffectValueStore.shared.setFlanger(entity.flanger, for: channelType)
             }
             post(.flangerChanged, entity: entity)
+        case .pitchChange(let entity):
+            updateEffectValueStore(entity: entity) { channelType in
+                EffectValueStore.shared.setPitch(entity.pitch, for: channelType)
+            }
+            post(.pitchChanged, entity: entity)
+        case .isolatorChange(let entity):
+            updateEffectValueStore(entity: entity) { channelType in
+                EffectValueStore.shared.setIsolator(entity.isolator, for: channelType)
+            }
+            post(.isolatorChanged, entity: entity)
         }
     }
     

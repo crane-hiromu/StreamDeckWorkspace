@@ -12,6 +12,8 @@ enum ServerMessageType: Codable {
     case reverbChange(ReverbChangeEntity)
     case delayChange(DelayChangeEntity)
     case flangerChange(FlangerChangeEntity)
+    case pitchChange(PitchChangeEntity)
+    case isolatorChange(IsolatorChangeEntity)
 
     enum CodingKeys: String, CodingKey {
         case type
@@ -23,6 +25,8 @@ enum ServerMessageType: Codable {
         case reverbChange
         case delayChange
         case flangerChange
+        case pitchChange
+        case isolatorChange
     }
 
     init(from decoder: Decoder) throws {
@@ -42,6 +46,12 @@ enum ServerMessageType: Codable {
         case .flangerChange:
             let data = try container.decode(FlangerChangeEntity.self, forKey: .data)
             self = .flangerChange(data)
+        case .pitchChange:
+            let data = try container.decode(PitchChangeEntity.self, forKey: .data)
+            self = .pitchChange(data)
+        case .isolatorChange:
+            let data = try container.decode(IsolatorChangeEntity.self, forKey: .data)
+            self = .isolatorChange(data)
         }
     }
 
@@ -60,6 +70,12 @@ enum ServerMessageType: Codable {
             try container.encode(entity, forKey: .data)
         case .flangerChange(let entity):
             try container.encode(MessageName.flangerChange, forKey: .type)
+            try container.encode(entity, forKey: .data)
+        case .pitchChange(let entity):
+            try container.encode(MessageName.pitchChange, forKey: .type)
+            try container.encode(entity, forKey: .data)
+        case .isolatorChange(let entity):
+            try container.encode(MessageName.isolatorChange, forKey: .type)
             try container.encode(entity, forKey: .data)
         }
     }

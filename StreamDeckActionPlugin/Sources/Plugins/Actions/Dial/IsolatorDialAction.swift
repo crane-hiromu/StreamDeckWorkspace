@@ -9,7 +9,7 @@ import Foundation
 import StreamDeck
 
 // MARK: - Action
-final class IsolatorDialAction: EncoderAction {
+final class IsolatorDialAction: EncoderAction, EffectDialActionProtocol {
     typealias Settings = NoSettings
 
     static var name: String = "Isolator"
@@ -35,6 +35,13 @@ final class IsolatorDialAction: EncoderAction {
     required init(context: String, coordinates: StreamDeck.Coordinates?) {
         self.context = context
         self.coordinates = coordinates
+        configure()
+    }
+
+    // MARK: Life Cycle
+
+    func willAppear(device: String, payload: AppearEvent<Settings>) {
+        updateUI()
     }
 
     // MARK: Dial Action
@@ -56,5 +63,24 @@ final class IsolatorDialAction: EncoderAction {
             coordinates: payload.coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
+    }
+}
+
+// MARK: - EffectDialActionProtocol
+extension IsolatorDialAction {
+    
+    func configure() {
+        addEffectChangeObserver(.isolatorChanged, entityType: IsolatorChangeEntity.self)
+        addChannelChangeObserver()
+    }
+    
+    func updateEffectValue<T: ServerMessageEntity>(entity: T) {
+        guard let isolatorEntity = entity as? IsolatorChangeEntity else { return }
+        EffectValueStore.shared.setIsolator(isolatorEntity.isolator, for: channel)
+    }
+    
+    func updateUI() {
+        let value = EffectValueStore.shared.getIsolator(for: channel)
+        setFeedback([IsolatorDialType.currentValue.key: "\(value)"])
     }
 }

@@ -21,6 +21,10 @@ final class EffectValueStore {
     private var delayByChannel: [MessageBuilder.ChannelType: Int] = [:]
     // flanger
     private var flangerByChannel: [MessageBuilder.ChannelType: Int] = [:]
+    // pitch
+    private var pitchByChannel: [MessageBuilder.ChannelType: Int] = [:]
+    // isolator
+    private var isolatorByChannel: [MessageBuilder.ChannelType: Int] = [:]
 
     // MARK: API (channel volume)
 
@@ -60,5 +64,25 @@ final class EffectValueStore {
 
     func getFlanger(for channel: MessageBuilder.ChannelType) -> Int {
         flangerByChannel[channel] ?? 0
+    }
+
+    // MARK: API (pitch)
+
+    func setPitch(_ value: Int, for channel: MessageBuilder.ChannelType) {
+        pitchByChannel[channel] = value
+    }
+
+    func getPitch(for channel: MessageBuilder.ChannelType) -> Int {
+        pitchByChannel[channel] ?? 0
+    }
+
+    // MARK: API (isolator)
+
+    func setIsolator(_ value: Int, for channel: MessageBuilder.ChannelType) {
+        isolatorByChannel[channel] = value
+    }
+
+    func getIsolator(for channel: MessageBuilder.ChannelType) -> Int {
+        isolatorByChannel[channel] ?? 0
     }
 }

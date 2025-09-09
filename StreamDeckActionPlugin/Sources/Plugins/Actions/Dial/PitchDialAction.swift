@@ -9,7 +9,7 @@ import Foundation
 import StreamDeck
 
 // MARK: - Action
-final class PitchDialAction: EncoderAction {
+final class PitchDialAction: EncoderAction, EffectDialActionProtocol {
     typealias Settings = NoSettings
 
     static var name: String = "Pitch"
@@ -35,6 +35,13 @@ final class PitchDialAction: EncoderAction {
     required init(context: String, coordinates: StreamDeck.Coordinates?) {
         self.context = context
         self.coordinates = coordinates
+        configure()
+    }
+
+    // MARK: Life Cycle
+
+    func willAppear(device: String, payload: AppearEvent<Settings>) {
+        updateUI()
     }
 
     // MARK: Dial Action
@@ -56,5 +63,24 @@ final class PitchDialAction: EncoderAction {
             coordinates: payload.coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
+    }
+}
+
+// MARK: - EffectDialActionProtocol
+extension PitchDialAction {
+    
+    func configure() {
+        addEffectChangeObserver(.pitchChanged, entityType: PitchChangeEntity.self)
+        addChannelChangeObserver()
+    }
+    
+    func updateEffectValue<T: ServerMessageEntity>(entity: T) {
+        guard let pitchEntity = entity as? PitchChangeEntity else { return }
+        EffectValueStore.shared.setPitch(pitchEntity.pitch, for: channel)
+    }
+    
+    func updateUI() {
+        let value = EffectValueStore.shared.getPitch(for: channel)
+        setFeedback([PitchDialType.currentPitch.key: "\(value)"])
     }
 }

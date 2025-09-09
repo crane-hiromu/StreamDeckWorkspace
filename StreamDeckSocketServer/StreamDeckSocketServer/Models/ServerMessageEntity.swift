@@ -32,3 +32,15 @@ struct FlangerChangeEntity: Codable {
     let channel: Int
     let flanger: Int
 }
+
+/// ピッチ変更エンティティ
+struct PitchChangeEntity: Codable {
+    let channel: Int
+    let pitch: Int
+}
+
+/// アイソレーター変更エンティティ
+struct IsolatorChangeEntity: Codable {
+    let channel: Int
+    let isolator: Int
+}

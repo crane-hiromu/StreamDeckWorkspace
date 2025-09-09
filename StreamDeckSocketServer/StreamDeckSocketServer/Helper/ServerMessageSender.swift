@@ -107,4 +107,38 @@ final class ServerMessageSender {
             sendFlangerChange(channel: channel.rawValue, flanger: 0)
         }
     }
+
+    // MARK: Pitch
+
+    /// ピッチ変更メッセージを送信
+    func sendPitchChange(channel: Int, pitch: Int) {
+        sendMessage(ServerMessageBuilder.buildPitchChangeMessage(
+            channel: channel,
+            pitch: pitch
+        ))
+    }
+
+    /// 全チャンネルのピッチ値リセットを送信
+    func sendPitchResetAllChannels() {
+        for channel in AdvancedSoundPlayer.Channel.allCases {
+            sendPitchChange(channel: channel.rawValue, pitch: 0)
+        }
+    }
+
+    // MARK: Isolator
+
+    /// アイソレーター変更メッセージを送信
+    func sendIsolatorChange(channel: Int, isolator: Int) {
+        sendMessage(ServerMessageBuilder.buildIsolatorChangeMessage(
+            channel: channel,
+            isolator: isolator
+        ))
+    }
+
+    /// 全チャンネルのアイソレーター値リセットを送信
+    func sendIsolatorResetAllChannels() {
+        for channel in AdvancedSoundPlayer.Channel.allCases {
+            sendIsolatorChange(channel: channel.rawValue, isolator: 0)
+        }
+    }
 }

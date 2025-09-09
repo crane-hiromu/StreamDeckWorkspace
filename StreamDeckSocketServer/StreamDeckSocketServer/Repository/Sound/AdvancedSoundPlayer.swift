@@ -132,6 +132,7 @@ final class AdvancedSoundPlayer {
         guard let playbackChannel = channels[channel] else { return }
         let cents = playbackChannel.pitchController.change(step: step)
         playbackChannel.setPitch(cents)
+        ServerMessageSender.shared.sendPitchChange(channel: channel.rawValue, pitch: Int(cents))
     }
 
     // 指定されたチャンネルのピッチを変更
@@ -156,6 +157,7 @@ final class AdvancedSoundPlayer {
         guard let playbackChannel = channels[channel] else { return }
         playbackChannel.pitchController.reset()
         playbackChannel.setPitch(0.0)
+        ServerMessageSender.shared.sendPitchChange(channel: channel.rawValue, pitch: 0)
     }
 
     // MARK: - Loop Control
@@ -233,6 +235,10 @@ final class AdvancedSoundPlayer {
         ServerMessageSender.shared.sendDelayResetAllChannels()
         // フロント側の全チャンネルのフランジャー表示もリセット
         ServerMessageSender.shared.sendFlangerResetAllChannels()
+        // フロント側の全チャンネルのピッチ表示もリセット
+        ServerMessageSender.shared.sendPitchResetAllChannels()
+        // フロント側の全チャンネルのアイソレーター表示もリセット
+        ServerMessageSender.shared.sendIsolatorResetAllChannels()
     }
 
     // 全チャンネルのレートをデフォルトに戻す
@@ -243,6 +249,7 @@ final class AdvancedSoundPlayer {
     // 全チャンネルのピッチをデフォルトに戻す
     func resetAllPitch() {
         channels.values.forEach { $0.pitchController.reset() }
+        ServerMessageSender.shared.sendPitchResetAllChannels()
     }
 
     // MARK: - Isolator Control
@@ -251,23 +258,32 @@ final class AdvancedSoundPlayer {
     func updateIsolatorBalance(on channel: Channel, step: Int, sensitivity: Float = 1.0/20.0) {
         guard let playbackChannel = channels[channel] else { return }
         playbackChannel.updateIsolatorBalance(step: step, sensitivity: sensitivity)
+        // バランス値を-100〜100の整数に変換して送信
+        let balance = playbackChannel.isolatorController.getBalance(for: channel)
+        ServerMessageSender.shared.sendIsolatorChange(channel: channel.rawValue, isolator: Int(balance * 100))
     }
 
     /// アイソレーター状態を直接設定（スムージング対応）
     func setIsolatorBalance(on channel: Channel, value s: Float, smoothing: Float = 0.15) {
         guard let playbackChannel = channels[channel] else { return }
         playbackChannel.setIsolatorBalance(value: s, smoothing: smoothing)
+        // バランス値を-100〜100の整数に変換して送信
+        let balance = playbackChannel.isolatorController.getBalance(for: channel)
+        ServerMessageSender.shared.sendIsolatorChange(channel: channel.rawValue, isolator: Int(balance * 100))
     }
 
     /// 指定チャンネルのアイソレーターをリセット（フラット）
     func resetIsolator(on channel: Channel) {
         guard let playbackChannel = channels[channel] else { return }
         playbackChannel.resetIsolator()
+        // リセット後は0を送信
+        ServerMessageSender.shared.sendIsolatorChange(channel: channel.rawValue, isolator: 0)
     }
 
     /// 全チャンネルのアイソレーターをリセット（フラット）
     func resetAllIsolators() {
         channels.values.forEach { $0.resetIsolator() }
+        ServerMessageSender.shared.sendIsolatorResetAllChannels()
     }
 
     // MARK: - Delay Control

@@ -25,7 +25,9 @@ final class ServerMessageBuilder {
              volume,
              reverb,
              delay,
-             flanger
+             flanger,
+             pitch,
+             isolator
 
         var key: String { rawValue }
     }
@@ -39,6 +41,8 @@ final class ServerMessageBuilder {
         case reverbChange
         case delayChange
         case flangerChange
+        case pitchChange
+        case isolatorChange
 
         var key: String { rawValue }
     }
@@ -102,6 +106,40 @@ final class ServerMessageBuilder {
             "\(MessageKeys.data.key)": {
                 "\(MessageKeys.channel.key)": \(channel),
                 "\(MessageKeys.flanger.key)": \(flanger)
+            }
+        }
+        """
+    }
+
+    // MARK: Pitch Change
+
+    /**
+     * PitchChange用のメッセージを構築します
+     */
+    static func buildPitchChangeMessage(channel: Int, pitch: Int) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(MessageType.pitchChange.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.channel.key)": \(channel),
+                "\(MessageKeys.pitch.key)": \(pitch)
+            }
+        }
+        """
+    }
+
+    // MARK: Isolator Change
+
+    /**
+     * IsolatorChange用のメッセージを構築します
+     */
+    static func buildIsolatorChangeMessage(channel: Int, isolator: Int) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(MessageType.isolatorChange.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.channel.key)": \(channel),
+                "\(MessageKeys.isolator.key)": \(isolator)
             }
         }
         """

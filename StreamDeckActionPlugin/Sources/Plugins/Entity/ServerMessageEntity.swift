@@ -51,3 +51,15 @@ struct FlangerChangeEntity: Codable, ServerMessageEntity {
     let channel: Int
     let flanger: Int
 }
+
+/// ピッチ変更エンティティ
+struct PitchChangeEntity: Codable, ServerMessageEntity {
+    let channel: Int
+    let pitch: Int
+}
+
+/// アイソレーター変更エンティティ
+struct IsolatorChangeEntity: Codable, ServerMessageEntity {
+    let channel: Int
+    let isolator: Int
+}

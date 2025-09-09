@@ -78,6 +78,11 @@ final class IsolatorController {
         eq.bands[2].gain = 0
     }
 
+    /// 指定チャンネルの現在のバランス値を取得
+    func getBalance(for channel: AdvancedSoundPlayer.Channel) -> Float {
+        return balanceByChannel[channel] ?? 0
+    }
+
     // MARK: Private
     /// バランス状態からLOW/MID/HIGHのゲインを計算して適用
     private func apply(eq: AVAudioUnitEQ, state s: Float) {
