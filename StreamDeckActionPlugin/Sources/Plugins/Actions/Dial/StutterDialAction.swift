@@ -38,6 +38,7 @@ final class StutterDialAction: EncoderAction {
     required init(context: String, coordinates: StreamDeck.Coordinates?) {
         self.context = context
         self.coordinates = coordinates
+        updateUI()
     }
 
     // MARK: Dial Action
@@ -48,7 +49,7 @@ final class StutterDialAction: EncoderAction {
         let increment = Double(payload.ticks) * 0.05
         StutterDialAction.currentSegmentLength = max(0.05, min(2.0, StutterDialAction.currentSegmentLength + increment))
         
-        setFeedback([StutterDialType.segmentLength.key: String(format: "%.2fs", StutterDialAction.currentSegmentLength)])
+        updateUI()
 
         let message = MessageBuilder.buildStutterDialMessage(
             type: .dialRotate,
@@ -63,7 +64,7 @@ final class StutterDialAction: EncoderAction {
         // ダイヤルプッシュはセグメント長をデフォルト（0.25秒）にリセット
         StutterDialAction.currentSegmentLength = 0.25
         
-        setFeedback([StutterDialType.segmentLength.key: String(format: "%.2fs", StutterDialAction.currentSegmentLength)])
+        updateUI()
 
         let message = MessageBuilder.buildStutterDialMessage(
             type: .dialDown,
@@ -72,5 +73,10 @@ final class StutterDialAction: EncoderAction {
             segmentLength: StutterDialAction.currentSegmentLength
         )
         UnixSocketClient.shared.sendMessage(message)
+    }
+
+    func updateUI() {
+        let value = String(format: "%.2fs", StutterDialAction.currentSegmentLength)
+        setFeedback([StutterDialType.segmentLength.key: value])
     }
 }
