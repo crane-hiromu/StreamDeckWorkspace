@@ -72,7 +72,7 @@ final class MessageProcessor {
                 }
             case .stopAllSound:
                 DispatchQueue.main.async {
-                    AdvancedSoundPlayer.shared.stopAll()
+                    AdvancedSoundPlayer.shared.resetAll()
                 }
             case .stutter:
                 DispatchQueue.main.async {

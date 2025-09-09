@@ -1,12 +1,12 @@
 import Foundation
 import StreamDeck
 
-// MARK: - Action (All Stop)
-final class StopAllTapAction: StopTapActionProtocol {
+// MARK: - Action (All Reset)
+final class ResetAllTapAction: StopTapActionProtocol {
     typealias Settings = NoSettings
 
-    static var name: String = "Stop All"
-    static var uuid: String = "stopall.tap"
+    static var name: String = "Reset All"
+    static var uuid: String = "resetall.tap"
     static var icon: String = "Icons/actionIcon"
 
     static var states: [PluginActionState]? = [
@@ -18,7 +18,7 @@ final class StopAllTapAction: StopTapActionProtocol {
     var context: String
     var coordinates: Coordinates?
 
-    // 全停止のため channel は未指定
+    // 全リセットのため channel は未指定
     var channel: MessageBuilder.ChannelType? { nil }
 
     required init(context: String, coordinates: Coordinates?) {
@@ -27,7 +27,7 @@ final class StopAllTapAction: StopTapActionProtocol {
         updateTitle()
     }
 
-    func updateTitle() { setTitle(to: "Stop\nAll") }
+    func updateTitle() { setTitle(to: "Reset\nAll") }
 
     func keyDown(device: String, payload: KeyEvent<NoSettings>) {
         let message = MessageBuilder.buildStopTapMessage(
