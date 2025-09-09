@@ -37,3 +37,9 @@ struct ReverbChangeEntity: Codable, ServerMessageEntity {
     let channel: Int
     let reverb: Int
 }
+
+/// ディレイ変更エンティティ
+struct DelayChangeEntity: Codable, ServerMessageEntity {
+    let channel: Int
+    let delay: Int
+}

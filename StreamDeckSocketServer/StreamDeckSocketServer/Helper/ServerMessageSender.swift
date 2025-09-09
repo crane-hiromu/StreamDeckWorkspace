@@ -72,4 +72,21 @@ final class ServerMessageSender {
             sendReverbChange(channel: channel.rawValue, reverb: 0)
         }
     }
+
+    // MARK: Delay
+
+    /// ディレイ変更メッセージを送信
+    func sendDelayChange(channel: Int, delay: Int) {
+        sendMessage(ServerMessageBuilder.buildDelayChangeMessage(
+            channel: channel,
+            delay: delay
+        ))
+    }
+
+    /// 全チャンネルのディレイ値リセットを送信
+    func sendDelayResetAllChannels() {
+        for channel in AdvancedSoundPlayer.Channel.allCases {
+            sendDelayChange(channel: channel.rawValue, delay: 0)
+        }
+    }
 }

@@ -23,7 +23,8 @@ final class ServerMessageBuilder {
              data,
              channel,
              volume,
-             reverb
+             reverb,
+             delay
 
         var key: String { rawValue }
     }
@@ -35,6 +36,7 @@ final class ServerMessageBuilder {
     enum MessageType: String {
         case volumeChange
         case reverbChange
+        case delayChange
 
         var key: String { rawValue }
     }
@@ -66,6 +68,21 @@ final class ServerMessageBuilder {
             "\(MessageKeys.data.key)": {
                 "\(MessageKeys.channel.key)": \(channel),
                 "\(MessageKeys.reverb.key)": \(reverb)
+            }
+        }
+        """
+    }
+
+    /**
+     * DelayChange用のメッセージを構築します
+     */
+    static func buildDelayChangeMessage(channel: Int, delay: Int) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(MessageType.delayChange.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.channel.key)": \(channel),
+                "\(MessageKeys.delay.key)": \(delay)
             }
         }
         """

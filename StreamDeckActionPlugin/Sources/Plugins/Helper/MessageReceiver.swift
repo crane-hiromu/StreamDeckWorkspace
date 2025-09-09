@@ -55,6 +55,8 @@ final class MessageReceiver {
             post(.volumeChanged, entity: entity)
         case .reverbChange(let entity):
             post(.reverbChanged, entity: entity)
+        case .delayChange(let entity):
+            post(.delayChanged, entity: entity)
         }
     }
 

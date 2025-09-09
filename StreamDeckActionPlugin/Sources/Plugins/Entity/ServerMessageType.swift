@@ -10,6 +10,7 @@ import Foundation
 enum ServerMessageType: Codable {
     case volumeChange(VolumeChangeEntity)
     case reverbChange(ReverbChangeEntity)
+    case delayChange(DelayChangeEntity)
 
     enum CodingKeys: String, CodingKey {
         case type
@@ -19,6 +20,7 @@ enum ServerMessageType: Codable {
     enum MessageName: String, Codable {
         case volumeChange
         case reverbChange
+        case delayChange
     }
 
     init(from decoder: Decoder) throws {
@@ -32,6 +34,9 @@ enum ServerMessageType: Codable {
         case .reverbChange:
             let data = try container.decode(ReverbChangeEntity.self, forKey: .data)
             self = .reverbChange(data)
+        case .delayChange:
+            let data = try container.decode(DelayChangeEntity.self, forKey: .data)
+            self = .delayChange(data)
         }
     }
 
@@ -44,6 +49,9 @@ enum ServerMessageType: Codable {
             try container.encode(entity, forKey: .data)
         case .reverbChange(let entity):
             try container.encode(MessageName.reverbChange, forKey: .type)
+            try container.encode(entity, forKey: .data)
+        case .delayChange(let entity):
+            try container.encode(MessageName.delayChange, forKey: .type)
             try container.encode(entity, forKey: .data)
         }
     }

@@ -17,6 +17,8 @@ final class EffectValueStore {
     private var channelVolumeByChannel: [MessageBuilder.ChannelType: Int] = [:]
     // reverb
     private var reverbByChannel: [MessageBuilder.ChannelType: Int] = [:]
+    // delay
+    private var delayByChannel: [MessageBuilder.ChannelType: Int] = [:]
 
     // MARK: API (channel volume)
 
@@ -36,5 +38,15 @@ final class EffectValueStore {
 
     func getReverb(for channel: MessageBuilder.ChannelType) -> Int {
         reverbByChannel[channel] ?? 0
+    }
+
+    // MARK: API (delay)
+
+    func setDelay(_ value: Int, for channel: MessageBuilder.ChannelType) {
+        delayByChannel[channel] = value
+    }
+
+    func getDelay(for channel: MessageBuilder.ChannelType) -> Int {
+        delayByChannel[channel] ?? 0
     }
 }

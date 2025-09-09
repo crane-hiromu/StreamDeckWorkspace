@@ -62,6 +62,8 @@ final class DelayController {
         let v = max(min(wetDryMix, mixMax), mixMin)
         mixByChannel[channel] = v
         node.wetDryMix = v
+        // 表示用に mix 値を送信
+        ServerMessageSender.shared.sendDelayChange(channel: channel.rawValue, delay: Int(v))
     }
 
     /// ダイヤル等のステップ入力で time を変更
@@ -118,6 +120,8 @@ final class DelayController {
         node.wetDryMix = 0.0
         node.lowPassCutoff = 15000 // デフォルト維持
         node.bypass = true
+        // 表示リセット
+        ServerMessageSender.shared.sendDelayChange(channel: channel.rawValue, delay: 0)
     }
 
     // MARK: Macro control

@@ -229,6 +229,8 @@ final class AdvancedSoundPlayer {
         ServerMessageSender.shared.sendChannelVolumeResetAllChannels()
         // フロント側の全チャンネルのリバーブ表示もリセット
         ServerMessageSender.shared.sendReverbResetAllChannels()
+        // フロント側の全チャンネルのディレイ表示もリセット
+        ServerMessageSender.shared.sendDelayResetAllChannels()
     }
 
     // 全チャンネルのレートをデフォルトに戻す

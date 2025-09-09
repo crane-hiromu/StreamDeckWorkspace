@@ -35,9 +35,14 @@ final class DelayDialAction: EncoderAction {
     required init(context: String, coordinates: StreamDeck.Coordinates?) {
         self.context = context
         self.coordinates = coordinates
+        configure()
     }
 
     // MARK: Dial Action
+
+    func willAppear(device: String, payload: AppearEvent<Settings>) {
+        updateValue()
+    }
 
     func dialRotate(device: String, payload: EncoderEvent<Settings>) {
         // 画面に数値を出したかったが、処理が複雑になるので一旦出していない
@@ -61,5 +66,41 @@ final class DelayDialAction: EncoderAction {
             coordinates: payload.coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
+    }
+
+    // MARK: Common
+
+    func configure() {
+        NotificationCenter.default.addObserver(
+            forName: .delayChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] nofi in
+            guard let self else { return }
+            let data = nofi.userInfo?[MessageReceiver.entityKey]
+            guard let entity = data as? DelayChangeEntity else { return }
+
+            let type = MessageBuilder.ChannelType(rawValue: entity.channel)
+            guard type == self.channel else { return }
+
+            EffectValueStore.shared.setDelay(entity.delay, for: self.channel)
+            self.setFeedback([DelayDialType.currentValue.key: "\(entity.delay)"])
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: .channelChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            self.updateValue()
+        }
+    }
+
+    // MARK: Helpers
+
+    private func updateValue() {
+        let value = EffectValueStore.shared.getDelay(for: channel)
+        setFeedback([DelayDialType.currentValue.key: "\(value)"])
     }
 }
