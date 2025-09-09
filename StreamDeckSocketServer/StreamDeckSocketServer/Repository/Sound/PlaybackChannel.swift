@@ -103,8 +103,8 @@ final class PlaybackChannel {
         // 音量制御用EQノードの設定
         setupVolumeNode()
         
-        // 初期音量を設定（1.0 = 100%）
-        setChannelVolume(1.0)
+        // 初期音量を現在のチャンネル音量で適用
+        setChannelVolume(channelVolume)
 
         // ディレイを初期状態（無効）に設定
         delayController.reset(on: channel, node: delay)

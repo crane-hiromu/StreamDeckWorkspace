@@ -29,6 +29,9 @@ final class StutterDialAction: EncoderAction {
     var context: String
     var coordinates: StreamDeck.Coordinates?
     
+    // 動的チャンネル（デフォルトは現在のチャンネル）
+    var channel: MessageBuilder.ChannelType { ChannelManager.shared.getCurrentChannel() }
+    
     // 現在のセグメント長をローカルで管理（他のアクションからもアクセス可能）
     static var currentSegmentLength: Double = 0.25
 
@@ -49,7 +52,7 @@ final class StutterDialAction: EncoderAction {
 
         let message = MessageBuilder.buildStutterDialMessage(
             type: .dialRotate,
-            channel: .main,
+            channel: channel,
             coordinates: payload.coordinates,
             segmentLength: StutterDialAction.currentSegmentLength
         )
@@ -64,7 +67,7 @@ final class StutterDialAction: EncoderAction {
 
         let message = MessageBuilder.buildStutterDialMessage(
             type: .dialDown,
-            channel: .main,
+            channel: channel,
             coordinates: payload.coordinates,
             segmentLength: StutterDialAction.currentSegmentLength
         )

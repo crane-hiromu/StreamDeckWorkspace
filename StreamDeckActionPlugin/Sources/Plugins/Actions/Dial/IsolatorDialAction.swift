@@ -28,6 +28,9 @@ final class IsolatorDialAction: EncoderAction {
 
     var context: String
     var coordinates: StreamDeck.Coordinates?
+    
+    // 動的チャンネル（デフォルトは現在のチャンネル）
+    var channel: MessageBuilder.ChannelType { ChannelManager.shared.getCurrentChannel() }
 
     required init(context: String, coordinates: StreamDeck.Coordinates?) {
         self.context = context
@@ -42,7 +45,7 @@ final class IsolatorDialAction: EncoderAction {
 
         let message = MessageBuilder.buildFrequencyDialMessage(
             type: .dialRotate,
-            channel: .main, // non related
+            channel: channel,
             coordinates: payload.coordinates,
             frequency: payload.ticks
         )
@@ -54,7 +57,7 @@ final class IsolatorDialAction: EncoderAction {
 
         let message = MessageBuilder.buildFrequencyDialMessage(
             type: .dialDown,
-            channel: .main, // non related
+            channel: channel,
             coordinates: payload.coordinates
         )
         UnixSocketClient.shared.sendMessage(message)

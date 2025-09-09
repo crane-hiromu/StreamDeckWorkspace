@@ -28,6 +28,9 @@ final class ScratchDialAction: EncoderAction {
 
     var context: String
     var coordinates: StreamDeck.Coordinates?
+    
+    // 動的チャンネル（デフォルトは現在のチャンネル）
+    var channel: MessageBuilder.ChannelType { ChannelManager.shared.getCurrentChannel() }
 
     required init(context: String, coordinates: StreamDeck.Coordinates?) {
         self.context = context
@@ -42,7 +45,7 @@ final class ScratchDialAction: EncoderAction {
 
         let message = MessageBuilder.buildScratchDialMessage(
             type: .dialRotate,
-            channel: .main,
+            channel: channel,
             coordinates: payload.coordinates,
             scratch: payload.ticks
         )
@@ -54,7 +57,7 @@ final class ScratchDialAction: EncoderAction {
 
         let message = MessageBuilder.buildScratchDialMessage(
             type: .dialDown,
-            channel: .main,
+            channel: channel,
             coordinates: payload.coordinates
         )
         UnixSocketClient.shared.sendMessage(message)

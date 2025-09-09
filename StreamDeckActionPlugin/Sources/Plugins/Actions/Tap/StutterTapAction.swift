@@ -43,7 +43,7 @@ final class StutterTapAction: KeyAction {
         let message = MessageBuilder.buildStutterTapMessage(
             type: .keyDown,
             command: .stutter,
-            channel: .main,
+            channel: ChannelManager.shared.getCurrentChannel(),
             segmentLength: segmentLength, // デフォルト値を使用
             coordinates: coordinates
         )
