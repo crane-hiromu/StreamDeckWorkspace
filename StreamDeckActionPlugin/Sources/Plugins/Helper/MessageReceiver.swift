@@ -53,6 +53,8 @@ final class MessageReceiver {
         switch message.message {
         case .volumeChange(let entity):
             post(.volumeChanged, entity: entity)
+        case .reverbChange(let entity):
+            post(.reverbChanged, entity: entity)
         }
     }
 

@@ -15,9 +15,9 @@ protocol VolumeDialActionProtocol: EncoderAction where Settings == NoSettings {
 }
 
 extension VolumeDialActionProtocol {
-    
+
     static var icon: String { "Icons/actionIcon" }
-    
+
     static var encoder: RotaryEncoder? {
         RotaryEncoder(
             layout: layoutName,
@@ -27,9 +27,17 @@ extension VolumeDialActionProtocol {
             push: "Mute"
         )
     }
-    
+
     static var userTitleEnabled: Bool? { false }
-    
+
+    // MARK: Life Cycle
+
+    func willAppear(device: String, payload: AppearEvent<Settings>) {
+        updateValue()
+    }
+
+    // MARK: Dial Action
+
     func dialRotate(device: String, payload: EncoderEvent<NoSettings>) {
         let message = MessageBuilder.buildVolumeDialMessage(
             type: .dialRotate,
@@ -39,7 +47,7 @@ extension VolumeDialActionProtocol {
         )
         UnixSocketClient.shared.sendMessage(message)
     }
-    
+
     func dialDown(device: String, payload: EncoderPressEvent<NoSettings>) {
         let message = MessageBuilder.buildVolumeDialMessage(
             type: .dialDown,
@@ -48,7 +56,9 @@ extension VolumeDialActionProtocol {
         )
         UnixSocketClient.shared.sendMessage(message)
     }
-    
+
+    // MARK: Common
+
     func configure() {
         NotificationCenter.default.addObserver(
             forName: .volumeChanged,
@@ -61,7 +71,23 @@ extension VolumeDialActionProtocol {
             let type = MessageBuilder.ChannelType(rawValue: entity.channel)
             guard type == channel else { return }
 
+            // 値を保存してからUI反映
+            if let type { EffectValueStore.shared.setChannelVolume(entity.volume, for: type) }
             setFeedback([VolumeDialType.currentVolume.key: "\(entity.volume)"])
         }
+
+        NotificationCenter.default.addObserver(
+            forName: .channelChanged,
+            object: nil,
+            queue: .main
+        ) { _ in
+            updateValue()
+        }
+    }
+
+    func updateValue() {
+        guard let channel else { return }
+        let value = EffectValueStore.shared.getChannelVolume(for: channel)
+        setFeedback([VolumeDialType.currentVolume.key: "\(value)"])
     }
 }

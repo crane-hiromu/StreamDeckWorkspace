@@ -9,6 +9,7 @@ import Foundation
 /// サーバーメッセージのタイプ（ActionTypeパターンに準拠）
 enum ServerMessageType: Codable {
     case volumeChange(VolumeChangeEntity)
+    case reverbChange(ReverbChangeEntity)
 
     enum CodingKeys: String, CodingKey {
         case type
@@ -17,6 +18,7 @@ enum ServerMessageType: Codable {
 
     enum MessageName: String, Codable {
         case volumeChange
+        case reverbChange
     }
 
     init(from decoder: Decoder) throws {
@@ -27,6 +29,9 @@ enum ServerMessageType: Codable {
         case .volumeChange:
             let data = try container.decode(VolumeChangeEntity.self, forKey: .data)
             self = .volumeChange(data)
+        case .reverbChange:
+            let data = try container.decode(ReverbChangeEntity.self, forKey: .data)
+            self = .reverbChange(data)
         }
     }
 
@@ -36,6 +41,9 @@ enum ServerMessageType: Codable {
         switch self {
         case .volumeChange(let entity):
             try container.encode(MessageName.volumeChange, forKey: .type)
+            try container.encode(entity, forKey: .data)
+        case .reverbChange(let entity):
+            try container.encode(MessageName.reverbChange, forKey: .type)
             try container.encode(entity, forKey: .data)
         }
     }

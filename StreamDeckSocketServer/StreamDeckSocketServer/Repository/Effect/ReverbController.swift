@@ -39,12 +39,14 @@ final class ReverbController {
         let v = max(min(wetDryMix, wetDryMixMax), wetDryMixMin)
         wetDryMixByChannel[channel] = v
         node.wetDryMix = v
+        ServerMessageSender.shared.sendReverbChange(channel: channel.rawValue, reverb: Int(v))
     }
 
     /// マクロ制御用（累積値を上書きしない）
     func setMacroOnly(wetDryMix: Float, on channel: AdvancedSoundPlayer.Channel, node: AVAudioUnitReverb) {
         let v = max(min(wetDryMix, wetDryMixMax), wetDryMixMin)
         node.wetDryMix = v
+        ServerMessageSender.shared.sendReverbChange(channel: channel.rawValue, reverb: Int(v))
     }
 
     /// ダイヤル等のステップ入力で wetDryMix を変更
@@ -67,6 +69,7 @@ final class ReverbController {
         enabledByChannel[channel] = false
         node.wetDryMix = 0.0
         node.bypass = true
+        ServerMessageSender.shared.sendReverbChange(channel: channel.rawValue, reverb: 0)
     }
 
     // MARK: Macro control

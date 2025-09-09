@@ -225,6 +225,10 @@ final class AdvancedSoundPlayer {
     // 全停止
     func stopAll() {
         channels.values.forEach { $0.stop() }
+        // フロント側の全チャンネルのボリュームも初期値(100)に更新
+        ServerMessageSender.shared.sendChannelVolumeResetAllChannels()
+        // フロント側の全チャンネルのリバーブ表示もリセット
+        ServerMessageSender.shared.sendReverbResetAllChannels()
     }
 
     // 全チャンネルのレートをデフォルトに戻す

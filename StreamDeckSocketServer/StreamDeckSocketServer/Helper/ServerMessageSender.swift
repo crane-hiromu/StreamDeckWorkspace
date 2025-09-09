@@ -15,7 +15,7 @@ final class ServerMessageSender {
     
     private var unixSocketServer: UnixSocketServer?
     
-    // MARK: Methods
+    // MARK: Common
     
     /// UnixSocketServerの参照を設定する
     /// - Parameter server: UnixSocketServerのインスタンス
@@ -32,6 +32,8 @@ final class ServerMessageSender {
         server.sendMessageToClient(message)
     }
 
+    // MARK: Volume
+
     /// システムボリューム変更メッセージを送信
     func sendSystemVolumeChange(volume: Int) {
         sendMessage(ServerMessageBuilder.buildVolumeChangeMessage(
@@ -45,5 +47,29 @@ final class ServerMessageSender {
             channel: channel,
             volume: volume
         ))
+    }
+
+    /// 全チャンネルのボリュームを初期値(100)で送信
+    func sendChannelVolumeResetAllChannels() {
+        for channel in AdvancedSoundPlayer.Channel.allCases {
+            sendChannelVolumeChange(channel: channel.rawValue, volume: 100)
+        }
+    }
+
+    // MARK: Reverb
+
+    /// リバーブ変更メッセージを送信
+    func sendReverbChange(channel: Int, reverb: Int) {
+        sendMessage(ServerMessageBuilder.buildReverbChangeMessage(
+            channel: channel,
+            reverb: reverb
+        ))
+    }
+
+    /// 全チャンネルのリバーブ値リセットを送信
+    func sendReverbResetAllChannels() {
+        for channel in AdvancedSoundPlayer.Channel.allCases {
+            sendReverbChange(channel: channel.rawValue, reverb: 0)
+        }
     }
 }

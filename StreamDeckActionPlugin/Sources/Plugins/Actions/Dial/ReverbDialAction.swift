@@ -28,13 +28,20 @@ final class ReverbDialAction: EncoderAction {
 
     var context: String
     var coordinates: StreamDeck.Coordinates?
-    
+
     // 動的チャンネル（デフォルトは現在のチャンネル）
     var channel: MessageBuilder.ChannelType { ChannelManager.shared.getCurrentChannel() }
 
     required init(context: String, coordinates: StreamDeck.Coordinates?) {
         self.context = context
         self.coordinates = coordinates
+        configure()
+    }
+
+    // MARK: Life Cycle
+
+    func willAppear(device: String, payload: AppearEvent<Settings>) {
+        updateValue()
     }
 
     // MARK: Dial Action
@@ -61,5 +68,41 @@ final class ReverbDialAction: EncoderAction {
             coordinates: payload.coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
+    }
+}
+
+// MARK: - Private
+private extension ReverbDialAction {
+
+    func configure() {
+        NotificationCenter.default.addObserver(
+            forName: .reverbChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] nofi in
+            guard let self else { return }
+            let data = nofi.userInfo?[MessageReceiver.entityKey]
+            guard let entity = data as? ReverbChangeEntity else { return }
+
+            let type = MessageBuilder.ChannelType(rawValue: entity.channel)
+            guard type == self.channel else { return }
+
+            // 値を保存してからUI反映
+            EffectValueStore.shared.setReverb(entity.reverb, for: self.channel)
+            self.setFeedback([ReverbDialType.currentValue.key: "\(entity.reverb)"])
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: .channelChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateValue()
+        }
+    }
+
+    func updateValue() {
+        let value = EffectValueStore.shared.getReverb(for: channel)
+        setFeedback([ReverbDialType.currentValue.key: "\(value)"])
     }
 }

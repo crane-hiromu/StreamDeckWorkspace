@@ -22,7 +22,8 @@ final class ServerMessageBuilder {
         case type,
              data,
              channel,
-             volume
+             volume,
+             reverb
 
         var key: String { rawValue }
     }
@@ -33,11 +34,12 @@ final class ServerMessageBuilder {
      */
     enum MessageType: String {
         case volumeChange
+        case reverbChange
 
         var key: String { rawValue }
     }
 
-    // MARK: Volume Change
+    // MARK: Message Builder
 
     /**
      * VolumeChange用のメッセージを構築します
@@ -49,6 +51,21 @@ final class ServerMessageBuilder {
             "\(MessageKeys.data.key)": {
                 "\(MessageKeys.channel.key)": \(channel ?? -1),
                 "\(MessageKeys.volume.key)": \(volume)
+            }
+        }
+        """
+    }
+
+    /**
+     * ReverbChange用のメッセージを構築します
+     */
+    static func buildReverbChangeMessage(channel: Int, reverb: Int) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(MessageType.reverbChange.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.channel.key)": \(channel),
+                "\(MessageKeys.reverb.key)": \(reverb)
             }
         }
         """

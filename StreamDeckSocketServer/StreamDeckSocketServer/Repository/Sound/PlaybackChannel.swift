@@ -217,7 +217,6 @@ final class PlaybackChannel {
         resetDelay()
         stopScratching()
         stopStutter()
-        resetChannelVolume()
     }
 
     /// 再生中かどうか

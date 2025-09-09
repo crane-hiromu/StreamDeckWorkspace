@@ -31,3 +31,9 @@ struct VolumeChangeEntity: Codable, ServerMessageEntity {
     let channel: Int
     let volume: Int
 }
+
+/// リバーブ変更エンティティ
+struct ReverbChangeEntity: Codable, ServerMessageEntity {
+    let channel: Int
+    let reverb: Int
+}
