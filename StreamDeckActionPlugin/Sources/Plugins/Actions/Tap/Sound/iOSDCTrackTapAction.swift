@@ -17,7 +17,6 @@ final class iOSDCTrackTapAction: SoundTapAction {
     static var actionUUID: String { "titletrack.tap" }
     static var actionTitle: String { "iOSDC\nTrack" }
     static var soundType: MessageBuilder.SoundType { .iosdc }
-    static var channelType: MessageBuilder.ChannelType { .sound }
 
     var context: String
     var coordinates: Coordinates?
@@ -27,4 +26,6 @@ final class iOSDCTrackTapAction: SoundTapAction {
         self.coordinates = coordinates
         setDefaultTitle()
     }
+
+    var channel: MessageBuilder.ChannelType { .sound }
 }

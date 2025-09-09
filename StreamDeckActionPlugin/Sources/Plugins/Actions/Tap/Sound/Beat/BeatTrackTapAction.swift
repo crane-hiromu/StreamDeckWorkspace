@@ -16,7 +16,6 @@ final class BeatTrackTapAction: SoundTapAction {
     static var actionUUID: String { "beattrack.tap" }
     static var actionTitle: String { "Beat\nTrack" }
     static var soundType: MessageBuilder.SoundType { .beat }
-    static var channelType: MessageBuilder.ChannelType { .main }
 
     var context: String
     var coordinates: Coordinates?

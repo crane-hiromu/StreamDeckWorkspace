@@ -7,8 +7,6 @@ final class MaVoice4SumimasenTapAction: SoundTapAction {
     static var actionUUID: String { "voice.ma4.sumimasen.tap" }
     static var actionTitle: String { "MA\nSUMIMASEN" }
     static var soundType: MessageBuilder.SoundType { .maVoice4Sumimasen }
-    static var channelType: MessageBuilder.ChannelType { .sound }
-
     var context: String
     var coordinates: Coordinates?
 
@@ -17,4 +15,6 @@ final class MaVoice4SumimasenTapAction: SoundTapAction {
         self.coordinates = coordinates
         setDefaultTitle()
     }
+
+    var channel: MessageBuilder.ChannelType { .sound }
 }

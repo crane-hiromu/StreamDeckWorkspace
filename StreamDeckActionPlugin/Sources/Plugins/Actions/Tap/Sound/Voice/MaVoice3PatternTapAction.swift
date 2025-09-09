@@ -7,8 +7,6 @@ final class MaVoice3PatternTapAction: SoundTapAction {
     static var actionUUID: String { "voice.ma3.pattern.tap" }
     static var actionTitle: String { "MA\nPATTERN" }
     static var soundType: MessageBuilder.SoundType { .maVoice3Pattern }
-    static var channelType: MessageBuilder.ChannelType { .sound }
-
     var context: String
     var coordinates: Coordinates?
 
@@ -17,4 +15,6 @@ final class MaVoice3PatternTapAction: SoundTapAction {
         self.coordinates = coordinates
         setDefaultTitle()
     }
+
+    var channel: MessageBuilder.ChannelType { .sound }
 }

@@ -7,8 +7,6 @@ final class MaVoice7TashikaniTapAction: SoundTapAction {
     static var actionUUID: String { "voice.ma7.tashikani.tap" }
     static var actionTitle: String { "MA\nTASHIKANI" }
     static var soundType: MessageBuilder.SoundType { .maVoice7Tashikani }
-    static var channelType: MessageBuilder.ChannelType { .sound }
-
     var context: String
     var coordinates: Coordinates?
 
@@ -17,4 +15,6 @@ final class MaVoice7TashikaniTapAction: SoundTapAction {
         self.coordinates = coordinates
         setDefaultTitle()
     }
+    
+    var channel: MessageBuilder.ChannelType { .sound }
 }

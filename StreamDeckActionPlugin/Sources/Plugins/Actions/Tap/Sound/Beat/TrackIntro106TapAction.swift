@@ -7,7 +7,6 @@ final class TrackIntro106TapAction: SoundTapAction {
     static var actionUUID: String { "trackintro106.tap" }
     static var actionTitle: String { "Track\nIntro 106" }
     static var soundType: MessageBuilder.SoundType { .trackIntro106 }
-    static var channelType: MessageBuilder.ChannelType { .sub }
 
     var context: String
     var coordinates: Coordinates?

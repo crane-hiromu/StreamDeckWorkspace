@@ -24,6 +24,9 @@ final class StopTapAction: KeyAction {
 
     var context: String
     var coordinates: Coordinates?
+    
+    // 動的チャンネル（デフォルトは現在のチャンネル）
+    var channel: MessageBuilder.ChannelType { ChannelManager.shared.getCurrentChannel() }
 
     required init(context: String, coordinates: Coordinates?) {
         self.context = context
@@ -35,10 +38,9 @@ final class StopTapAction: KeyAction {
         let message = MessageBuilder.buildStopTapMessage(
             type: .keyDown,
             command: .stopSound,
-            channel: .main,
+            channel: channel,
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
     }
 }
-

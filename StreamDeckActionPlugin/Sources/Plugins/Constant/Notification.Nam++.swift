@@ -10,4 +10,5 @@ import Foundation
 // MARK: - Name
 extension Notification.Name {
     static let volumeChanged = Self(String(describing: VolumeChangeEntity.self))
+    static let channelChanged = Self(String(describing: ChannelManager.self))
 }

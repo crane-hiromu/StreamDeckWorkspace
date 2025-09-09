@@ -7,8 +7,6 @@ final class HaseVoice7KyuomoTapAction: SoundTapAction {
     static var actionUUID: String { "voice.hase7.kyuomo.tap" }
     static var actionTitle: String { "HASE\nKYUOMO" }
     static var soundType: MessageBuilder.SoundType { .haseVoice7Kyuomo }
-    static var channelType: MessageBuilder.ChannelType { .sound }
-
     var context: String
     var coordinates: Coordinates?
 
@@ -17,4 +15,6 @@ final class HaseVoice7KyuomoTapAction: SoundTapAction {
         self.coordinates = coordinates
         setDefaultTitle()
     }
+    
+    var channel: MessageBuilder.ChannelType { .sound }
 }

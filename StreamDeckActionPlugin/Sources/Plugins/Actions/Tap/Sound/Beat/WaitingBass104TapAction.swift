@@ -7,7 +7,6 @@ final class WaitingBass104TapAction: SoundTapAction {
     static var actionUUID: String { "waitingbass104.tap" }
     static var actionTitle: String { "Waiting\nBass 104" }
     static var soundType: MessageBuilder.SoundType { .waitingBass104 }
-    static var channelType: MessageBuilder.ChannelType { .sub }
 
     var context: String
     var coordinates: Coordinates?

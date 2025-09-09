@@ -8,7 +8,10 @@ protocol SoundTapAction: KeyAction {
     static var actionUUID: String { get }
     static var actionTitle: String { get }
     static var soundType: MessageBuilder.SoundType { get }
-    static var channelType: MessageBuilder.ChannelType { get }
+    
+    /// 使用するチャンネルを取得
+    /// デフォルトはChannelManager.shared.getCurrentChannel()
+    var channel: MessageBuilder.ChannelType { get }
 }
 
 extension SoundTapAction {
@@ -18,8 +21,13 @@ extension SoundTapAction {
     static var icon: String { "Icons/actionIcon" }
     static var states: [PluginActionState]? { 
         [PluginActionState(image: "Icons/actionDefaultImage", titleAlignment: .middle)] 
-        }
+    }
     static var userTitleEnabled: Bool? { false }
+
+    // デフォルトのチャンネル設定
+    var channel: MessageBuilder.ChannelType {
+        ChannelManager.shared.getCurrentChannel()
+    }
 
     // 初期化後にタイトル設定するためのヘルパー
     func setDefaultTitle() {
@@ -32,7 +40,7 @@ extension SoundTapAction {
             type: .keyDown,
             command: .playSound,
             sound: Self.soundType,
-            channel: Self.channelType,
+            channel: self.channel,
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)

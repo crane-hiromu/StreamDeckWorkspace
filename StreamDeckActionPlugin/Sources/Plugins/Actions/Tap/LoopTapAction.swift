@@ -24,6 +24,9 @@ final class LoopTapAction: KeyAction {
 
     var context: String
     var coordinates: Coordinates?
+    
+    // 動的チャンネル（デフォルトは現在のチャンネル）
+    var channel: MessageBuilder.ChannelType { ChannelManager.shared.getCurrentChannel() }
 
     private var loop: Bool = false
 
@@ -37,7 +40,7 @@ final class LoopTapAction: KeyAction {
         let message = MessageBuilder.buildLoopTapMessage(
             type: .keyDown,
             command: .setLoopState,
-            channel: .main,
+            channel: channel,
             coordinates: coordinates
         )
         UnixSocketClient.shared.sendMessage(message)
