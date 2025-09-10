@@ -105,7 +105,7 @@ struct LongPressDialUpEntity: DialEntity, Codable {
 
 // MARK: - Common Entity
 
-struct KeyCoordinates: Codable {
+struct KeyCoordinates: Codable, Equatable {
     let column: Int
     let row: Int
 }

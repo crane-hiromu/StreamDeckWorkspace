@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-// MARK: - view
+// MARK: - MainView
 struct MainView: View {
-    @State private var highlighted: (column: Int, row: Int)? = nil
+    @StateObject private var viewModel = MainViewModel()
     private let columns = 4
     private let rows = 4
 
@@ -28,11 +28,6 @@ struct MainView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(Color(NSColor.windowBackgroundColor))
-        .onReceive(NotificationCenter.default.publisher(for: .streamDeckCoordinatesUpdated)) { notification in
-            let column = notification.userInfo?["column"] as? Int
-            let row = notification.userInfo?["row"] as? Int
-            if let column, let row { highlighted = (column, row) }
-        }
     }
 }
 
@@ -90,26 +85,16 @@ private extension MainView {
 
         RoundedRectangle(cornerRadius: min(width, height) * 0.18)
             .strokeBorder(
-                squareButtonColor(col: col, row: row),
-                lineWidth: strokeBorderWidth(col: col, row: row)
+                viewModel.squareButtonColor(col: col, row: row),
+                lineWidth: viewModel.strokeBorderWidth(col: col, row: row)
             )
             .background(
                 RoundedRectangle(cornerRadius: min(width, height) * 0.18)
-                    .fill(squareButtonBackgroundColor(col: col, row: row))
+                    .fill(viewModel.squareButtonBackgroundColor(col: col, row: row))
             )
             .frame(width: width, height: height)
-    }
-
-    func squareButtonColor(col: Int, row: Int) -> Color {
-        isHighlighted(col: col, row: row) ? .blue : .gray.opacity(0.4)
-    }
-
-    func squareButtonBackgroundColor(col: Int, row: Int) -> Color {
-        isHighlighted(col: col, row: row) ? .blue.opacity(0.15) : .black.opacity(0.06)
-    }
-
-    func strokeBorderWidth(col: Int, row: Int) -> CGFloat {
-        isHighlighted(col: col, row: row) ? 4 : 1
+            .scaleEffect(viewModel.isHighlighted(col: col, row: row) ? 1.05 : 1.0)
+            .animation(.easeInOut(duration: 0.2), value: viewModel.highlighted)
     }
 
     // MARK: rectangleButton
@@ -120,55 +105,39 @@ private extension MainView {
                          row: Int) -> some View {
         Rectangle()
             .strokeBorder(
-                rectangleButtonColor(col: col, row: row),
-                lineWidth: strokeBorderWidth(col: col, row: row)
+                viewModel.rectangleButtonColor(col: col, row: row),
+                lineWidth: viewModel.strokeBorderWidth(col: col, row: row)
             )
             .background(
                 Rectangle()
-                    .fill(rectangleButtonBackgroundColor(col: col, row: row))
+                    .fill(viewModel.rectangleButtonBackgroundColor(col: col, row: row))
             )
             .frame(width: width, height: height)
-    }
-
-    func rectangleButtonColor(col: Int, row: Int) -> Color {
-        isHighlighted(col: col, row: row) ? .green : .gray.opacity(0.4)
-    }
-
-    func rectangleButtonBackgroundColor(col: Int, row: Int) -> Color {
-        isHighlighted(col: col, row: row) ? .green.opacity(0.15) : .black.opacity(0.06)
+            .scaleEffect(viewModel.isHighlighted(col: col, row: row) ? 1.05 : 1.0)
+            .animation(.easeInOut(duration: 0.2), value: viewModel.highlighted)
     }
 
     // MARK: circleButton
 
     func circleButton(diameter: CGFloat,
-                      frameW: CGFloat,
-                      frameH: CGFloat,
-                      col: Int,
-                      row: Int) -> some View {
+                       frameW: CGFloat,
+                       frameH: CGFloat,
+                       col: Int,
+                       row: Int) -> some View {
         ZStack {
             Circle()
                 .strokeBorder(
-                    circleButtonColor(col: col, row: row),
-                    lineWidth: strokeBorderWidth(col: col, row: row)
+                    viewModel.circleButtonColor(col: col, row: row),
+                    lineWidth: viewModel.strokeBorderWidth(col: col, row: row)
                 )
                 .background(
-                    Circle().fill(circleButtonBackgroundColor(col: col, row: row))
+                    Circle().fill(viewModel.circleButtonBackgroundColor(col: col, row: row))
                 )
                 .frame(width: diameter, height: diameter)
         }
         .frame(width: frameW, height: frameH)
-    }
-
-    func circleButtonColor(col: Int, row: Int) -> Color {
-        isHighlighted(col: col, row: row) ? .red : .gray.opacity(0.4)
-    }
-
-    func circleButtonBackgroundColor(col: Int, row: Int) -> Color {
-        isHighlighted(col: col, row: row) ? .red.opacity(0.15) : .black.opacity(0.06)
-    }
-
-    func isHighlighted(col: Int, row: Int) -> Bool {
-        highlighted?.column == col && highlighted?.row == row
+        .scaleEffect(viewModel.isHighlighted(col: col, row: row) ? 1.05 : 1.0)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.highlighted)
     }
 }
 
