@@ -26,4 +26,5 @@ enum CommandType: Int, Codable {
     case scratchWithBounce
     case playTone
     case stutter
+    case switchChannel
 }

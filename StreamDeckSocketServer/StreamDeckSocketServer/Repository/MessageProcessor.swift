@@ -39,7 +39,11 @@ final class MessageProcessor {
     /// メッセージエンティティを処理する
     /// - Parameter message: 処理するメッセージエンティティ
     private func handleMessage(_ entity: MessageEntity) {
-        debugPrint("📨 Processing message: \(entity)")
+        // debugPrint("📨 Processing message: \(entity)")
+
+        // 座標通知を送信（ダイアルの場合は4列のボタンにマッピング）
+        let adjustedCoordinates = adjustCoordinatesForDial(entity.action)
+        postCoordinatesNotification(coordinates: adjustedCoordinates)
 
         switch entity.action {
         case .keyDown(let entity):
@@ -107,7 +111,8 @@ final class MessageProcessor {
              .changeFlanger,
              .scratch,
              .scratchWithInertia,
-             .scratchWithBounce:
+             .scratchWithBounce,
+             .switchChannel:
             break
         }
     }
@@ -219,7 +224,8 @@ final class MessageProcessor {
              .playTone,
              .setLoopState,
              .stopSound,
-             .stopAllSound:
+             .stopAllSound,
+             .switchChannel:
             break
         }
     }
@@ -275,7 +281,8 @@ final class MessageProcessor {
              .playTone,
              .setLoopState,
              .stopSound,
-             .stopAllSound:
+             .stopAllSound,
+             .switchChannel:
             break
         }
     }
@@ -299,5 +306,38 @@ final class MessageProcessor {
     /// メインスレッドで実行するヘルパーメソッド
     private func executeOnMain(_ block: @escaping () -> Void) {
         DispatchQueue.main.async(execute: block)
+    }
+
+    /// ダイアルの場合は4列のボタンに座標をマッピング
+    private func adjustCoordinatesForDial(_ action: ActionType) -> KeyCoordinates {
+        let row = 3
+
+        switch action {
+        case .dialRotate(let entity):
+            return KeyCoordinates(column: entity.coordinates.column, row: row)
+        case .dialDown(let entity):
+            return KeyCoordinates(column: entity.coordinates.column, row: row)
+        case .dialUp(let entity):
+            return KeyCoordinates(column: entity.coordinates.column, row: row)
+        case .longPressDialUp(let entity):
+            return KeyCoordinates(column: entity.coordinates.column, row: row)
+        default:
+            // キーイベントの場合はそのまま
+            return action.coordinates
+        }
+    }
+
+    /// UI用に座標通知を発火
+    private func postCoordinatesNotification(coordinates: KeyCoordinates) {
+        executeOnMain {
+            NotificationCenter.default.post(
+                name: .streamDeckCoordinatesUpdated,
+                object: nil,
+                userInfo: [
+                    "column": coordinates.column,
+                    "row": coordinates.row
+                ]
+            )
+        }
     }
 }

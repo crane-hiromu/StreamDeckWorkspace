@@ -26,15 +26,15 @@ struct MessageEntity: Codable {
 protocol BaseEntity {
     var command: CommandType { get }
     var channel: Int { get }
-    // var coordinates: KeyCoordinates { get }
-    // var isValidCoordinate: Bool { get }
+    var coordinates: KeyCoordinates { get }
+    var isValidCoordinate: Bool { get }
 }
 
 extension BaseEntity {
-//    // 座標がマイナスの場合は無効
-//    var isValidCoordinate: Bool {
-//        0 <= coordinates.column || 0 <= coordinates.row
-//    }
+    // 座標がマイナスの場合は無効
+    var isValidCoordinate: Bool {
+        0 <= coordinates.column || 0 <= coordinates.row
+    }
 
     var channelType: AdvancedSoundPlayer.Channel {
         .init(rawValue: channel) ?? .other
@@ -52,16 +52,19 @@ struct KeyDownEntity: KeyEntity, Codable {
     let note: String?
     let stutterSegmentLength: Double?
     let channel: Int
+    let coordinates: KeyCoordinates
 }
 
 struct KeyUpEntity: KeyEntity, Codable {
     let command: CommandType
     let channel: Int
+    let coordinates: KeyCoordinates
 }
 
 struct LongKeyPressEntity: KeyEntity, Codable {
     let command: CommandType
     let channel: Int
+    let coordinates: KeyCoordinates
 }
 
 // MARK: - Dial Action
@@ -69,6 +72,7 @@ struct LongKeyPressEntity: KeyEntity, Codable {
 struct DialRotateEntity: DialEntity, Codable {
     let command: CommandType
     let channel: Int
+    let coordinates: KeyCoordinates
     let volume: Int?
     let rate: Int?
     let pitch: Int?
@@ -84,16 +88,19 @@ struct DialRotateEntity: DialEntity, Codable {
 struct DialDownEntity: DialEntity, Codable {
     let command: CommandType
     let channel: Int
+    let coordinates: KeyCoordinates
 }
 
 struct DialUpEntity: DialEntity, Codable {
     let command: CommandType
     let channel: Int
+    let coordinates: KeyCoordinates
 }
 
 struct LongPressDialUpEntity: DialEntity, Codable {
     let command: CommandType
     let channel: Int
+    let coordinates: KeyCoordinates
 }
 
 // MARK: - Common Entity

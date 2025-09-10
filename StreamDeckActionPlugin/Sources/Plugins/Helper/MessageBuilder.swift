@@ -69,6 +69,7 @@ final class MessageBuilder {
         case scratchWithBounce
         case playTone
         case stutter
+        case switchChannel
 
         var value: Int { rawValue }
     }
@@ -162,6 +163,28 @@ final class MessageBuilder {
                                     command: MessageCommandType,
                                     channel: ChannelType,
                                     coordinates: Coordinates?) -> String {
+        """
+        {
+            "\(MessageKeys.type.key)": "\(type.key)",
+            "\(MessageKeys.data.key)": {
+                "\(MessageKeys.command.key)": \(command.value),
+                "\(MessageKeys.channel.key)": \(channel.id),
+                "\(MessageKeys.coordinates.key)": {
+                    "\(MessageKeys.column.key)": \(coordinates?.column ?? -1),
+                    "\(MessageKeys.row.key)": \(coordinates?.row ?? -1)
+                }
+            }
+        }
+        """
+    }
+
+    /**
+     * ChannelSwitchAction用のメッセージを構築します
+     */
+    static func buildChannelSwitchTapMessage(type: MessageType,
+                                            command: MessageCommandType,
+                                            channel: ChannelType,
+                                            coordinates: Coordinates?) -> String {
         """
         {
             "\(MessageKeys.type.key)": "\(type.key)",

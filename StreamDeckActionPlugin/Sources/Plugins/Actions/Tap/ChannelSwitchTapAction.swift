@@ -23,7 +23,6 @@ final class ChannelSwitchTapAction: KeyAction {
         self.coordinates = coordinates
         updateTitle()
         
-        // チャンネル変更通知を受け取る
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(channelChanged),
@@ -37,8 +36,15 @@ final class ChannelSwitchTapAction: KeyAction {
     }
 
     func keyDown(device: String, payload: KeyEvent<NoSettings>) {
-        // チャンネルを切り替え
         ChannelManager.shared.switchChannel()
+
+        let message = MessageBuilder.buildChannelSwitchTapMessage(
+            type: .keyDown,
+            command: .switchChannel,
+            channel: ChannelManager.shared.getCurrentChannel(),
+            coordinates: coordinates
+        )
+        UnixSocketClient.shared.sendMessage(message)
     }
     
     @objc private func channelChanged() {

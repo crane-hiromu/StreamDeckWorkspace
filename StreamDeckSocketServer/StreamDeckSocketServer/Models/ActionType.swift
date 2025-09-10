@@ -87,4 +87,24 @@ enum ActionType: Codable {
             try container.encode(entity, forKey: .data)
         }
     }
+    
+    /// アクションに含まれる座標を取得
+    var coordinates: KeyCoordinates {
+        switch self {
+        case .keyDown(let entity):
+            return entity.coordinates
+        case .keyUp(let entity):
+            return entity.coordinates
+        case .longKeyPress(let entity):
+            return entity.coordinates
+        case .dialRotate(let entity):
+            return entity.coordinates
+        case .dialDown(let entity):
+            return entity.coordinates
+        case .dialUp(let entity):
+            return entity.coordinates
+        case .longPressDialUp(let entity):
+            return entity.coordinates
+        }
+    }
 }

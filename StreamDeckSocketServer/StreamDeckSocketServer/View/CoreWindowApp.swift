@@ -14,7 +14,10 @@ struct CoreWindowApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
+                .frame(minWidth: 500, maxWidth: 800, minHeight: 500, maxHeight: 800)
         }
+        .windowResizability(.contentSize)
+        .defaultSize(width: 500, height: 500)
     }
 }
