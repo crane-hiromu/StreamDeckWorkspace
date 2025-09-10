@@ -4,21 +4,17 @@ import SwiftUI
 // MARK: - AppDelegate
 final class AppDelegate: NSObject, NSApplicationDelegate {
 
-    // MARK: Property
-
-    private let socketServer = UnixSocketServer()
-
     // MARK: Delegate Method
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        socketServer.startServer()
+        UnixSocketServer.shared.startServer()
         // オーディオエンジンを事前起動（初回再生の遅延を回避）
         AdvancedSoundPlayer.shared.prewarmAudioEngine()
-        ServerMessageSender.shared.setUnixSocketServer(socketServer)
+        ServerMessageSender.shared.setUnixSocketServer(UnixSocketServer.shared)
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        socketServer.stopServer()
+        UnixSocketServer.shared.stopServer()
     }
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {

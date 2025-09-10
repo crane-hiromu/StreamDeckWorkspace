@@ -10,6 +10,11 @@ import Foundation
 // MARK: - Socket Server
 final class UnixSocketServer {
 
+    // MARK: Singleton
+    
+    static let shared = UnixSocketServer()
+    private init() {}
+
     // MARK: Property
 
     private let socketPath = NSHomeDirectory() + "/tmp/streamdeck.sock"

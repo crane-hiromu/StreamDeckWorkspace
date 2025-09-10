@@ -10,33 +10,28 @@ import Foundation
 // MARK: - JSON Parser
 final class JSONParser {
     
-    // MARK: - Singleton
+    // MARK: - Static Properties
     
-    static let shared = JSONParser()
-    private init() { }
-    
-    // MARK: - Properties
-    
-    private lazy var decoder: JSONDecoder = {
+    private static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
     }()
     
-    private lazy var encoder: JSONEncoder = {
+    private static let encoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         return encoder
     }()
     
-    // MARK: - Methods
+    // MARK: - Static Methods
     
     /// JSON文字列から指定された型にデコードする
     /// - Parameters:
     ///   - jsonString: JSON形式の文字列
     ///   - type: デコードする型
     /// - Returns: デコードされたオブジェクト、失敗時はnil
-    func decode<T: Codable>(_ jsonString: String, as type: T.Type) -> T? {
+    static func decode<T: Codable>(_ jsonString: String, as type: T.Type) -> T? {
         guard let data = jsonString.data(using: .utf8) else { return nil }
         
         do {
@@ -53,7 +48,7 @@ final class JSONParser {
     ///   - data: JSONデータ
     ///   - type: デコードする型
     /// - Returns: デコードされたオブジェクト、失敗時はnil
-    func decode<T: Codable>(_ data: Data, as type: T.Type) -> T? {
+    static func decode<T: Codable>(_ data: Data, as type: T.Type) -> T? {
         do {
             let result = try decoder.decode(type, from: data)
             return result
@@ -66,7 +61,7 @@ final class JSONParser {
     /// オブジェクトをJSON文字列にエンコードする
     /// - Parameter object: エンコードするオブジェクト
     /// - Returns: JSON文字列、失敗時はnil
-    func encode<T: Codable>(_ object: T) -> String? {
+    static func encode<T: Codable>(_ object: T) -> String? {
         do {
             let data = try encoder.encode(object)
             return String(data: data, encoding: .utf8)
@@ -79,7 +74,7 @@ final class JSONParser {
     /// オブジェクトをJSONデータにエンコードする
     /// - Parameter object: エンコードするオブジェクト
     /// - Returns: JSONデータ、失敗時はnil
-    func encode<T: Codable>(_ object: T) -> Data? {
+    static func encode<T: Codable>(_ object: T) -> Data? {
         do {
             let data = try encoder.encode(object)
             return data
