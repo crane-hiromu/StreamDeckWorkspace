@@ -22,11 +22,16 @@ final class SocketPlugin: Plugin {
         BeatTrackTapAction.self
         TrackIntro106TapAction.self
         WaitingBass104TapAction.self
-        // Effect Tap Actions
+        // Sound Effect Tap Actions
         LoopTapAction.self
         StopTapAction.self
         ResetAllTapAction.self
         ChannelSwitchTapAction.self
+        StutterTapAction.self
+        // Effect Tap Actions
+        EffectPufTapAction.self
+        EffectInfoStartTapAction.self
+        EffectInfoEndTapAction.self
         // Drum Tap Actions
         DrumBassTapAction.self
         DrumCymbalTapAction.self
@@ -37,8 +42,6 @@ final class SocketPlugin: Plugin {
         DrumEl1TapAction.self
         DrumEl2TapAction.self
         DrumEl3TapAction.self
-        EffectPufTapAction.self
-        StutterTapAction.self
         // Voice Tap Actions
         HaseVoice1MinnaTapAction.self
         HaseVoice2BlogTapAction.self
