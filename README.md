@@ -10,6 +10,8 @@ This project is a versatile server system that sends StreamDeck button and dial 
 
 **Audio Control Features**: Professional music control functionality is implemented for system operation verification and demonstration purposes. It enables intuitive operations for DJ and music production, with real-time effect control and simultaneous multi-channel control.
 
+![StreamDeck DJ](images/st_dj.png)
+
 ### 📦 Project Structure
 This workspace consists of the following two components:
 
