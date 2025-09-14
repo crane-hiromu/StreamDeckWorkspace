@@ -2,6 +2,8 @@
 
 StreamDeckとmacOSアプリケーションをUnixソケット通信で連携させる、汎用的な制御システムです。StreamDeckからの操作を任意のmacOSアプリケーションに送信し、カスタム制御システムを構築できます。
 
+[English version is here / 英語版はこちら](README.md)
+
 ## 🔌 概要
 
 このプロジェクトは、StreamDeckのボタンやダイヤル操作をUnixソケット経由でmacOSアプリケーションに送信する汎用的なサーバーシステムです。StreamDeckからの操作を任意のアプリケーションで受信・処理し、様々な用途に応用可能です。
