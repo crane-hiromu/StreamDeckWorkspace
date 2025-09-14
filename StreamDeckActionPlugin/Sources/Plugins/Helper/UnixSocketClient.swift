@@ -13,8 +13,6 @@ final class UnixSocketClient {
     // MARK: Properties
 
     private var socket: Int32 = -1
-    // サーバー側の NSHomeDirectory() で生成される実際のパスをセット
-    private let socketPath = "\(NSHomeDirectory())/Library/Containers/h.crane.t.StreamDeckSocketServer/Data/tmp/streamdeck.sock"
     private let log = Logger(subsystem: "StreamDeckPlugin", category: "Action")
 
     // MARK: Methods
@@ -38,12 +36,12 @@ final class UnixSocketClient {
         // 基本的にはPOSIX API (C の低レベルソケットAPI)をSwiftから呼んでおり、 C の定義を Swift に自動ブリッジしている
         var serverAddr = sockaddr_un()
         serverAddr.sun_family = sa_family_t(AF_UNIX)
-        strncpy(&serverAddr.sun_path, socketPath, Int(socklen_t(socketPath.count)))
+        strncpy(&serverAddr.sun_path, SocketConfig.socketPath, Int(socklen_t(SocketConfig.socketPath.count)))
         
         // 接続
         let result = Darwin.connect(socket, sockaddr_cast(&serverAddr), socklen_t(MemoryLayout<sockaddr_un>.size))
         if result == 0 {
-            logMessage(#function + " Unix socket connected to \(self.socketPath)")
+            logMessage(#function + " Unix socket connected to \(SocketConfig.socketPath)")
         } else {
             logMessage(#function + " Failed to connect Unix socket: \(errno)")
             close(socket)
