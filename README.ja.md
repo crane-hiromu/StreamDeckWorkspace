@@ -63,7 +63,7 @@ StreamDeckWorkSpace/
 ### 前提条件
 - macOS 15.2以上
 - Xcode 16.0以上
-- Stream Deck
+- Stream Deck +
 
 ### インストール手順
 
@@ -109,6 +109,8 @@ StreamDeckプラグインが自動的にサーバーに接続
 
 ### 5. 操作確認
 macOSサーバーアプリの画面で、StreamDeckからの操作が正しく受信されているかをリアルタイムで確認できます。
+
+⚠️ **注意**: 本システムはStream Deck +（ダイヤル付きモデル）にのみ対応しています。従来のStreamDeck（ボタンのみ）では、ボタン数やレイアウトが異なるため、macOSサーバーアプリでの表示確認ができません。
 
 ![StreamDeck Socket Server UI](images/socket_serve_ui.png)
 
