@@ -104,15 +104,7 @@ Launch the macOS app to start the Unix socket server
 
 ### 2. Configure Actions on StreamDeck Side
 1. **Open StreamDeck App**
-2. **Add Action** → **Custom** → Select **action-plugin**
-3. **Available Actions**:
-   - **Tap Actions**: Audio playback and effect switching on button press
-     - Sound (sound effects), Drum (drums), Tone (scales), Effect (effects)
-   - **Dial Actions**: Real-time control via dial rotation
-     - Volume, Pitch, Rate (playback speed)
-     - Delay, Reverb, Flanger
-     - Isolator (EQ), Scratch, Stutter
-4. **Place on Buttons**: Drag and drop to place on StreamDeck buttons
+2. **Place on Buttons**: Drag and drop to place on StreamDeck buttons
 
 ### 3. StreamDeck Connection
 StreamDeck plugin automatically connects to the server
