@@ -8,9 +8,11 @@ A versatile control system that connects StreamDeck and macOS applications via U
 
 This project is a versatile server system that sends StreamDeck button and dial operations to macOS applications via Unix sockets. StreamDeck operations can be received and processed by any application, making it applicable to various use cases.
 
-**Audio Control Features**: Professional music control functionality is implemented for system operation verification and demonstration purposes. It enables intuitive operations for DJ and music production, with real-time effect control and simultaneous multi-channel control.
+**Audio Control Features**: 
 
 ![StreamDeck DJ](images/st_dj.png)
+
+Professional music control functionality is implemented for system operation verification and demonstration purposes. It enables intuitive operations for DJ and music production, with real-time effect control and simultaneous multi-channel control.
 
 ### 📦 Project Structure
 This workspace consists of the following two components:
