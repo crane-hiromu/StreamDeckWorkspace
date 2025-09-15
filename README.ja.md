@@ -135,6 +135,17 @@ macOSサーバーアプリの画面で、StreamDeckからの操作が正しく�
 
 カスタム用途では、`MessageProcessor.swift`でメッセージ処理ロジックを変更し、任意のアプリケーションとの連携を実現できます。音声制御機能は、システムの動作確認とデモンストレーション用の実装例として参考にしてください。
 
+## ✅ 端末がなくても簡易に試す
+
+物理デバイスをお持ちでなくても、以下の方法で手早く動作確認が可能です：
+
+- Stream Deck Mobile（iPhone/iPad）: https://apps.apple.com/app/elgato-stream-deck-mobile/id1440014184
+- Virtual Stream Deck（デスクトップ、Stream Deck 7.0以上が必要）:
+  - 日本語: https://www.elgato.com/jp/ja/s/virtual-stream-deck
+  - 英語: https://www.elgato.com/us/en/s/virtual-stream-deck
+
+注意: ボタンベースのアクションは容易に検証できます。ダイヤル専用アクションはStream Deck +向けであり、モバイル/バーチャル環境では制限がある場合があります。
+
 ## 🤝 コントリビューション
 
 1. このリポジトリをフォーク

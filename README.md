@@ -139,6 +139,17 @@ This system's Unix socket server can be applied to the following use cases:
 
 For custom use cases, modify the message processing logic in `MessageProcessor.swift` to achieve integration with any application. The audio control functionality serves as a reference implementation example for system operation verification and demonstration purposes.
 
+## ✅ Try Without Physical Device
+
+If you don't have a Stream Deck device yet, you can still try this project quickly using the following options:
+
+- Stream Deck Mobile (iPhone/iPad): https://apps.apple.com/app/elgato-stream-deck-mobile/id1440014184
+- Virtual Stream Deck (Desktop, requires Stream Deck 7.0+):
+  - Japanese: https://www.elgato.com/jp/ja/s/virtual-stream-deck
+  - English: https://www.elgato.com/us/en/s/virtual-stream-deck
+
+Note: Button-based actions can be tested easily. Dial-specific actions target Stream Deck + and may have limitations depending on the virtual/mobile environment.
+
 ## 🤝 Contributing
 
 1. Fork the repository
