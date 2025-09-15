@@ -81,11 +81,11 @@ cd StreamDeckWorkSpace
 
 2. **Build and Install StreamDeck Plugin**
 
-⚠️ **Important**: Before building, change the Bundle ID in `SocketConfig.swift` to your own.
+⚠️ **Important**: Before building, change the Bundle ID in `SocketConfig.swift` to match your directory hierarchy.
 
 ```swift
 // SocketConfig.swift configuration example
-let bundleID = "h.crane.t.StreamDeckSocketServer" // ← Change this to your Bundle ID
+let bundleID = "h.crane.t.StreamDeckSocketServer" // ← Change this to match your directory hierarchy
 ```
 
 **How to modify**:

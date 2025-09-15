@@ -81,11 +81,11 @@ cd StreamDeckWorkSpace
 
 2. **StreamDeckプラグインのビルド・インストール**
 
-⚠️ **重要**: ビルド前に`SocketConfig.swift`のBundle IDを自分のものに書き換えてください。
+⚠️ **重要**: ビルド前に`SocketConfig.swift`のBundle IDを自分のディレクトリ階層に合うように書き換えてください。
 
 ```swift
 // SocketConfig.swift の設定例
-let bundleID = "xxx.yyy.zzz" // ← ここを自分のPCのパスと一致するように変更
+let bundleID = "xxx.yyy.zzz" // ← 自分のディレクトリ階層に合うように変更
 ```
 
 
