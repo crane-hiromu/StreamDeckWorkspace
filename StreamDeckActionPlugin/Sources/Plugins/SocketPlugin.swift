@@ -32,6 +32,7 @@ final class SocketPlugin: Plugin {
         EffectPufTapAction.self
         EffectInfoStartTapAction.self
         EffectInfoEndTapAction.self
+        EffectHornTapAction.self
         // Drum Tap Actions
         DrumBassTapAction.self
         DrumCymbalTapAction.self

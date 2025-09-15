@@ -77,6 +77,7 @@ final class MessageBuilder {
     enum SoundType: String {
         // 効果音
         case puf = "E_puf"
+        case horn = "E_horn"
         case infoStart = "E_info_start"
         case infoEnd = "E_info_end"
 
