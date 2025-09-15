@@ -46,7 +46,7 @@ final class ToneController {
         // バッファを直接再生（確実に再生）
         player.scheduleBuffer(buffer, at: nil, options: [.interrupts], completionHandler: nil)
         player.play()
-        print("🎵 Playing tone \(note)")
+        // print("🎵 Playing tone \(note)")
     }
     
     /// 利用可能な音階のリストを取得

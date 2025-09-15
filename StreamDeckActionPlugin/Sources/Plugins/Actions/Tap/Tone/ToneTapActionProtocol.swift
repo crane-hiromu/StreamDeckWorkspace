@@ -33,8 +33,6 @@ extension ToneTapActionProtocol {
             note: note
         )
         UnixSocketClient.shared.sendMessage(message)
-        
-        print("🎵 Playing tone: \(note) (\(japaneseName))")
     }
     
     func updateTitle() {
