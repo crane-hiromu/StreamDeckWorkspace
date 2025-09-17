@@ -8,11 +8,9 @@ struct SocketConfig {
     // MARK: - Configuration
     
     /// ソケットファイルのパス
-    /// ⚠️ 重要: 自分のBundle IDに合わせて変更してください
-    /// Bundle IDは StreamDeckSocketServer.xcodeproj のプロジェクト設定で確認可能
+    /// サーバーアプリのBundle IDを自動取得してパスを構築
     static let socketPath: String = {
-        // 自分のBundle IDに変更してください
-        let bundleID = "h.crane.t.StreamDeckSocketServer" // ← ここを変更
+        let bundleID = findRunningServerBundleID() ?? ""
         return "\(NSHomeDirectory())/Library/Containers/\(bundleID)/Data/tmp/streamdeck.sock"
     }()
     
@@ -45,6 +43,20 @@ struct SocketConfig {
     }
     
     // MARK: - Private Helpers
+        
+    /// 実行中のStreamDeckSocketServerアプリのBundle IDを取得
+    private static func findRunningServerBundleID() -> String? {
+        let runningApps = NSWorkspace.shared.runningApplications
+        
+        for app in runningApps {
+            if let bundleID = app.bundleIdentifier,
+               bundleID.contains("StreamDeckSocketServer") {
+                return bundleID
+            }
+        }
+        
+        return nil
+    }
     
     private static var bundleIDFromPath: String {
         let components = socketPath.components(separatedBy: "/")
