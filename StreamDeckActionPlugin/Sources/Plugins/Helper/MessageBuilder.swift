@@ -92,27 +92,9 @@ final class MessageBuilder {
         case drumEl2 = "DRUM_EL_2"
         case drumEl3 = "DRUM_EL_3"
         
-        // iOSDC素材
-        case iosdc = "S_iOSDCJP"
-        case beat = "S_BEAT"
-        case trackIntro106 = "TRACK_INTRO_106"
-        case waitingBass104 = "WAITING_BASS_104"
-
-        // 効果音（Voice）
-        case haseVoice1Minna = "HASE_VOICE_1_MINNA"
-        case haseVoice2Blog = "HASE_VOICE_2_BLOG"
-        case haseVoice3Oha = "HASE_VOICE_3_OHA"
-        case haseVoice4Oha = "HASE_VOICE_4_OHA"
-        case haseVoice5Oha = "HASE_VOICE_5_OHA"
-        case haseVoice6Toiuwakde = "HASE_VOICE_6_TOIUWAKDE"
-        case haseVoice7Kyuomo = "HASE_VOICE_7_KYUOMO"
-        case maVoice1Singleton = "MA_VOICE_1_SINGLETON"
-        case maVoice2Instance = "MA_VOICE_2_INSTANCE"
-        case maVoice3Pattern = "MA_VOICE_3_PATTERN"
-        case maVoice4Sumimasen = "MA_VOICE_4_SUMIMASEN"
-        case maVoice5Two = "MA_VOICE_5_TWO"
-        case maVoice6Oioi = "MA_VOICE_6_OIOI"
-        case maVoice7Tashikani = "MA_VOICE_7_TASHIKANI"
+        // リズム音
+        case rhythmS1SF = "S_1_SF"
+        case rhythmS2MIS = "S_2_MIS"
         
 
         var name: String { rawValue }

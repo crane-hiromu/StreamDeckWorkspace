@@ -23,6 +23,8 @@ final class SocketPlugin: Plugin {
         ResetAllTapAction.self
         ChannelSwitchTapAction.self
         StutterTapAction.self
+        RhythmS1SFTapAction.self
+        RhythmS2MISTapAction.self
         // Effect Tap Actions
         EffectPufTapAction.self
         EffectInfoStartTapAction.self

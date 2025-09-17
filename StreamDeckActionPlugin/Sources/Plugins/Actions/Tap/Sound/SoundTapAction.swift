@@ -46,3 +46,41 @@ extension SoundTapAction {
         UnixSocketClient.shared.sendMessage(message)
     }
 }
+
+// MARK: - Rhythm S_1_SF
+final class RhythmS1SFTapAction: SoundTapAction {
+    typealias Settings = NoSettings
+
+    static var actionName: String { "Rhythm S_1_SF Sound" }
+    static var actionUUID: String { "rhythm.s1sf.tap" }
+    static var actionTitle: String { "Rhythm\nS1_SF" }
+    static var soundType: MessageBuilder.SoundType { .rhythmS1SF }
+
+    var context: String
+    var coordinates: Coordinates?
+
+    required init(context: String, coordinates: Coordinates?) {
+        self.context = context
+        self.coordinates = coordinates
+        setDefaultTitle()
+    }
+}
+
+// MARK: - Rhythm S_2_MIS
+final class RhythmS2MISTapAction: SoundTapAction {
+    typealias Settings = NoSettings
+
+    static var actionName: String { "Rhythm S_2_MIS Sound" }
+    static var actionUUID: String { "rhythm.s2mis.tap" }
+    static var actionTitle: String { "Rhythm\nS2_MIS" }
+    static var soundType: MessageBuilder.SoundType { .rhythmS2MIS }
+
+    var context: String
+    var coordinates: Coordinates?
+
+    required init(context: String, coordinates: Coordinates?) {
+        self.context = context
+        self.coordinates = coordinates
+        setDefaultTitle()
+    }
+}
