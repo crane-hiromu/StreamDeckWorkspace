@@ -17,11 +17,6 @@ final class SocketPlugin: Plugin {
         SampleDialAction.self
 
         // MARK: Socket Server Tap Action
-        iOSDCTrackTapAction.self
-        // Beat Tap Actions
-        BeatTrackTapAction.self
-        TrackIntro106TapAction.self
-        WaitingBass104TapAction.self
         // Sound Effect Tap Actions
         LoopTapAction.self
         StopTapAction.self
@@ -43,21 +38,6 @@ final class SocketPlugin: Plugin {
         DrumEl1TapAction.self
         DrumEl2TapAction.self
         DrumEl3TapAction.self
-        // Voice Tap Actions
-        HaseVoice1MinnaTapAction.self
-        HaseVoice2BlogTapAction.self
-        HaseVoice3OhaTapAction.self
-        HaseVoice4OhaTapAction.self
-        HaseVoice5OhaTapAction.self
-        HaseVoice6ToiuwakdeTapAction.self
-        HaseVoice7KyuomoTapAction.self
-        MaVoice1SingletonTapAction.self
-        MaVoice2InstanceTapAction.self
-        MaVoice3PatternTapAction.self
-        MaVoice4SumimasenTapAction.self
-        MaVoice5TwoTapAction.self
-        MaVoice6OioiTapAction.self
-        MaVoice7TashikaniTapAction.self
         // Tone Tap Actions
         ToneCTapAction.self
         ToneDTapAction.self
