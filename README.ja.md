@@ -81,18 +81,12 @@ cd StreamDeckWorkSpace
 
 2. **StreamDeckプラグインのビルド・インストール**
 
-⚠️ **重要**: ビルド前に`SocketConfig.swift`のBundle IDを自分のディレクトリ階層に合うように書き換えてください。
-
-```swift
-// SocketConfig.swift の設定例
-let bundleID = "xxx.yyy.zzz" // ← 自分のディレクトリ階層に合うように変更
-```
-
-
 ```bash
 cd StreamDeckActionPlugin
 make build
 ```
+
+> 注意: 初回ビルドは依存関係の解決とキャッシュ生成のため、数分かかる場合があります。
 
 3. **macOSサーバーの起動**
 Xcodeで`StreamDeckSocketServer.xcodeproj`を開いて実行
